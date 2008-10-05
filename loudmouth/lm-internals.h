@@ -60,6 +60,8 @@ typedef struct {
 } LmConnectData;
 
 GMainContext *   _lm_connection_get_context       (LmConnection       *conn);
+/* Need to free the return value */
+gchar *          _lm_connection_get_server        (LmConnection       *conn);
 gboolean         _lm_old_socket_failed_with_error (LmConnectData         *data,
                                                int                    error);
 gboolean         _lm_old_socket_failed            (LmConnectData         *data);

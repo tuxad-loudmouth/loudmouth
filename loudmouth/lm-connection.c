@@ -524,9 +524,7 @@ connection_do_open (LmConnection *connection, GError **error)
 		return FALSE;
 	}
 
-	if (!connection_get_server_from_jid (connection->jid, &domain)) {
-		domain = g_strdup (connection->server);
-	}
+        domain = _lm_connection_get_server (connection);
 
 	lm_verbose ("Connecting to: %s:%d\n", connection->server, connection->port);
 
@@ -993,9 +991,7 @@ connection_send_stream_header (LmConnection *connection)
 
 	lm_verbose ("Sending stream header\n");
 
-	if (!connection_get_server_from_jid (connection->jid, &server_from_jid)) {
-		server_from_jid = g_strdup (connection->server);
-	}
+        server_from_jid = _lm_connection_get_server (connection);
 
 	m = lm_message_new (server_from_jid, LM_MESSAGE_TYPE_STREAM);
 	lm_message_node_set_attributes (m->node,
@@ -1021,6 +1017,20 @@ _lm_connection_get_context (LmConnection *conn)
         g_return_val_if_fail (conn != NULL, NULL);
 
         return conn->context;
+}
+
+gchar *
+_lm_connection_get_server (LmConnection *conn)
+{
+        gchar *server;
+
+        g_return_val_if_fail (conn != NULL, NULL);
+
+	if (!connection_get_server_from_jid (conn->jid, &server)) {
+		server = g_strdup (conn->server);
+	}
+
+        return server;
 }
 
 gboolean 
