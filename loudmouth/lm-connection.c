@@ -149,6 +149,7 @@ struct _LmConnection {
 
 	guint         keep_alive_rate;
 	GSource      *keep_alive_source;
+	guint         keep_alive_counter;
 
 	gint          ref_count;
 };
@@ -162,6 +163,7 @@ typedef enum {
 #define XMPP_NS_BIND "urn:ietf:params:xml:ns:xmpp-bind"
 #define XMPP_NS_SESSION "urn:ietf:params:xml:ns:xmpp-session"
 #define XMPP_NS_STARTTLS "urn:ietf:params:xml:ns:xmpp-tls"
+#define XMPP_NS_PING "urn:xmpp:ping"
 
 static void     connection_free              (LmConnection        *connection);
 static void     connection_handle_message    (LmConnection        *connection,
@@ -198,6 +200,11 @@ static void     connection_stream_error      (LmConnection        *connection,
 static gint      
 connection_handler_compare_func              (HandlerData         *a,
                                               HandlerData         *b);
+static LmHandlerResult
+connection_keep_alive_reply                  (LmMessageHandler *handler,
+                                              LmConnection     *connection,
+                                              LmMessage        *m,
+                                              gpointer          user_data);
 static gboolean connection_send_keep_alive   (LmConnection        *connection);
 static void     connection_start_keep_alive  (LmConnection        *connection);
 static void     connection_stop_keep_alive   (LmConnection        *connection);
@@ -395,13 +402,54 @@ connection_new_message_cb (LmParser     *parser,
 	lm_message_queue_push_tail (connection->queue, m);
 }
 
+static LmHandlerResult
+connection_keep_alive_reply(LmMessageHandler *handler,
+			    LmConnection     *connection,
+			    LmMessage        *m,
+			    gpointer          user_data)
+{
+	connection->keep_alive_counter = 0;
+	return LM_HANDLER_RESULT_REMOVE_MESSAGE;
+}
+
 static gboolean
 connection_send_keep_alive (LmConnection *connection)
-{ 
-	if (!connection_send (connection, " ", -1, NULL)) {
+{
+	LmMessage *ping;
+	LmMessageNode *ping_node;
+	LmMessageHandler *keep_alive_handler;
+	gchar *server;
+
+	connection->keep_alive_counter++;
+	if (connection->keep_alive_counter > 3) {
+		connection_do_close (connection);
+		connection_signal_disconnect (connection,
+					      LM_DISCONNECT_REASON_PING_TIME_OUT);
+	}
+
+	if (!connection_get_server_from_jid (connection->jid, &server)) {
+		server = g_strdup (connection->server);
+	}
+	ping = lm_message_new_with_sub_type (server,
+					     LM_MESSAGE_TYPE_IQ,
+					     LM_MESSAGE_SUB_TYPE_GET);
+	ping_node = lm_message_node_add_child (ping->node, "ping", NULL);
+	lm_message_node_set_attribute (ping_node, "xmlns", XMPP_NS_PING);
+	keep_alive_handler =
+		lm_message_handler_new (connection_keep_alive_reply,
+				        NULL,
+				        FALSE);
+
+	if (!lm_connection_send_with_reply (connection,
+					    ping,
+					    keep_alive_handler,
+					    NULL)) {
 		lm_verbose ("Error while sending keep alive package!\n");
 	}
 
+	lm_message_handler_unref (keep_alive_handler);
+	lm_message_unref (ping);
+	g_free (server);
 	return TRUE;
 }
 
@@ -424,6 +472,7 @@ connection_start_keep_alive (LmConnection *connection)
 	}
 
 	if (connection->keep_alive_rate > 0) {
+		connection->keep_alive_counter = 0;
 		connection->keep_alive_source =
 			lm_misc_add_timeout (connection->context,
 					     connection->keep_alive_rate * 1000,
