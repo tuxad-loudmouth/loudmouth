@@ -78,6 +78,9 @@ libloudmouth_1_la_SOURCES =		\
 	lm-tcp-socket.c                 \
 	lm-tcp-socket.h                 \
 	                                \
+	lm-feature-ping.c               \
+	lm-feature-ping.h               \
+	                                \
 	lm-sasl.c                       \
 	lm-sasl.h                       \
 	lm-simple-io.c                  \
