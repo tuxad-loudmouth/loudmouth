@@ -21,8 +21,14 @@
 #include <config.h>
 
 #include "lm-connection.h"
+#include "lm-debug.h"
+#include "lm-internals.h"
 #include "lm-marshal.h"
+#include "lm-misc.h"
+
 #include "lm-feature-ping.h"
+
+#define XMPP_NS_PING "urn:xmpp:ping"
 
 #define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), LM_TYPE_FEATURE_PING, LmFeaturePingPriv))
 
@@ -43,6 +49,13 @@ static void     feature_ping_set_property        (GObject           *object,
                                                   guint              param_id,
                                                   const GValue      *value,
                                                   GParamSpec        *pspec);
+
+static LmHandlerResult
+feature_ping_keep_alive_reply                    (LmMessageHandler *handler,
+                                                  LmConnection     *connection,
+                                                  LmMessage        *m,
+                                                  gpointer          user_data);
+static gboolean feature_ping_send_keep_alive     (LmFeaturePing    *fp);
 
 G_DEFINE_TYPE (LmFeaturePing, lm_feature_ping, G_TYPE_OBJECT)
 
@@ -159,16 +172,111 @@ feature_ping_set_property (GObject      *object,
 	};
 }
 
+static LmHandlerResult
+feature_ping_keep_alive_reply (LmMessageHandler *handler,
+                               LmConnection     *connection,
+                               LmMessage        *m,
+                               gpointer          user_data)
+{
+        LmFeaturePingPriv *priv;
+
+        priv = GET_PRIV (user_data);
+
+        priv->keep_alive_counter = 0;
+	
+        return LM_HANDLER_RESULT_REMOVE_MESSAGE;
+}
+
+static gboolean
+feature_ping_send_keep_alive (LmFeaturePing *fp)
+{
+        LmFeaturePingPriv *priv;
+	LmMessage         *ping;
+        LmMessageNode     *ping_node;
+	LmMessageHandler  *keep_alive_handler;
+        gchar             *server;
+
+        priv = GET_PRIV (fp);
+
+        priv->keep_alive_counter++;
+	if (priv->keep_alive_counter > 3) {
+                g_signal_emit (fp, signals[TIMED_OUT], 0);
+                /* FIXME */
+#if 0 /* Should be moved to signal callback in LmConnection */
+                connection_do_close (connection);
+		connection_signal_disconnect (connection,
+					      LM_DISCONNECT_REASON_PING_TIME_OUT);
+#endif
+
+	}
+
+        server = _lm_connection_get_server (priv->connection);
+	
+        ping = lm_message_new_with_sub_type (server,
+					     LM_MESSAGE_TYPE_IQ,
+					     LM_MESSAGE_SUB_TYPE_GET);
+
+	ping_node = lm_message_node_add_child (ping->node, "ping", NULL);
+
+	lm_message_node_set_attribute (ping_node, "xmlns", XMPP_NS_PING);
+
+	keep_alive_handler =
+		lm_message_handler_new (feature_ping_keep_alive_reply,
+                                        NULL,
+				        FALSE);
+
+        if (!lm_connection_send_with_reply (priv->connection,
+					    ping,
+					    keep_alive_handler,
+					    NULL)) {
+                lm_verbose ("Error while sending XMPP ping!\n");
+	}
+
+	lm_message_handler_unref (keep_alive_handler);
+	lm_message_unref (ping);
+	g_free (server);
+
+	return TRUE;
+}
+
+
 void
 lm_feature_ping_start (LmFeaturePing *fp)
 {
+        LmFeaturePingPriv *priv;
+
         g_return_if_fail (LM_IS_FEATURE_PING (fp));
+
+        priv = GET_PRIV (fp);
+
+        if (priv->keep_alive_source) {
+                lm_feature_ping_stop (fp);
+	}
+
+        if (priv->keep_alive_rate > 0) {
+                priv->keep_alive_counter = 0;
+                priv->keep_alive_source =
+                        lm_misc_add_timeout (_lm_connection_get_context (priv->connection),
+					     priv->keep_alive_rate * 1000,
+					     (GSourceFunc) feature_ping_send_keep_alive,
+                                             fp);
+	}
 }
 
 void
 lm_feature_ping_stop (LmFeaturePing *fp)
 {
+        LmFeaturePingPriv *priv;
+
         g_return_if_fail (LM_IS_FEATURE_PING (fp));
+
+        priv = GET_PRIV (fp);
+
+        if (priv->keep_alive_source) {
+		g_source_destroy (priv->keep_alive_source);
+	}
+
+        priv->keep_alive_source = NULL;
 }
 
 
