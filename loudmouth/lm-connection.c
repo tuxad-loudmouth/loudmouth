@@ -1015,6 +1015,14 @@ connection_send_stream_header (LmConnection *connection)
 	lm_message_unref (m);
 }
 
+GMainContext *
+_lm_connection_get_context (LmConnection *conn)
+{
+        g_return_val_if_fail (conn != NULL, NULL);
+
+        return conn->context;
+}
+
 gboolean 
 _lm_connection_async_connect_waiting (LmConnection *connection)
 {
