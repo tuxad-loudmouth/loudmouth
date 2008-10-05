@@ -41,17 +41,12 @@ struct LmFeaturePing {
 
 struct LmFeaturePingClass {
 	GObjectClass parent_class;
-	
-	/* <vtable> */
-	void  (*initialize)    (LmFeaturePing     *feature_ping,
-				const char *username,
-				const char *server,
-				const char *password);
-	void  (*begin)         (LmFeaturePing     *feature_ping);
-	void  (*cancel)        (LmFeaturePing     *feature_ping);
 };
 
 GType   lm_feature_ping_get_type  (void);
+
+void    lm_feature_ping_start     (LmFeaturePing *fp);
+void    lm_feature_ping_stop      (LmFeaturePing *fp);
 
 G_END_DECLS
 

@@ -20,6 +20,7 @@
 
 #include <config.h>
 
+#include "lm-connection.h"
 #include "lm-marshal.h"
 #include "lm-feature-ping.h"
 
@@ -27,28 +28,32 @@
 
 typedef struct LmFeaturePingPriv LmFeaturePingPriv;
 struct LmFeaturePingPriv {
-	gint my_prop;
+        LmConnection *connection;
+	guint         keep_alive_rate;
+	GSource      *keep_alive_source;
+	guint         keep_alive_counter;
 };
 
 static void     feature_ping_finalize            (GObject           *object);
 static void     feature_ping_get_property        (GObject           *object,
-					   guint              param_id,
-					   GValue            *value,
-					   GParamSpec        *pspec);
+                                                  guint              param_id,
+                                                  GValue            *value,
+                                                  GParamSpec        *pspec);
 static void     feature_ping_set_property        (GObject           *object,
-					   guint              param_id,
-					   const GValue      *value,
-					   GParamSpec        *pspec);
+                                                  guint              param_id,
+                                                  const GValue      *value,
+                                                  GParamSpec        *pspec);
 
 G_DEFINE_TYPE (LmFeaturePing, lm_feature_ping, G_TYPE_OBJECT)
 
 enum {
 	PROP_0,
-	PROP_MY_PROP
+        PROP_CONNECTION,
+        PROP_RATE
 };
 
 enum {
-	SIGNAL_NAME,
+        TIMED_OUT,
 	LAST_SIGNAL
 };
 
@@ -63,23 +68,30 @@ lm_feature_ping_class_init (LmFeaturePingClass *class)
 	object_class->get_property = feature_ping_get_property;
 	object_class->set_property = feature_ping_set_property;
 
-	g_object_class_install_property (object_class,
-					 PROP_MY_PROP,
-					 g_param_spec_string ("my-prop",
-							      "My Prop",
-							      "My Property",
-							      NULL,
-							      G_PARAM_READWRITE));
-	
-	signals[SIGNAL_NAME] = 
-		g_signal_new ("signal-name",
+        g_object_class_install_property (object_class,
+                                         PROP_CONNECTION,
+                                         g_param_spec_pointer ("connection",
+                                                               "Connection",
+                                                               "The LmConnection to use",
+                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+        g_object_class_install_property (object_class,
+					 PROP_RATE,
+					 g_param_spec_uint ("rate",
+                                                            "Timeout Rate",
+                                                            "Keep alive rate in seconds",
+                                                            0, G_MAXUINT,
+                                                            0,
+                                                            G_PARAM_READWRITE));
+
+        signals[TIMED_OUT] = 
+		g_signal_new ("timed-out",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      lm_marshal_VOID__INT,
-			      G_TYPE_NONE, 
-			      1, G_TYPE_INT);
+			      lm_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 	
 	g_type_class_add_private (object_class, sizeof (LmFeaturePingPriv));
 }
@@ -105,17 +117,17 @@ feature_ping_finalize (GObject *object)
 
 static void
 feature_ping_get_property (GObject    *object,
-		   guint       param_id,
-		   GValue     *value,
-		   GParamSpec *pspec)
+                           guint       param_id,
+                           GValue     *value,
+                           GParamSpec *pspec)
 {
 	LmFeaturePingPriv *priv;
 
 	priv = GET_PRIV (object);
 
 	switch (param_id) {
-	case PROP_MY_PROP:
-		g_value_set_int (value, priv->my_prop);
+	case PROP_RATE:
+		g_value_set_uint (value, priv->keep_alive_rate);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -125,21 +137,38 @@ feature_ping_get_property (GObject    *object,
 
 static void
 feature_ping_set_property (GObject      *object,
-		   guint         param_id,
-		   const GValue *value,
-		   GParamSpec   *pspec)
+                           guint         param_id,
+                           const GValue *value,
+                           GParamSpec   *pspec)
 {
 	LmFeaturePingPriv *priv;
 
 	priv = GET_PRIV (object);
 
 	switch (param_id) {
-	case PROP_MY_PROP:
-		priv->my_prop = g_value_get_int (value);
+        case PROP_CONNECTION:
+                priv->connection = g_value_get_pointer (value);
+                break;
+        case PROP_RATE:
+		priv->keep_alive_rate = g_value_get_uint (value);
+                /* Restart the pings */
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
 	};
 }
+
+void
+lm_feature_ping_start (LmFeaturePing *fp)
+{
+        g_return_if_fail (LM_IS_FEATURE_PING (fp));
+}
+
+void
+lm_feature_ping_stop (LmFeaturePing *fp)
+{
+        g_return_if_fail (LM_IS_FEATURE_PING (fp));
+}
+
 
