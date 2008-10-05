@@ -85,6 +85,7 @@
 #include "lm-sock.h"
 #include "lm-debug.h"
 #include "lm-error.h"
+#include "lm-feature-ping.h"
 #include "lm-internals.h"
 #include "lm-message-queue.h"
 #include "lm-misc.h"
@@ -147,9 +148,8 @@ struct _LmConnection {
 
 	LmConnectionState state;
 
-	guint         keep_alive_rate;
-	GSource      *keep_alive_source;
-	guint         keep_alive_counter;
+        guint          keep_alive_rate;
+        LmFeaturePing *feature_ping;
 
 	gint          ref_count;
 };
@@ -163,7 +163,6 @@ typedef enum {
 #define XMPP_NS_BIND "urn:ietf:params:xml:ns:xmpp-bind"
 #define XMPP_NS_SESSION "urn:ietf:params:xml:ns:xmpp-session"
 #define XMPP_NS_STARTTLS "urn:ietf:params:xml:ns:xmpp-tls"
-#define XMPP_NS_PING "urn:xmpp:ping"
 
 static void     connection_free              (LmConnection        *connection);
 static void     connection_handle_message    (LmConnection        *connection,
@@ -200,12 +199,6 @@ static void     connection_stream_error      (LmConnection        *connection,
 static gint      
 connection_handler_compare_func              (HandlerData         *a,
                                               HandlerData         *b);
-static LmHandlerResult
-connection_keep_alive_reply                  (LmMessageHandler *handler,
-                                              LmConnection     *connection,
-                                              LmMessage        *m,
-                                              gpointer          user_data);
-static gboolean connection_send_keep_alive   (LmConnection        *connection);
 static void     connection_start_keep_alive  (LmConnection        *connection);
 static void     connection_stop_keep_alive   (LmConnection        *connection);
 static gboolean connection_send              (LmConnection        *connection, 
@@ -402,93 +395,46 @@ connection_new_message_cb (LmParser     *parser,
 	lm_message_queue_push_tail (connection->queue, m);
 }
 
-static LmHandlerResult
-connection_keep_alive_reply(LmMessageHandler *handler,
-			    LmConnection     *connection,
-			    LmMessage        *m,
-			    gpointer          user_data)
+static void
+connection_ping_timed_out (LmFeaturePing *fp, 
+                           LmConnection  *connection)
 {
-	connection->keep_alive_counter = 0;
-	return LM_HANDLER_RESULT_REMOVE_MESSAGE;
-}
-
-static gboolean
-connection_send_keep_alive (LmConnection *connection)
-{
-	LmMessage *ping;
-	LmMessageNode *ping_node;
-	LmMessageHandler *keep_alive_handler;
-	gchar *server;
-
-	connection->keep_alive_counter++;
-	if (connection->keep_alive_counter > 3) {
-		connection_do_close (connection);
-		connection_signal_disconnect (connection,
-					      LM_DISCONNECT_REASON_PING_TIME_OUT);
-	}
-
-	if (!connection_get_server_from_jid (connection->jid, &server)) {
-		server = g_strdup (connection->server);
-	}
-	ping = lm_message_new_with_sub_type (server,
-					     LM_MESSAGE_TYPE_IQ,
-					     LM_MESSAGE_SUB_TYPE_GET);
-	ping_node = lm_message_node_add_child (ping->node, "ping", NULL);
-	lm_message_node_set_attribute (ping_node, "xmlns", XMPP_NS_PING);
-	keep_alive_handler =
-		lm_message_handler_new (connection_keep_alive_reply,
-				        NULL,
-				        FALSE);
-
-	if (!lm_connection_send_with_reply (connection,
-					    ping,
-					    keep_alive_handler,
-					    NULL)) {
-		lm_verbose ("Error while sending keep alive package!\n");
-	}
-
-	lm_message_handler_unref (keep_alive_handler);
-	lm_message_unref (ping);
-	g_free (server);
-	return TRUE;
+        connection_do_close (connection);
+        connection_signal_disconnect (connection,
+                                      LM_DISCONNECT_REASON_PING_TIME_OUT);
 }
 
 static void
 connection_start_keep_alive (LmConnection *connection)
 {
-        /* try using TCP keepalives if possible */
-        if ((connection->keep_alive_rate > 0) &&
-            lm_old_socket_set_keepalive (connection->socket,
-                                         connection->keep_alive_rate)) {
-#ifdef ONLY_TCP_KEEP_ALIVE
-                /* Many NAT firewalls seems to not handle this correctly and 
-                 * will disconnect the clients */
-                return;
-#endif /* ONLY_TCP_KEEP_ALIVE */
+	if (connection->feature_ping) {
+                connection_stop_keep_alive (connection);
 	}
 
-	if (connection->keep_alive_source) {
-		connection_stop_keep_alive (connection);
-	}
+        connection->feature_ping = g_object_new (LM_TYPE_FEATURE_PING,
+                                                 "connection", connection,
+                                                 "rate", connection->keep_alive_rate,
+                                                 NULL);
 
-	if (connection->keep_alive_rate > 0) {
-		connection->keep_alive_counter = 0;
-		connection->keep_alive_source =
-			lm_misc_add_timeout (connection->context,
-					     connection->keep_alive_rate * 1000,
-					     (GSourceFunc) connection_send_keep_alive,
-					     connection);
-	}
+        g_signal_connect (connection->feature_ping, "timed-out",
+                          G_CALLBACK (connection_ping_timed_out),
+                          connection);
+
+        lm_feature_ping_start (connection->feature_ping);
 }
 
 static void
 connection_stop_keep_alive (LmConnection *connection)
 {
-	if (connection->keep_alive_source) {
-		g_source_destroy (connection->keep_alive_source);
-	}
-
-	connection->keep_alive_source = NULL;
+	if (connection->feature_ping) {
+                lm_feature_ping_stop (connection->feature_ping);
+                g_signal_handlers_disconnect_by_func (connection->feature_ping,
+                                                      G_CALLBACK (connection_ping_timed_out),
+                                                      connection);
+                g_object_unref (connection->feature_ping);
+        }
+        
+	connection->feature_ping = NULL;
 }
 
 static void
@@ -1322,7 +1268,6 @@ lm_connection_new (const gchar *server)
 							      connection);
 	connection->cancel_open       = FALSE;
 	connection->state             = LM_CONNECTION_STATE_CLOSED;
-	connection->keep_alive_source = NULL;
 	connection->keep_alive_rate   = 0;
 	connection->socket            = NULL;
 	connection->use_sasl          = FALSE;
@@ -1717,13 +1662,12 @@ lm_connection_set_keep_alive_rate (LmConnection *connection, guint rate)
 	connection_stop_keep_alive (connection);
 
 	if (rate == 0) {
-		connection->keep_alive_source = NULL;
 		return;
 	}
 
-	connection->keep_alive_rate = rate;
+        connection->keep_alive_rate = rate;
 	
-	if (lm_connection_is_open (connection)) {
+        if (lm_connection_is_open (connection)) {
 		connection_start_keep_alive (connection);
 	}
 }
