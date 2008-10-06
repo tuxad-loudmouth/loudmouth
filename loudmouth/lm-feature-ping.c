@@ -222,7 +222,7 @@ feature_ping_send_keep_alive (LmFeaturePing *fp)
 
 	keep_alive_handler =
 		lm_message_handler_new (feature_ping_keep_alive_reply,
-                                        NULL,
+                                        fp,
 				        FALSE);
 
         if (!lm_connection_send_with_reply (priv->connection,
