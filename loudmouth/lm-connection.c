@@ -1126,6 +1126,7 @@ connection_features_cb (LmMessageHandler *handler,
 	LmMessageNode *bind_node;
 	LmMessageNode    *starttls_node;
 	LmMessageNode *old_auth;
+	LmMessageNode *sasl_mechanisms;
 	
 	starttls_node = lm_message_node_find_child (message->node, "starttls");
         if (connection->ssl && lm_old_socket_get_use_starttls (connection->socket)) {
@@ -1197,7 +1198,9 @@ connection_features_cb (LmMessageHandler *handler,
 	}
 
 	old_auth = lm_message_node_find_child (message->node, "auth");
-	if (connection->use_sasl && old_auth) {
+
+	sasl_mechanisms = lm_message_node_find_child (message->node, "mechanisms");
+	if (connection->use_sasl && old_auth != NULL && sasl_mechanisms == NULL) {
 		g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, 
 		       "Server uses XEP-0078 (jabber iq auth) instead of SASL\n");
 		/* So the server is XMPP1.0, but doesn't support SASL and uses
