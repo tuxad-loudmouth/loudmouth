@@ -1437,7 +1437,9 @@ lm_connection_close (LmConnection      *connection,
 	
 	g_return_val_if_fail (connection != NULL, FALSE);
 
-	lm_old_socket_asyncns_cancel (connection->socket);
+        if (connection->socket) {
+                lm_old_socket_asyncns_cancel (connection->socket);
+        }
 
 	if (connection->state == LM_CONNECTION_STATE_CLOSED) {
 		g_set_error (error,
