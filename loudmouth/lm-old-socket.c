@@ -800,7 +800,7 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
                       "host", remote_addr, 
                       "type", LM_RESOLVER_HOST,
                       NULL);
-
+       
         lm_resolver_lookup (resolver);
 }
 
@@ -823,7 +823,7 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
 
                 return;
         }
-        
+
         socket->connect_data->current_addr = 
                 lm_resolver_results_get_next (resolver);
 
@@ -845,7 +845,8 @@ lm_old_socket_create (GMainContext      *context,
                       LmProxy           *proxy,
                       GError           **error)
 {
-        LmOldSocket  *socket;
+        LmOldSocket   *socket;
+        LmConnectData *data;
 
 	g_return_val_if_fail (domain != NULL, NULL);
 	g_return_val_if_fail ((port >= LM_MIN_PORT && port <= LM_MAX_PORT), NULL);
@@ -874,6 +875,12 @@ lm_old_socket_create (GMainContext      *context,
 	if (proxy) {
 		socket->proxy = lm_proxy_ref (proxy);
 	}
+
+        data = g_new0 (LmConnectData, 1);
+        data->socket = socket;
+        data->connection = socket->connection;
+        data->fd = -1;
+        socket->connect_data = data;
 
 	if (!server) {
                 socket->resolver = lm_resolver_new_for_service (socket->domain,
