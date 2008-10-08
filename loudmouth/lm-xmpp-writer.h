@@ -37,17 +37,17 @@ typedef struct _LmXmppWriter      LmXmppWriter;
 typedef struct _LmXmppWriterIface LmXmppWriterIface;
 
 struct _LmXmppWriterIface {
-	GTypeInterface parent;
+    GTypeInterface parent;
 
-	/* <vtable> */
-        void (*send_message) (LmXmppWriter *writer,
-                              LmMessage    *message);
-        void (*send_text)    (LmXmppWriter *writer,
-                              const gchar  *buf,
-                              gsize         len);
+    /* <vtable> */
+    void (*send_message) (LmXmppWriter *writer,
+                          LmMessage    *message);
+    void (*send_text)    (LmXmppWriter *writer,
+                          const gchar  *buf,
+                          gsize         len);
 
-        /* Needed? */
-        void (*flush)        (LmXmppWriter   *writer);
+    /* Needed? */
+    void (*flush)        (LmXmppWriter   *writer);
 };
 
 GType          lm_xmpp_writer_get_type      (void);

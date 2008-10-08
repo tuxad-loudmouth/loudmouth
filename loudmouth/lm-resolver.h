@@ -36,26 +36,26 @@ typedef struct LmResolver      LmResolver;
 typedef struct LmResolverClass LmResolverClass;
 
 struct LmResolver {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmResolverClass {
-	GObjectClass parent_class;
-	
-	/* <vtable> */
-        void (*lookup)  (LmResolver  *resolver);
-        void (*cancel)  (LmResolver  *resolver);
+    GObjectClass parent_class;
+    
+    /* <vtable> */
+    void (*lookup)  (LmResolver  *resolver);
+    void (*cancel)  (LmResolver  *resolver);
 };
 
 typedef enum {
-        LM_RESOLVER_HOST,
-        LM_RESOLVER_SRV
+    LM_RESOLVER_HOST,
+    LM_RESOLVER_SRV
 } LmResolverType;
 
 typedef enum {
-        LM_RESOLVER_RESULT_OK,
-        LM_RESOLVER_RESULT_FAILED,
-        LM_RESOLVER_RESULT_CANCELLED
+    LM_RESOLVER_RESULT_OK,
+    LM_RESOLVER_RESULT_FAILED,
+    LM_RESOLVER_RESULT_CANCELLED
 } LmResolverResult;
 
 typedef void (*LmResolverCallback) (LmResolver       *resolver,

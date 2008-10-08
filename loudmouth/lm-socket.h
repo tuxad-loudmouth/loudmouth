@@ -37,18 +37,18 @@ typedef struct _LmSocket      LmSocket;
 typedef struct _LmSocketIface LmSocketIface;
 
 struct _LmSocketIface {
-	GTypeInterface parent;
+    GTypeInterface parent;
 
-	/* <vtable> */
-        void     (*connect)      (LmSocket *socket);
-        gboolean (*write)        (LmSocket *socket,
-                                  gchar    *buf,
-                                  gsize     len);
-        gboolean (*read)         (LmSocket *socket,
-                                  gchar    *buf,
-                                  gsize     buf_len,
-                                  gsize    *read_len);
-        void     (*disconnect)   (LmSocket *socket);
+    /* <vtable> */
+    void     (*connect)      (LmSocket *socket);
+    gboolean (*write)        (LmSocket *socket,
+                              gchar    *buf,
+                              gsize     len);
+    gboolean (*read)         (LmSocket *socket,
+                              gchar    *buf,
+                              gsize     buf_len,
+                              gsize    *read_len);
+    void     (*disconnect)   (LmSocket *socket);
 };
 
 typedef void  (*LmSocketCallback)  (LmSocket *socket,

@@ -38,19 +38,19 @@ typedef struct LmSoupSocket      LmSoupSocket;
 typedef struct LmSoupSocketClass LmSoupSocketClass;
 
 struct LmSoupSocket {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmSoupSocketClass {
-	GObjectClass parent_class;
-	
-	/* <vtable> */
-	void  (*initialize)    (LmSoupSocket     *soup_socket,
-				const char *username,
-				const char *server,
-				const char *password);
-	void  (*begin)         (LmSoupSocket     *soup_socket);
-	void  (*cancel)        (LmSoupSocket     *soup_socket);
+    GObjectClass parent_class;
+    
+    /* <vtable> */
+    void  (*initialize)    (LmSoupSocket     *soup_socket,
+                            const char *username,
+                            const char *server,
+                            const char *password);
+    void  (*begin)         (LmSoupSocket     *soup_socket);
+    void  (*cancel)        (LmSoupSocket     *soup_socket);
 };
 
 GType   lm_soup_socket_get_type  (void);

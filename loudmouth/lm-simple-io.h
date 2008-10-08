@@ -36,11 +36,11 @@ typedef struct LmSimpleIO      LmSimpleIO;
 typedef struct LmSimpleIOClass LmSimpleIOClass;
 
 struct LmSimpleIO {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmSimpleIOClass {
-	GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 GType   lm_simple_io_get_type  (void);

@@ -27,14 +27,14 @@
 typedef struct LmParser LmParser;
 
 typedef void (* LmParserMessageFunction) (LmParser     *parser,
-					  LmMessage    *message,
-					  gpointer      user_data);
+                                          LmMessage    *message,
+                                          gpointer      user_data);
 
 LmParser *   lm_parser_new       (LmParserMessageFunction  function,
-				  gpointer                 user_data,
-				  GDestroyNotify           notify);
+                                  gpointer                 user_data,
+                                  GDestroyNotify           notify);
 gboolean     lm_parser_parse     (LmParser                *parser,
-				  const gchar             *string);
+                                  const gchar             *string);
 void         lm_parser_free      (LmParser                *parser);
 
 #endif /* __LM_PARSER_H__ */

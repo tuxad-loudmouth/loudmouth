@@ -27,22 +27,22 @@
 
 typedef struct _LmSSLBase LmSSLBase;
 struct _LmSSLBase {
-	LmSSLFunction   func;
-	gpointer        func_data;
-	GDestroyNotify  data_notify;
-	gchar          *expected_fingerprint;
-	char            fingerprint[20];
-	gboolean        use_starttls;
-	gboolean        require_starttls;
+    LmSSLFunction   func;
+    gpointer        func_data;
+    GDestroyNotify  data_notify;
+    gchar          *expected_fingerprint;
+    char            fingerprint[20];
+    gboolean        use_starttls;
+    gboolean        require_starttls;
 
-	gint            ref_count;
+    gint            ref_count;
 };
 
 void _lm_ssl_base_init         (LmSSLBase      *base, 
-				const gchar    *expected_fingerprint,
-				LmSSLFunction   ssl_function,
-				gpointer        user_data,
-				GDestroyNotify  notify);
+                                const gchar    *expected_fingerprint,
+                                LmSSLFunction   ssl_function,
+                                gpointer        user_data,
+                                GDestroyNotify  notify);
 
 void _lm_ssl_base_free_fields  (LmSSLBase      *base);
 

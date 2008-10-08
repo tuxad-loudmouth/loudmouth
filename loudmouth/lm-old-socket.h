@@ -28,16 +28,16 @@
 typedef struct _LmOldSocket LmOldSocket;
 
 typedef void    (* IncomingDataFunc)  (LmOldSocket         *socket,
-				       const gchar         *buf,
-				       gpointer             user_data);
+                                       const gchar         *buf,
+                                       gpointer             user_data);
 
 typedef void    (* SocketClosedFunc)  (LmOldSocket         *socket,
-				       LmDisconnectReason   reason,
-				       gpointer             user_data);
+                                       LmDisconnectReason   reason,
+                                       gpointer             user_data);
 
 typedef void    (* ConnectResultFunc) (LmOldSocket         *socket,
                                        gboolean             result,
-				       gpointer             user_data);
+                                       gpointer             user_data);
 
 LmOldSocket * lm_old_socket_create          (GMainContext       *context, 
                                              IncomingDataFunc    data_func,
@@ -63,7 +63,7 @@ gboolean       lm_old_socket_starttls       (LmOldSocket        *socket);
 gboolean       lm_old_socket_set_keepalive  (LmOldSocket        *socket, 
                                              int                 delay);
 gchar *        lm_old_socket_get_local_host (LmOldSocket        *socket);
-void	       lm_old_socket_asyncns_cancel (LmOldSocket        *socket);
+void           lm_old_socket_asyncns_cancel (LmOldSocket        *socket);
 
 gboolean       lm_old_socket_get_use_starttls (LmOldSocket      *socket);
 gboolean       lm_old_socket_get_require_starttls (LmOldSocket  *socket);

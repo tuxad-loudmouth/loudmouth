@@ -28,7 +28,7 @@
 
 typedef struct LmTcpSocketPriv LmTcpSocketPriv;
 struct LmTcpSocketPriv {
-	gint my_prop;
+    gint my_prop;
 };
 
 static void     tcp_socket_iface_init          (LmSocketIface     *iface);
@@ -56,13 +56,13 @@ G_DEFINE_TYPE_WITH_CODE (LmTcpSocket, lm_tcp_socket, G_TYPE_OBJECT,
                                                 tcp_socket_iface_init))
 
 enum {
-	PROP_0,
-	PROP_MY_PROP
+    PROP_0,
+    PROP_MY_PROP
 };
 
 enum {
-	SIGNAL_NAME,
-	LAST_SIGNAL
+    SIGNAL_NAME,
+    LAST_SIGNAL
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -70,59 +70,59 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 lm_tcp_socket_class_init (LmTcpSocketClass *class)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (class);
+    GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-	object_class->finalize     = tcp_socket_finalize;
-	object_class->get_property = tcp_socket_get_property;
-	object_class->set_property = tcp_socket_set_property;
+    object_class->finalize     = tcp_socket_finalize;
+    object_class->get_property = tcp_socket_get_property;
+    object_class->set_property = tcp_socket_set_property;
 
-	g_object_class_install_property (object_class,
-					 PROP_MY_PROP,
-					 g_param_spec_string ("my-prop",
-							      "My Prop",
-							      "My Property",
-							      NULL,
-							      G_PARAM_READWRITE));
-	
-	signals[SIGNAL_NAME] = 
-		g_signal_new ("signal-name",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      lm_marshal_VOID__INT,
-			      G_TYPE_NONE, 
-			      1, G_TYPE_INT);
-	
-	g_type_class_add_private (object_class, sizeof (LmTcpSocketPriv));
+    g_object_class_install_property (object_class,
+                                     PROP_MY_PROP,
+                                     g_param_spec_string ("my-prop",
+                                                          "My Prop",
+                                                          "My Property",
+                                                          NULL,
+                                                          G_PARAM_READWRITE));
+    
+    signals[SIGNAL_NAME] = 
+        g_signal_new ("signal-name",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_LAST,
+                      0,
+                      NULL, NULL,
+                      lm_marshal_VOID__INT,
+                      G_TYPE_NONE, 
+                      1, G_TYPE_INT);
+    
+    g_type_class_add_private (object_class, sizeof (LmTcpSocketPriv));
 }
 
 static void
 tcp_socket_iface_init (LmSocketIface *iface)
 {
-        iface->connect    = tcp_socket_connect;
-        iface->write      = tcp_socket_write;
-        iface->read       = tcp_socket_read;
-        iface->disconnect = tcp_socket_disconnect;
+    iface->connect    = tcp_socket_connect;
+    iface->write      = tcp_socket_write;
+    iface->read       = tcp_socket_read;
+    iface->disconnect = tcp_socket_disconnect;
 }
 
 static void
 lm_tcp_socket_init (LmTcpSocket *dummy)
 {
-	LmTcpSocketPriv *priv;
+    LmTcpSocketPriv *priv;
 
-	priv = GET_PRIV (dummy);
+    priv = GET_PRIV (dummy);
 
 }
 
 static void
 tcp_socket_finalize (GObject *object)
 {
-	LmTcpSocketPriv *priv;
+    LmTcpSocketPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	(G_OBJECT_CLASS (lm_tcp_socket_parent_class)->finalize) (object);
+    (G_OBJECT_CLASS (lm_tcp_socket_parent_class)->finalize) (object);
 }
 
 static void
@@ -131,18 +131,18 @@ tcp_socket_get_property (GObject    *object,
                          GValue     *value,
                          GParamSpec *pspec)
 {
-	LmTcpSocketPriv *priv;
+    LmTcpSocketPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		g_value_set_int (value, priv->my_prop);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        g_value_set_int (value, priv->my_prop);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 
 static void
@@ -151,40 +151,40 @@ tcp_socket_set_property (GObject      *object,
                          const GValue *value,
                          GParamSpec   *pspec)
 {
-	LmTcpSocketPriv *priv;
+    LmTcpSocketPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		priv->my_prop = g_value_get_int (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        priv->my_prop = g_value_get_int (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 
 static void 
 tcp_socket_connect (LmSocket *socket)
 {
-        /* Initiate the connection process                 */
-        /* DNS lookup, connect thing, create IOchannel etc */
+    /* Initiate the connection process                 */
+    /* DNS lookup, connect thing, create IOchannel etc */
 }
 
 static gboolean
 tcp_socket_write (LmSocket *socket, gchar *data, gsize len)
 {
-        return FALSE;
+    return FALSE;
 }
 
 static gboolean
 tcp_socket_read (LmSocket *socket,
-                gchar     *buf,
-                gsize      buf_len,
-                gsize     *read_len)
+                 gchar     *buf,
+                 gsize      buf_len,
+                 gsize     *read_len)
 {
-        return FALSE;
+    return FALSE;
 }
 
 static void 

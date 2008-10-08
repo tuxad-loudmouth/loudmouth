@@ -27,29 +27,29 @@
 
 typedef struct LmDummyPriv LmDummyPriv;
 struct LmDummyPriv {
-	gint my_prop;
+    gint my_prop;
 };
 
 static void     dummy_finalize            (GObject           *object);
 static void     dummy_get_property        (GObject           *object,
-					   guint              param_id,
-					   GValue            *value,
-					   GParamSpec        *pspec);
+                                           guint              param_id,
+                                           GValue            *value,
+                                           GParamSpec        *pspec);
 static void     dummy_set_property        (GObject           *object,
-					   guint              param_id,
-					   const GValue      *value,
-					   GParamSpec        *pspec);
+                                           guint              param_id,
+                                           const GValue      *value,
+                                           GParamSpec        *pspec);
 
 G_DEFINE_TYPE (LmDummy, lm_dummy, G_TYPE_OBJECT)
 
 enum {
-	PROP_0,
-	PROP_MY_PROP
+    PROP_0,
+    PROP_MY_PROP
 };
 
 enum {
-	SIGNAL_NAME,
-	LAST_SIGNAL
+    SIGNAL_NAME,
+    LAST_SIGNAL
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -57,89 +57,89 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 lm_dummy_class_init (LmDummyClass *class)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (class);
+    GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-	object_class->finalize     = dummy_finalize;
-	object_class->get_property = dummy_get_property;
-	object_class->set_property = dummy_set_property;
+    object_class->finalize     = dummy_finalize;
+    object_class->get_property = dummy_get_property;
+    object_class->set_property = dummy_set_property;
 
-	g_object_class_install_property (object_class,
-					 PROP_MY_PROP,
-					 g_param_spec_string ("my-prop",
-							      "My Prop",
-							      "My Property",
-							      NULL,
-							      G_PARAM_READWRITE));
-	
-	signals[SIGNAL_NAME] = 
-		g_signal_new ("signal-name",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      lm_marshal_VOID__INT,
-			      G_TYPE_NONE, 
-			      1, G_TYPE_INT);
-	
-	g_type_class_add_private (object_class, sizeof (LmDummyPriv));
+    g_object_class_install_property (object_class,
+                                     PROP_MY_PROP,
+                                     g_param_spec_string ("my-prop",
+                                                          "My Prop",
+                                                          "My Property",
+                                                          NULL,
+                                                          G_PARAM_READWRITE));
+    
+    signals[SIGNAL_NAME] = 
+        g_signal_new ("signal-name",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_LAST,
+                      0,
+                      NULL, NULL,
+                      lm_marshal_VOID__INT,
+                      G_TYPE_NONE, 
+                      1, G_TYPE_INT);
+    
+    g_type_class_add_private (object_class, sizeof (LmDummyPriv));
 }
 
 static void
 lm_dummy_init (LmDummy *dummy)
 {
-	LmDummyPriv *priv;
+    LmDummyPriv *priv;
 
-	priv = GET_PRIV (dummy);
+    priv = GET_PRIV (dummy);
 
 }
 
 static void
 dummy_finalize (GObject *object)
 {
-	LmDummyPriv *priv;
+    LmDummyPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	(G_OBJECT_CLASS (lm_dummy_parent_class)->finalize) (object);
+    (G_OBJECT_CLASS (lm_dummy_parent_class)->finalize) (object);
 }
 
 static void
 dummy_get_property (GObject    *object,
-		   guint       param_id,
-		   GValue     *value,
-		   GParamSpec *pspec)
+                    guint       param_id,
+                    GValue     *value,
+                    GParamSpec *pspec)
 {
-	LmDummyPriv *priv;
+    LmDummyPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		g_value_set_int (value, priv->my_prop);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        g_value_set_int (value, priv->my_prop);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 
 static void
 dummy_set_property (GObject      *object,
-		   guint         param_id,
-		   const GValue *value,
-		   GParamSpec   *pspec)
+                    guint         param_id,
+                    const GValue *value,
+                    GParamSpec   *pspec)
 {
-	LmDummyPriv *priv;
+    LmDummyPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		priv->my_prop = g_value_get_int (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        priv->my_prop = g_value_get_int (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 

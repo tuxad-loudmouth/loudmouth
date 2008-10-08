@@ -36,19 +36,19 @@ typedef struct LmDummy      LmDummy;
 typedef struct LmDummyClass LmDummyClass;
 
 struct LmDummy {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmDummyClass {
-	GObjectClass parent_class;
-	
-	/* <vtable> */
-	void  (*initialize)    (LmDummy     *dummy,
-				const char *username,
-				const char *server,
-				const char *password);
-	void  (*begin)         (LmDummy     *dummy);
-	void  (*cancel)        (LmDummy     *dummy);
+    GObjectClass parent_class;
+    
+    /* <vtable> */
+    void  (*initialize)    (LmDummy     *dummy,
+                            const char *username,
+                            const char *server,
+                            const char *password);
+    void  (*begin)         (LmDummy     *dummy);
+    void  (*cancel)        (LmDummy     *dummy);
 };
 
 GType   lm_dummy_get_type  (void);

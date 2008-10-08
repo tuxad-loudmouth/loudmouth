@@ -1,22 +1,23 @@
+/* -*- mode: c; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /* $Id: asyncns.c 27 2007-02-16 13:51:03Z lennart $ */
 
 /***
-  This file is part of libasyncns.
+    This file is part of libasyncns.
  
-  libasyncns is free software; you can redistribute it and/or modify
-  it under the terms of the GNU Lesser General Public License as
-  published by the Free Software Foundation; either version 2 of the
-  License, or (at your option) any later version.
+    libasyncns is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 2 of the
+    License, or (at your option) any later version.
  
-  libasyncns is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  General Public License for more details.
+    libasyncns is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    General Public License for more details.
  
-  You should have received a copy of the GNU Lesser General Public
-  License along with libasyncns; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-  USA.
+    You should have received a copy of the GNU Lesser General Public
+    License along with libasyncns; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+    USA.
 ***/
 
 /*#undef HAVE_PTHREAD */
@@ -291,86 +292,86 @@ static int handle_request(int out_fd, const rheader_t *req, size_t length) {
     assert(length == req->length);
 
     switch (req->type) {
-        case REQUEST_ADDRINFO: {
-            struct addrinfo ai, *result = NULL;
-            const addrinfo_request_t *ai_req = (const addrinfo_request_t*) req;
-            const char *node, *service;
-            int ret;
+    case REQUEST_ADDRINFO: {
+        struct addrinfo ai, *result = NULL;
+        const addrinfo_request_t *ai_req = (const addrinfo_request_t*) req;
+        const char *node, *service;
+        int ret;
 
-            assert(length >= sizeof(addrinfo_request_t));
-            assert(length == sizeof(addrinfo_request_t) + ai_req->node_len + ai_req->service_len);
+        assert(length >= sizeof(addrinfo_request_t));
+        assert(length == sizeof(addrinfo_request_t) + ai_req->node_len + ai_req->service_len);
 
-            memset(&ai, 0, sizeof(ai));
-            ai.ai_flags = ai_req->ai_flags;
-            ai.ai_family = ai_req->ai_family;
-            ai.ai_socktype = ai_req->ai_socktype;
-            ai.ai_protocol = ai_req->ai_protocol;
+        memset(&ai, 0, sizeof(ai));
+        ai.ai_flags = ai_req->ai_flags;
+        ai.ai_family = ai_req->ai_family;
+        ai.ai_socktype = ai_req->ai_socktype;
+        ai.ai_protocol = ai_req->ai_protocol;
 
-            node = ai_req->node_len ? (const char*) req + sizeof(addrinfo_request_t) : NULL;
-            service = ai_req->service_len ? (const char*) req + sizeof(addrinfo_request_t) + ai_req->node_len : NULL;
+        node = ai_req->node_len ? (const char*) req + sizeof(addrinfo_request_t) : NULL;
+        service = ai_req->service_len ? (const char*) req + sizeof(addrinfo_request_t) + ai_req->node_len : NULL;
 
-            /*printf("[getaddrinfo for '%s']\n", node);*/
-            ret = getaddrinfo(node, service,
-                              ai_req->hints_is_null ? NULL : &ai,
-                              &result);
-            /*printf("[return value: %d: '%s']\n", ret, gai_strerror(ret));*/
+        /*printf("[getaddrinfo for '%s']\n", node);*/
+        ret = getaddrinfo(node, service,
+                          ai_req->hints_is_null ? NULL : &ai,
+                          &result);
+        /*printf("[return value: %d: '%s']\n", ret, gai_strerror(ret));*/
 
-            /* send_addrinfo_reply() frees result */
-            return send_addrinfo_reply(out_fd, req->id, ret, result);
-        }
+        /* send_addrinfo_reply() frees result */
+        return send_addrinfo_reply(out_fd, req->id, ret, result);
+    }
 
-        case REQUEST_NAMEINFO: {
-            int ret;
-            const nameinfo_request_t *ni_req = (const nameinfo_request_t*) req;
-            char hostbuf[NI_MAXHOST], servbuf[NI_MAXSERV];
-            const struct sockaddr *sa;
+    case REQUEST_NAMEINFO: {
+        int ret;
+        const nameinfo_request_t *ni_req = (const nameinfo_request_t*) req;
+        char hostbuf[NI_MAXHOST], servbuf[NI_MAXSERV];
+        const struct sockaddr *sa;
             
-            assert(length >= sizeof(nameinfo_request_t));
-            assert(length == sizeof(nameinfo_request_t) + ni_req->sockaddr_len);
+        assert(length >= sizeof(nameinfo_request_t));
+        assert(length == sizeof(nameinfo_request_t) + ni_req->sockaddr_len);
 
-            sa = (const struct sockaddr*) ((const char*) req + sizeof(nameinfo_request_t));
+        sa = (const struct sockaddr*) ((const char*) req + sizeof(nameinfo_request_t));
             
-            ret = getnameinfo(sa, ni_req->sockaddr_len,
-                              ni_req->gethost ? hostbuf : NULL, ni_req->gethost ? sizeof(hostbuf) : 0,
-                              ni_req->getserv ? servbuf : NULL, ni_req->getserv ? sizeof(servbuf) : 0,
-                              ni_req->flags);
+        ret = getnameinfo(sa, ni_req->sockaddr_len,
+                          ni_req->gethost ? hostbuf : NULL, ni_req->gethost ? sizeof(hostbuf) : 0,
+                          ni_req->getserv ? servbuf : NULL, ni_req->getserv ? sizeof(servbuf) : 0,
+                          ni_req->flags);
 
-            return send_nameinfo_reply(out_fd, req->id, ret,
-                                       ret == 0 && ni_req->gethost ? hostbuf : NULL,
-                                       ret == 0 && ni_req->getserv ? servbuf : NULL);
+        return send_nameinfo_reply(out_fd, req->id, ret,
+                                   ret == 0 && ni_req->gethost ? hostbuf : NULL,
+                                   ret == 0 && ni_req->getserv ? servbuf : NULL);
+    }
+
+    case REQUEST_RES_QUERY: 
+    case REQUEST_RES_SEARCH: {
+        int ret;
+        unsigned char answer[BUFSIZE];
+        const res_request_t *res_req = (const res_request_t *)req;
+        const char *dname;
+
+        assert(length >= sizeof(res_request_t));
+        assert(length == sizeof(res_request_t) + res_req->dlen + 1);
+
+        dname = (const char *) req + sizeof(res_request_t);
+
+        if (req->type == REQUEST_RES_QUERY) { 
+            /*printf("[res query for '%s']\n", dname);*/
+            ret = res_query(dname, res_req->class, res_req->type, 
+                            answer, BUFSIZE);
+            /*printf("[return value: %d]\n", ret);*/
+        } else {
+            ret = res_search(dname, res_req->class, res_req->type, 
+                             answer, BUFSIZE);
         }
+        return send_res_reply(out_fd, req->id, answer, ret);
+    }
 
-        case REQUEST_RES_QUERY: 
-        case REQUEST_RES_SEARCH: {
-            int ret;
-            unsigned char answer[BUFSIZE];
-            const res_request_t *res_req = (const res_request_t *)req;
-            const char *dname;
+    case REQUEST_TERMINATE: {
+        /* Quit */
+        return -1;
+    }
 
-            assert(length >= sizeof(res_request_t));
-            assert(length == sizeof(res_request_t) + res_req->dlen + 1);
-
-            dname = (const char *) req + sizeof(res_request_t);
-
-            if (req->type == REQUEST_RES_QUERY) { 
-                /*printf("[res query for '%s']\n", dname);*/
-                ret = res_query(dname, res_req->class, res_req->type, 
-                                answer, BUFSIZE);
-                /*printf("[return value: %d]\n", ret);*/
-            } else {
-                ret = res_search(dname, res_req->class, res_req->type, 
-                                 answer, BUFSIZE);
-            }
-            return send_res_reply(out_fd, req->id, answer, ret);
-        }
-
-        case REQUEST_TERMINATE: {
-            /* Quit */
-            return -1;
-        }
-
-        default:
-            ;
+    default:
+        ;
     }
 
     return 0;
@@ -545,7 +546,7 @@ asyncns_t* asyncns_new(unsigned n_proc) {
 
     return asyncns;
 
-fail:
+ fail:
     if (asyncns) 
         asyncns_free(asyncns);
 
@@ -671,7 +672,7 @@ static void *unserialize_addrinfo(void *p, struct addrinfo **ret_ai, size_t *len
     return (uint8_t*) p + l;
 
 
-fail:
+ fail:
     if (ai)
         asyncns_freeaddrinfo(ai);
 
@@ -689,76 +690,76 @@ static int handle_response(asyncns_t *asyncns, rheader_t *resp, size_t length) {
         return 0;
     
     switch (resp->type) {
-        case RESPONSE_ADDRINFO: {
-            const addrinfo_response_t *ai_resp = (addrinfo_response_t*) resp;
-            void *p;
-            size_t l;
-            struct addrinfo *prev = NULL;
+    case RESPONSE_ADDRINFO: {
+        const addrinfo_response_t *ai_resp = (addrinfo_response_t*) resp;
+        void *p;
+        size_t l;
+        struct addrinfo *prev = NULL;
 
-            assert(length >= sizeof(addrinfo_response_t));
-            assert(q->type == REQUEST_ADDRINFO);
+        assert(length >= sizeof(addrinfo_response_t));
+        assert(q->type == REQUEST_ADDRINFO);
 
-            q->ret = ai_resp->ret;
-            l = length - sizeof(addrinfo_response_t);
-            p = (uint8_t*) resp + sizeof(addrinfo_response_t);
+        q->ret = ai_resp->ret;
+        l = length - sizeof(addrinfo_response_t);
+        p = (uint8_t*) resp + sizeof(addrinfo_response_t);
 
-            while (l > 0 && p) {
-                struct addrinfo *ai = NULL;
-                p = unserialize_addrinfo(p, &ai, &l);
+        while (l > 0 && p) {
+            struct addrinfo *ai = NULL;
+            p = unserialize_addrinfo(p, &ai, &l);
 
-                if (!ai)
-                    break;
+            if (!ai)
+                break;
 
-                if (prev)
-                    prev->ai_next = ai;
-                else
-                    q->addrinfo = ai;
+            if (prev)
+                prev->ai_next = ai;
+            else
+                q->addrinfo = ai;
 
-                prev = ai;
-            }
-
-            complete_query(asyncns, q);
-            break;
+            prev = ai;
         }
 
-        case RESPONSE_NAMEINFO: {
-            const nameinfo_response_t *ni_resp = (nameinfo_response_t*) resp;
+        complete_query(asyncns, q);
+        break;
+    }
 
-            assert(length >= sizeof(nameinfo_response_t));
-            assert(q->type == REQUEST_NAMEINFO);
+    case RESPONSE_NAMEINFO: {
+        const nameinfo_response_t *ni_resp = (nameinfo_response_t*) resp;
 
-            q->ret = ni_resp->ret;
+        assert(length >= sizeof(nameinfo_response_t));
+        assert(q->type == REQUEST_NAMEINFO);
 
-            if (ni_resp->hostlen)
-                q->host = g_strndup((const char*) ni_resp + sizeof(nameinfo_response_t), (gsize)ni_resp->hostlen-1);
+        q->ret = ni_resp->ret;
 
-            if (ni_resp->servlen)
-                q->serv = g_strndup((const char*) ni_resp + sizeof(nameinfo_response_t) + ni_resp->hostlen, (gsize)ni_resp->servlen-1);
+        if (ni_resp->hostlen)
+            q->host = g_strndup((const char*) ni_resp + sizeof(nameinfo_response_t), (gsize)ni_resp->hostlen-1);
+
+        if (ni_resp->servlen)
+            q->serv = g_strndup((const char*) ni_resp + sizeof(nameinfo_response_t) + ni_resp->hostlen, (gsize)ni_resp->servlen-1);
                     
 
-            complete_query(asyncns, q);
-            break;
+        complete_query(asyncns, q);
+        break;
+    }
+
+    case RESPONSE_RES: {
+        const res_response_t *res_resp = (res_response_t *)resp;
+
+        assert(length >= sizeof(res_response_t));
+        assert(q->type == REQUEST_RES_QUERY || q->type == REQUEST_RES_SEARCH);
+
+        q->ret = res_resp->ret;
+
+        if (res_resp->ret >= 0)  {
+            q->serv = malloc(res_resp->ret);
+            memcpy(q->serv, (char *)resp + sizeof(res_response_t), res_resp->ret);
         }
 
-        case RESPONSE_RES: {
-            const res_response_t *res_resp = (res_response_t *)resp;
-
-            assert(length >= sizeof(res_response_t));
-            assert(q->type == REQUEST_RES_QUERY || q->type == REQUEST_RES_SEARCH);
-
-            q->ret = res_resp->ret;
-
-            if (res_resp->ret >= 0)  {
-                q->serv = malloc(res_resp->ret);
-                memcpy(q->serv, (char *)resp + sizeof(res_response_t), res_resp->ret);
-            }
-
-            complete_query(asyncns, q);
-            break;
-        }
+        complete_query(asyncns, q);
+        break;
+    }
             
-        default:
-            ;
+    default:
+        ;
     }
     
     return 0;
@@ -871,7 +872,7 @@ asyncns_query_t* asyncns_getaddrinfo(asyncns_t *asyncns, const char *node, const
     
     return q;
 
-fail:
+ fail:
     if (q)
         asyncns_cancel(asyncns, q);
 
@@ -929,7 +930,7 @@ asyncns_query_t* asyncns_getnameinfo(asyncns_t *asyncns, const struct sockaddr *
     
     return q;
 
-fail:
+ fail:
     if (q)
         asyncns_cancel(asyncns, q);
 
@@ -1000,7 +1001,7 @@ asyncns_res(asyncns_t *asyncns, query_type_t qtype,
 
     return q;
 
-fail:
+ fail:
     if (q)
         asyncns_cancel(asyncns, q);
 

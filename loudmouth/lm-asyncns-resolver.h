@@ -38,11 +38,11 @@ typedef struct LmAsyncnsResolver      LmAsyncnsResolver;
 typedef struct LmAsyncnsResolverClass LmAsyncnsResolverClass;
 
 struct LmAsyncnsResolver {
-        LmResolver parent;
+    LmResolver parent;
 };
 
 struct LmAsyncnsResolverClass {
-        LmResolverClass parent_class;
+    LmResolverClass parent_class;
 };
 
 GType   lm_asyncns_resolver_get_type  (void);

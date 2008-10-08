@@ -38,11 +38,11 @@ typedef struct LmTcpSocket      LmTcpSocket;
 typedef struct LmTcpSocketClass LmTcpSocketClass;
 
 struct LmTcpSocket {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmTcpSocketClass {
-	GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 GType       lm_tcp_socket_get_type      (void);

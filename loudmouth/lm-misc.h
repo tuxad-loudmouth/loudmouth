@@ -24,17 +24,17 @@
 #include <glib.h>
 
 GSource *          lm_misc_add_io_watch         (GMainContext *context,
-						 GIOChannel   *chan,
-						 GIOCondition  condition,
-						 GIOFunc       function,
-						 gpointer      data);
+                                                 GIOChannel   *chan,
+                                                 GIOCondition  condition,
+                                                 GIOFunc       function,
+                                                 gpointer      data);
 GSource *          lm_misc_add_idle             (GMainContext *context,
-						 GSourceFunc   function,
-						 gpointer      data);
+                                                 GSourceFunc   function,
+                                                 gpointer      data);
 GSource *          lm_misc_add_timeout          (GMainContext *context,
-						 guint         interval,
-						 GSourceFunc   function,
-						 gpointer      data);
+                                                 guint         interval,
+                                                 GSourceFunc   function,
+                                                 gpointer      data);
 
 const char *       lm_misc_io_condition_to_str  (GIOCondition    condition);
 

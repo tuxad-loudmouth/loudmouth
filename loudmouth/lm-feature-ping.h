@@ -36,11 +36,11 @@ typedef struct LmFeaturePing      LmFeaturePing;
 typedef struct LmFeaturePingClass LmFeaturePingClass;
 
 struct LmFeaturePing {
-	GObject parent;
+    GObject parent;
 };
 
 struct LmFeaturePingClass {
-	GObjectClass parent_class;
+    GObjectClass parent_class;
 };
 
 GType   lm_feature_ping_get_type  (void);

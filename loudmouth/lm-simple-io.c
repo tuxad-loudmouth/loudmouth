@@ -28,7 +28,7 @@
 
 typedef struct LmSimpleIOPriv LmSimpleIOPriv;
 struct LmSimpleIOPriv {
-	gint my_prop;
+    gint my_prop;
 };
 
 static void     simple_io_finalize            (GObject           *object);
@@ -52,53 +52,53 @@ G_DEFINE_TYPE_WITH_CODE (LmSimpleIO, lm_simple_io, G_TYPE_OBJECT,
                                                 simple_io_writer_iface_init))
 
 enum {
-	PROP_0,
-	PROP_MY_PROP
+    PROP_0,
+    PROP_MY_PROP
 };
 
 static void
 lm_simple_io_class_init (LmSimpleIOClass *class)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (class);
+    GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-	object_class->finalize     = simple_io_finalize;
-	object_class->get_property = simple_io_get_property;
-	object_class->set_property = simple_io_set_property;
+    object_class->finalize     = simple_io_finalize;
+    object_class->get_property = simple_io_get_property;
+    object_class->set_property = simple_io_set_property;
 
-	g_object_class_install_property (object_class,
-					 PROP_MY_PROP,
-					 g_param_spec_string ("my-prop",
-							      "My Prop",
-							      "My Property",
-							      NULL,
-							      G_PARAM_READWRITE));
-	
-	g_type_class_add_private (object_class, sizeof (LmSimpleIOPriv));
+    g_object_class_install_property (object_class,
+                                     PROP_MY_PROP,
+                                     g_param_spec_string ("my-prop",
+                                                          "My Prop",
+                                                          "My Property",
+                                                          NULL,
+                                                          G_PARAM_READWRITE));
+    
+    g_type_class_add_private (object_class, sizeof (LmSimpleIOPriv));
 }
 
 static void
 lm_simple_io_init (LmSimpleIO *simple_io)
 {
-	LmSimpleIOPriv *priv;
+    LmSimpleIOPriv *priv;
 
-	priv = GET_PRIV (simple_io);
+    priv = GET_PRIV (simple_io);
 }
 
 static void
 simple_io_finalize (GObject *object)
 {
-	LmSimpleIOPriv *priv;
+    LmSimpleIOPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	(G_OBJECT_CLASS (lm_simple_io_parent_class)->finalize) (object);
+    (G_OBJECT_CLASS (lm_simple_io_parent_class)->finalize) (object);
 }
 
 static void
 simple_io_writer_iface_init (LmXmppWriterIface *iface)
 {
-        iface->send_message = simple_io_send_message;
-        iface->send_text    = simple_io_send_text;
+    iface->send_message = simple_io_send_message;
+    iface->send_text    = simple_io_send_text;
 }
 
 static void
@@ -107,18 +107,18 @@ simple_io_get_property (GObject    *object,
                         GValue     *value,
                         GParamSpec *pspec)
 {
-	LmSimpleIOPriv *priv;
+    LmSimpleIOPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		g_value_set_int (value, priv->my_prop);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        g_value_set_int (value, priv->my_prop);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 
 static void
@@ -127,18 +127,18 @@ simple_io_set_property (GObject      *object,
                         const GValue *value,
                         GParamSpec   *pspec)
 {
-	LmSimpleIOPriv *priv;
+    LmSimpleIOPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-	switch (param_id) {
-	case PROP_MY_PROP:
-		priv->my_prop = g_value_get_int (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
-		break;
-	};
+    switch (param_id) {
+    case PROP_MY_PROP:
+        priv->my_prop = g_value_get_int (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    };
 }
 
 static void

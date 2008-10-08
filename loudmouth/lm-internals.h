@@ -44,26 +44,26 @@ typedef SOCKET LmOldSocketT;
 #endif /* G_OS_WIN32 */
 
 typedef struct {
-	gpointer       func;
-	gpointer       user_data;
-	GDestroyNotify notify;
+    gpointer       func;
+    gpointer       user_data;
+    GDestroyNotify notify;
 } LmCallback;
 
 typedef struct {
-	LmConnection    *connection;
-	LmOldSocket        *socket;
+    LmConnection    *connection;
+    LmOldSocket        *socket;
 
-	/* struct to save resolved address */
-	struct addrinfo *current_addr;
-	LmOldSocketT         fd;
-	GIOChannel      *io_channel;
+    /* struct to save resolved address */
+    struct addrinfo *current_addr;
+    LmOldSocketT         fd;
+    GIOChannel      *io_channel;
 } LmConnectData;
 
 GMainContext *   _lm_connection_get_context       (LmConnection       *conn);
 /* Need to free the return value */
 gchar *          _lm_connection_get_server        (LmConnection       *conn);
 gboolean         _lm_old_socket_failed_with_error (LmConnectData         *data,
-                                               int                    error);
+                                                   int                    error);
 gboolean         _lm_old_socket_failed            (LmConnectData         *data);
 void             _lm_old_socket_succeeded         (LmConnectData         *data);
 gboolean 
@@ -103,8 +103,8 @@ void             _lm_sock_set_blocking        (LmOldSocketT              sock,
 void             _lm_sock_shutdown            (LmOldSocketT              sock);
 void             _lm_sock_close               (LmOldSocketT              sock);
 LmOldSocketT         _lm_sock_makesocket         (int                    af,
-                                               int                    type,
-                                               int                    protocol);
+                                                  int                    type,
+                                                  int                    protocol);
 int              _lm_sock_connect             (LmOldSocketT              sock,
                                                const struct sockaddr *name,
                                                int                    namelen);

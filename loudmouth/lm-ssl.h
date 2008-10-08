@@ -63,9 +63,9 @@ typedef struct _LmSSL LmSSL;
  * Provides information of the status of a certain certificate.
  */
 typedef enum {
-	LM_CERT_INVALID,
-	LM_CERT_ISSUER_NOT_FOUND,
-	LM_CERT_REVOKED
+    LM_CERT_INVALID,
+    LM_CERT_ISSUER_NOT_FOUND,
+    LM_CERT_REVOKED
 } LmCertificateStatus;
 
 /**
@@ -81,13 +81,13 @@ typedef enum {
  * Provides information about something gone wrong when trying to setup the SSL connection.
  */
 typedef enum {
-	LM_SSL_STATUS_NO_CERT_FOUND,	
-	LM_SSL_STATUS_UNTRUSTED_CERT,
-	LM_SSL_STATUS_CERT_EXPIRED,
-	LM_SSL_STATUS_CERT_NOT_ACTIVATED,
-	LM_SSL_STATUS_CERT_HOSTNAME_MISMATCH,			
-	LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,			
-	LM_SSL_STATUS_GENERIC_ERROR
+    LM_SSL_STATUS_NO_CERT_FOUND,    
+    LM_SSL_STATUS_UNTRUSTED_CERT,
+    LM_SSL_STATUS_CERT_EXPIRED,
+    LM_SSL_STATUS_CERT_NOT_ACTIVATED,
+    LM_SSL_STATUS_CERT_HOSTNAME_MISMATCH,           
+    LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,            
+    LM_SSL_STATUS_GENERIC_ERROR
 } LmSSLStatus;
 
 /**
@@ -98,8 +98,8 @@ typedef enum {
  * Used to inform #LmConnection if you want to stop due to an error reported or if you want to continue to connect.
  */
 typedef enum {
-	LM_SSL_RESPONSE_CONTINUE,
-	LM_SSL_RESPONSE_STOP
+    LM_SSL_RESPONSE_CONTINUE,
+    LM_SSL_RESPONSE_STOP
 } LmSSLResponse;
 
 /**
@@ -113,21 +113,21 @@ typedef enum {
  * Returns: User should return #LM_SSL_RESPONSE_CONTINUE if connection should proceed and otherwise #LM_SSL_RESPONSE_STOP.
  */
 typedef LmSSLResponse (* LmSSLFunction)      (LmSSL        *ssl,
-					      LmSSLStatus   status,
-					      gpointer      user_data);
+                                              LmSSLStatus   status,
+                                              gpointer      user_data);
 
 LmSSL *               lm_ssl_new             (const gchar *expected_fingerprint,
-					      LmSSLFunction   ssl_function,
-					      gpointer        user_data,
-					      GDestroyNotify  notify);
+                                              LmSSLFunction   ssl_function,
+                                              gpointer        user_data,
+                                              GDestroyNotify  notify);
 
 gboolean              lm_ssl_is_supported    (void);
 
 const gchar *         lm_ssl_get_fingerprint (LmSSL          *ssl);
 
 void                  lm_ssl_use_starttls    (LmSSL *ssl,
-					      gboolean use_starttls,
-					      gboolean require);
+                                              gboolean use_starttls,
+                                              gboolean require);
 
 gboolean              lm_ssl_get_use_starttls (LmSSL *ssl);
 

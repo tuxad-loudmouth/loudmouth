@@ -27,45 +27,45 @@ static void    xmpp_writer_base_init (LmXmppWriterIface *iface);
 GType
 lm_xmpp_writer_get_type (void)
 {
-	static GType iface_type = 0;
+    static GType iface_type = 0;
 
-	if (!iface_type) {
-		static const GTypeInfo iface_info = {
-			sizeof (LmXmppWriterIface),
-			(GBaseInitFunc)     xmpp_writer_base_init,
-			(GBaseFinalizeFunc) NULL,
-		};
+    if (!iface_type) {
+        static const GTypeInfo iface_info = {
+            sizeof (LmXmppWriterIface),
+            (GBaseInitFunc)     xmpp_writer_base_init,
+            (GBaseFinalizeFunc) NULL,
+        };
 
-		iface_type = g_type_register_static (G_TYPE_INTERFACE,
-						     "LmXmppWriterIface",
-						     &iface_info,
-						     0);
+        iface_type = g_type_register_static (G_TYPE_INTERFACE,
+                                             "LmXmppWriterIface",
+                                             &iface_info,
+                                             0);
 
-		g_type_interface_add_prerequisite (iface_type, G_TYPE_OBJECT);
-	}
+        g_type_interface_add_prerequisite (iface_type, G_TYPE_OBJECT);
+    }
 
-	return iface_type;
+    return iface_type;
 }
 
 static void
 xmpp_writer_base_init (LmXmppWriterIface *iface)
 {
-	static gboolean initialized = FALSE;
+    static gboolean initialized = FALSE;
 
-	if (!initialized) {
-		/* create interface signals here. */
-		initialized = TRUE;
-	}
+    if (!initialized) {
+        /* create interface signals here. */
+        initialized = TRUE;
+    }
 }
 
 void
 lm_xmpp_writer_send_message (LmXmppWriter *writer, LmMessage *message)
 {
-        if (!LM_XMPP_WRITER_GET_IFACE(writer)->send_message) {
-                g_assert_not_reached ();
-	}
+    if (!LM_XMPP_WRITER_GET_IFACE(writer)->send_message) {
+        g_assert_not_reached ();
+    }
 
-        LM_XMPP_WRITER_GET_IFACE(writer)->send_message (writer, message);
+    LM_XMPP_WRITER_GET_IFACE(writer)->send_message (writer, message);
 }
 
 void
@@ -73,20 +73,20 @@ lm_xmpp_writer_send_text (LmXmppWriter *writer,
                           const gchar  *buf,
                           gsize         len)
 {
-        if (!LM_XMPP_WRITER_GET_IFACE(writer)->send_text) {
-                g_assert_not_reached ();
-	}
+    if (!LM_XMPP_WRITER_GET_IFACE(writer)->send_text) {
+        g_assert_not_reached ();
+    }
 
-        LM_XMPP_WRITER_GET_IFACE(writer)->send_text (writer, buf, len);
+    LM_XMPP_WRITER_GET_IFACE(writer)->send_text (writer, buf, len);
 }
 
 void
 lm_xmpp_writer_flush (LmXmppWriter *writer)
 {
-	if (!LM_XMPP_WRITER_GET_IFACE(writer)->flush) {
-		g_assert_not_reached ();
-	}
+    if (!LM_XMPP_WRITER_GET_IFACE(writer)->flush) {
+        g_assert_not_reached ();
+    }
 
-	LM_XMPP_WRITER_GET_IFACE(writer)->flush (writer);
+    LM_XMPP_WRITER_GET_IFACE(writer)->flush (writer);
 }
 

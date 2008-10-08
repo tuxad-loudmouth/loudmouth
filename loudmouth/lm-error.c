@@ -31,11 +31,11 @@
 GQuark
 lm_error_quark (void)
 {
-	static GQuark q = 0;
+    static GQuark q = 0;
 
-	if (q == 0) {
-		q = g_quark_from_static_string ("lm-error-quark");
-	}
-	
-	return q;
+    if (q == 0) {
+        q = g_quark_from_static_string ("lm-error-quark");
+    }
+    
+    return q;
 }

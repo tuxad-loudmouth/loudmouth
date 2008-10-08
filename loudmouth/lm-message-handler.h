@@ -41,13 +41,13 @@ G_BEGIN_DECLS
  * Returns: #LM_HANDLER_RESULT_REMOVE_MESSAGE to indicate that message has been handled, otherwise #LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS.
  */
 typedef LmHandlerResult (* LmHandleMessageFunction) (LmMessageHandler *handler,
-						     LmConnection     *connection,
-						     LmMessage        *message,
-						     gpointer          user_data);
+                                                     LmConnection     *connection,
+                                                     LmMessage        *message,
+                                                     gpointer          user_data);
 
 LmMessageHandler *lm_message_handler_new   (LmHandleMessageFunction  function,
-					    gpointer                 user_data,
-					    GDestroyNotify           notify);
+                                            gpointer                 user_data,
+                                            GDestroyNotify           notify);
 void              lm_message_handler_invalidate (LmMessageHandler   *handler);
 gboolean          lm_message_handler_is_valid   (LmMessageHandler   *handler);
 LmMessageHandler *lm_message_handler_ref   (LmMessageHandler        *handler);

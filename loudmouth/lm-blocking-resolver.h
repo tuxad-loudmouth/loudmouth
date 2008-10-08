@@ -38,11 +38,11 @@ typedef struct LmBlockingResolver      LmBlockingResolver;
 typedef struct LmBlockingResolverClass LmBlockingResolverClass;
 
 struct LmBlockingResolver {
-        LmResolver parent;
+    LmResolver parent;
 };
 
 struct LmBlockingResolverClass {
-	LmResolverClass parent_class;
+    LmResolverClass parent_class;
 };
 
 GType   lm_blocking_resolver_get_type  (void);

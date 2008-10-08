@@ -65,8 +65,8 @@ typedef struct LmMessageHandler LmMessageHandler;
  * The return type of an LmMessageHandler. This determines whether more message handlers should be called.
  */
 typedef enum {
-	LM_HANDLER_RESULT_REMOVE_MESSAGE,
-	LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS
+    LM_HANDLER_RESULT_REMOVE_MESSAGE,
+    LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS
 } LmHandlerResult;
 
 /**
@@ -78,9 +78,9 @@ typedef enum {
  * Since the handlers decide whether to stop the calling chain with there return values it's sometimes decirable to be able to set priority. For example a handler that only logs all incoming messages and then pass the message on to another handler wants to have priority %LM_HANDLER_PRIORITY_FIRST. An handler that should take all messages that wasn't handled by anything else would want to have priority %LM_HANDLER_PRIORITY_LAST. If several handlers have the same priority nothing can be said about the order the handlers will be called in.
  */
 typedef enum {
-	LM_HANDLER_PRIORITY_LAST   = 1,
-	LM_HANDLER_PRIORITY_NORMAL = 2,
-	LM_HANDLER_PRIORITY_FIRST  = 3
+    LM_HANDLER_PRIORITY_LAST   = 1,
+    LM_HANDLER_PRIORITY_NORMAL = 2,
+    LM_HANDLER_PRIORITY_FIRST  = 3
 } LmHandlerPriority;
 
 /**
@@ -93,13 +93,13 @@ typedef enum {
  * Sent with #LmDisconnectFunction to describe why a connection was closed.
  */
 typedef enum {
-	LM_DISCONNECT_REASON_OK,
-	LM_DISCONNECT_REASON_PING_TIME_OUT,
-	LM_DISCONNECT_REASON_HUP,
-	LM_DISCONNECT_REASON_ERROR,
-	LM_DISCONNECT_REASON_RESOURCE_CONFLICT,
-	LM_DISCONNECT_REASON_INVALID_XML,
-	LM_DISCONNECT_REASON_UNKNOWN
+    LM_DISCONNECT_REASON_OK,
+    LM_DISCONNECT_REASON_PING_TIME_OUT,
+    LM_DISCONNECT_REASON_HUP,
+    LM_DISCONNECT_REASON_ERROR,
+    LM_DISCONNECT_REASON_RESOURCE_CONFLICT,
+    LM_DISCONNECT_REASON_INVALID_XML,
+    LM_DISCONNECT_REASON_UNKNOWN
 } LmDisconnectReason;
 
 /**
@@ -113,11 +113,11 @@ typedef enum {
  * Describes the current state of an #LmConnection.
  */
 typedef enum {
-	LM_CONNECTION_STATE_CLOSED,
-	LM_CONNECTION_STATE_OPENING,
-	LM_CONNECTION_STATE_OPEN,
-	LM_CONNECTION_STATE_AUTHENTICATING,
-	LM_CONNECTION_STATE_AUTHENTICATED
+    LM_CONNECTION_STATE_CLOSED,
+    LM_CONNECTION_STATE_OPENING,
+    LM_CONNECTION_STATE_OPEN,
+    LM_CONNECTION_STATE_AUTHENTICATING,
+    LM_CONNECTION_STATE_AUTHENTICATED
 } LmConnectionState;
 
 /**
@@ -129,8 +129,8 @@ typedef enum {
  * Callback for informing if an asynchronous operation was successful.
  */
 typedef void          (* LmResultFunction)     (LmConnection       *connection,
-						gboolean            success,
-						gpointer            user_data);
+                                                gboolean            success,
+                                                gpointer            user_data);
 
 /**
  * LmDisconnectFunction:
@@ -141,92 +141,92 @@ typedef void          (* LmResultFunction)     (LmConnection       *connection,
  * Callback called when a connection is closed.
  */
 typedef void          (* LmDisconnectFunction) (LmConnection       *connection,
-						LmDisconnectReason  reason,
-						gpointer            user_data);
+                                                LmDisconnectReason  reason,
+                                                gpointer            user_data);
 
 LmConnection *lm_connection_new               (const gchar        *server);
 LmConnection *lm_connection_new_with_context  (const gchar        *server,
-					       GMainContext       *context);
+                                               GMainContext       *context);
 gboolean      lm_connection_open              (LmConnection       *connection,
-					       LmResultFunction    function,
-					       gpointer            user_data,
-					       GDestroyNotify      notify,
-					       GError            **error);
+                                               LmResultFunction    function,
+                                               gpointer            user_data,
+                                               GDestroyNotify      notify,
+                                               GError            **error);
 
 gboolean      lm_connection_open_and_block    (LmConnection       *connection,
-					       GError            **error);
+                                               GError            **error);
 
 void          lm_connection_cancel_open       (LmConnection      *connection);
 gboolean      lm_connection_close             (LmConnection       *connection,
-					       GError            **error);
+                                               GError            **error);
 gboolean      lm_connection_authenticate      (LmConnection       *connection,
-					       const gchar        *username,
-					       const gchar        *password,
-					       const gchar        *resource,
-					       LmResultFunction    function,
-					       gpointer            user_data,
-					       GDestroyNotify      notify,
-					       GError            **error);
+                                               const gchar        *username,
+                                               const gchar        *password,
+                                               const gchar        *resource,
+                                               LmResultFunction    function,
+                                               gpointer            user_data,
+                                               GDestroyNotify      notify,
+                                               GError            **error);
 gboolean
 lm_connection_authenticate_and_block          (LmConnection       *connection,
-					       const gchar        *username,
-					       const gchar        *password,
-					       const gchar        *resource,
-					       GError            **error);
+                                               const gchar        *username,
+                                               const gchar        *password,
+                                               const gchar        *resource,
+                                               GError            **error);
 guint         lm_connection_get_keep_alive_rate (LmConnection     *connection);
 void        lm_connection_set_keep_alive_rate (LmConnection       *connection,
-					       guint               rate);
+                                               guint               rate);
 
 gboolean      lm_connection_is_open           (LmConnection       *connection);
 gboolean      lm_connection_is_authenticated  (LmConnection       *connection);
 
 const gchar * lm_connection_get_server        (LmConnection       *connection);
 void          lm_connection_set_server        (LmConnection       *connection,
-					       const gchar        *server);
+                                               const gchar        *server);
 void          lm_connection_set_jid           (LmConnection       *connection,
-					       const gchar        *jid);
+                                               const gchar        *jid);
 const gchar * lm_connection_get_jid           (LmConnection       *connection);
 gchar *       lm_connection_get_full_jid      (LmConnection       *connection);
 
 guint         lm_connection_get_port          (LmConnection       *connection);
 void          lm_connection_set_port          (LmConnection       *connection,
-					       guint               port);
+                                               guint               port);
 
 LmSSL *       lm_connection_get_ssl           (LmConnection       *connection);
 void          lm_connection_set_ssl           (LmConnection       *connection,
-					       LmSSL              *ssl);
+                                               LmSSL              *ssl);
 LmProxy *     lm_connection_get_proxy         (LmConnection       *connection);
 void          lm_connection_set_proxy         (LmConnection       *connection,
-					       LmProxy            *proxy);
+                                               LmProxy            *proxy);
 gboolean      lm_connection_send              (LmConnection       *connection,
-					       LmMessage          *message,
-					       GError            **error);
+                                               LmMessage          *message,
+                                               GError            **error);
 gboolean      lm_connection_send_with_reply   (LmConnection       *connection,
-					       LmMessage          *message,
-					       LmMessageHandler   *handler,
-					       GError            **error);
+                                               LmMessage          *message,
+                                               LmMessageHandler   *handler,
+                                               GError            **error);
 LmMessage *   
 lm_connection_send_with_reply_and_block       (LmConnection       *connection,
-					       LmMessage          *message,
-					       GError            **error);
+                                               LmMessage          *message,
+                                               GError            **error);
 void
 lm_connection_register_message_handler        (LmConnection       *connection,
-					       LmMessageHandler   *handler,
-					       LmMessageType       type,
-					       LmHandlerPriority   priority);
+                                               LmMessageHandler   *handler,
+                                               LmMessageType       type,
+                                               LmHandlerPriority   priority);
 void
 lm_connection_unregister_message_handler      (LmConnection       *connection,
-					       LmMessageHandler   *handler,
-					       LmMessageType       type);
+                                               LmMessageHandler   *handler,
+                                               LmMessageType       type);
 void 
 lm_connection_set_disconnect_function         (LmConnection       *connection,
-					       LmDisconnectFunction function,
-					       gpointer             user_data,
-					       GDestroyNotify       notify);
-					       
+                                               LmDisconnectFunction function,
+                                               gpointer             user_data,
+                                               GDestroyNotify       notify);
+                           
 gboolean      lm_connection_send_raw          (LmConnection       *connection,
-					       const gchar        *str,
-					       GError            **error);
+                                               const gchar        *str,
+                                               GError            **error);
 LmConnectionState lm_connection_get_state     (LmConnection       *connection);
 gchar *       lm_connection_get_local_host    (LmConnection       *connection);
 LmConnection* lm_connection_ref               (LmConnection       *connection);

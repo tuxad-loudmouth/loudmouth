@@ -43,7 +43,7 @@
 
 typedef struct LmBlockingResolverPriv LmBlockingResolverPriv;
 struct LmBlockingResolverPriv {
-        GSource *idle_source;
+    GSource *idle_source;
 };
 
 static void     blocking_resolver_finalize    (GObject       *object);
@@ -55,187 +55,187 @@ G_DEFINE_TYPE (LmBlockingResolver, lm_blocking_resolver, LM_TYPE_RESOLVER)
 static void
 lm_blocking_resolver_class_init (LmBlockingResolverClass *class)
 {
-        GObjectClass    *object_class   = G_OBJECT_CLASS (class);
-        LmResolverClass *resolver_class = LM_RESOLVER_CLASS (class);
+    GObjectClass    *object_class   = G_OBJECT_CLASS (class);
+    LmResolverClass *resolver_class = LM_RESOLVER_CLASS (class);
 
-	object_class->finalize = blocking_resolver_finalize;
+    object_class->finalize = blocking_resolver_finalize;
 
-        resolver_class->lookup = blocking_resolver_lookup;
-        resolver_class->cancel = blocking_resolver_cancel;
-	
-	g_type_class_add_private (object_class, 
-                                  sizeof (LmBlockingResolverPriv));
+    resolver_class->lookup = blocking_resolver_lookup;
+    resolver_class->cancel = blocking_resolver_cancel;
+    
+    g_type_class_add_private (object_class, 
+                              sizeof (LmBlockingResolverPriv));
 }
 
 static void
 lm_blocking_resolver_init (LmBlockingResolver *blocking_resolver)
 {
-	LmBlockingResolverPriv *priv;
+    LmBlockingResolverPriv *priv;
 
-	priv = GET_PRIV (blocking_resolver);
+    priv = GET_PRIV (blocking_resolver);
 }
 
 static void
 blocking_resolver_finalize (GObject *object)
 {
-	LmBlockingResolverPriv *priv;
+    LmBlockingResolverPriv *priv;
 
-	priv = GET_PRIV (object);
+    priv = GET_PRIV (object);
 
-        /* Ensure we don't have an idle around */
-        blocking_resolver_cancel (LM_RESOLVER (object));
+    /* Ensure we don't have an idle around */
+    blocking_resolver_cancel (LM_RESOLVER (object));
 
-	(G_OBJECT_CLASS (lm_blocking_resolver_parent_class)->finalize) (object);
+    (G_OBJECT_CLASS (lm_blocking_resolver_parent_class)->finalize) (object);
 }
 
 static void
 blocking_resolver_lookup_host (LmBlockingResolver *resolver)
 {
-        gchar           *host;
-        struct addrinfo  req;
-        struct addrinfo *ans;
-        int              err;
+    gchar           *host;
+    struct addrinfo  req;
+    struct addrinfo *ans;
+    int              err;
 
-        g_object_get (resolver, "host", &host, NULL);
+    g_object_get (resolver, "host", &host, NULL);
 
-        /* Lookup */
+    /* Lookup */
 
-	memset (&req, 0, sizeof(req));
-	req.ai_family   = AF_UNSPEC;
-	req.ai_socktype = SOCK_STREAM;
-	req.ai_protocol = IPPROTO_TCP;
+    memset (&req, 0, sizeof(req));
+    req.ai_family   = AF_UNSPEC;
+    req.ai_socktype = SOCK_STREAM;
+    req.ai_protocol = IPPROTO_TCP;
 
-        err = getaddrinfo (host, NULL, &req, &ans);
+    err = getaddrinfo (host, NULL, &req, &ans);
 
-	if (err != 0) {
-                /* FIXME: Report error */
-                g_print ("ERROR: %d in %s\n", err, G_STRFUNC);
-		return;
-	}
+    if (err != 0) {
+        /* FIXME: Report error */
+        g_print ("ERROR: %d in %s\n", err, G_STRFUNC);
+        return;
+    }
 
-        if (ans == NULL) {
-                /* Couldn't find any results */
-                /* FIXME: Report no results  */
-                g_print ("No results in %s\n", G_STRFUNC);
-        }
+    if (ans == NULL) {
+        /* Couldn't find any results */
+        /* FIXME: Report no results  */
+        g_print ("No results in %s\n", G_STRFUNC);
+    }
 
-        /* FIXME: How to set and iterate the results */
-        /*priv->results    = ans;
-        priv->cur_result = ans; */
+    /* FIXME: How to set and iterate the results */
+    /*priv->results    = ans;
+      priv->cur_result = ans; */
 
-        g_print ("Found result for %s\n", host);
+    g_print ("Found result for %s\n", host);
 
-        g_object_ref (resolver);
+    g_object_ref (resolver);
 
-        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK,
-                                 ans);
+    _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK,
+                             ans);
 
-        g_object_unref (resolver);
+    g_object_unref (resolver);
 
-        g_free (host);
+    g_free (host);
 }
 
 static void
 blocking_resolver_lookup_service (LmBlockingResolver *resolver)
 {
-        gchar *domain;
-        gchar *service;
-        gchar *protocol;
-        gchar *srv;
-        gchar *new_server = NULL;
-        guint  new_port = 0;
-        gboolean  result;
-	unsigned char    srv_ans[SRV_LEN];
-	int              len;
+    gchar *domain;
+    gchar *service;
+    gchar *protocol;
+    gchar *srv;
+    gchar *new_server = NULL;
+    guint  new_port = 0;
+    gboolean  result;
+    unsigned char    srv_ans[SRV_LEN];
+    int              len;
 
-        g_object_get (resolver,
-                      "domain", &domain,
-                      "service", &service,
-                      "protocol", &protocol,
-                      NULL);
+    g_object_get (resolver,
+                  "domain", &domain,
+                  "service", &service,
+                  "protocol", &protocol,
+                  NULL);
 
-        srv = _lm_resolver_create_srv_string (domain, service, protocol);
+    srv = _lm_resolver_create_srv_string (domain, service, protocol);
 
-        res_init ();
+    res_init ();
 
-        len = res_query (srv, C_IN, T_SRV, srv_ans, SRV_LEN);
+    len = res_query (srv, C_IN, T_SRV, srv_ans, SRV_LEN);
 
-        result = _lm_resolver_parse_srv_response (srv_ans, len, 
-                                                  &new_server, &new_port);
-        if (result == FALSE) {
-                g_print ("Error while parsing srv response in %s\n", 
-                         G_STRFUNC);
-                /* FIXME: Report error */
-        }
+    result = _lm_resolver_parse_srv_response (srv_ans, len, 
+                                              &new_server, &new_port);
+    if (result == FALSE) {
+        g_print ("Error while parsing srv response in %s\n", 
+                 G_STRFUNC);
+        /* FIXME: Report error */
+    }
 
-        g_object_set (resolver, 
-                      "host", new_server,
-                      "port", new_port,
-                      NULL);
+    g_object_set (resolver, 
+                  "host", new_server,
+                  "port", new_port,
+                  NULL);
 
-        /* Lookup the new server and the new port */
-        blocking_resolver_lookup_host (resolver);
+    /* Lookup the new server and the new port */
+    blocking_resolver_lookup_host (resolver);
 
-        g_free (new_server);
-        g_free (srv);
-        g_free (domain);
-        g_free (service);
-        g_free (protocol);
+    g_free (new_server);
+    g_free (srv);
+    g_free (domain);
+    g_free (service);
+    g_free (protocol);
 }
 
 static gboolean
 blocking_resolver_idle_lookup (LmBlockingResolver *resolver) 
 {
-        LmBlockingResolverPriv *priv = GET_PRIV (resolver);
-        gint                    type;
+    LmBlockingResolverPriv *priv = GET_PRIV (resolver);
+    gint                    type;
 
-        /* Start the DNS querying */
+    /* Start the DNS querying */
 
-        /* Decide if we are going to lookup a srv or host */
-        g_object_get (resolver, "type", &type, NULL);
+    /* Decide if we are going to lookup a srv or host */
+    g_object_get (resolver, "type", &type, NULL);
 
-        switch (type) {
-        case LM_RESOLVER_HOST:
-                blocking_resolver_lookup_host (resolver);
-                break;
-        case LM_RESOLVER_SRV:
-                blocking_resolver_lookup_service (resolver);
-                break;
-        };
+    switch (type) {
+    case LM_RESOLVER_HOST:
+        blocking_resolver_lookup_host (resolver);
+        break;
+    case LM_RESOLVER_SRV:
+        blocking_resolver_lookup_service (resolver);
+        break;
+    };
 
-        /* End of DNS querying */
-        priv->idle_source = NULL;
-        return FALSE;
+    /* End of DNS querying */
+    priv->idle_source = NULL;
+    return FALSE;
 }
 
 static void
 blocking_resolver_lookup (LmResolver *resolver)
 {
-        LmBlockingResolverPriv *priv;
-        GMainContext           *context;
+    LmBlockingResolverPriv *priv;
+    GMainContext           *context;
 
-        g_return_if_fail (LM_IS_BLOCKING_RESOLVER (resolver));
+    g_return_if_fail (LM_IS_BLOCKING_RESOLVER (resolver));
 
-        priv = GET_PRIV (resolver);
+    priv = GET_PRIV (resolver);
 
-        g_object_get (resolver, "context", &context, NULL);
+    g_object_get (resolver, "context", &context, NULL);
 
-        priv->idle_source = lm_misc_add_idle (context, 
-                                              (GSourceFunc) blocking_resolver_idle_lookup,
-                                              resolver);
+    priv->idle_source = lm_misc_add_idle (context, 
+                                          (GSourceFunc) blocking_resolver_idle_lookup,
+                                          resolver);
 }
 
 static void
 blocking_resolver_cancel (LmResolver *resolver)
 {
-        LmBlockingResolverPriv *priv;
+    LmBlockingResolverPriv *priv;
 
-        g_return_if_fail (LM_IS_BLOCKING_RESOLVER (resolver));
+    g_return_if_fail (LM_IS_BLOCKING_RESOLVER (resolver));
 
-        priv = GET_PRIV (resolver);
+    priv = GET_PRIV (resolver);
 
-        if (priv->idle_source) {
-                g_source_destroy (priv->idle_source);
-                priv->idle_source = NULL;
-        }
+    if (priv->idle_source) {
+        g_source_destroy (priv->idle_source);
+        priv->idle_source = NULL;
+    }
 }
