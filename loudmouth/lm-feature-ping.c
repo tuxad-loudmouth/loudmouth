@@ -103,7 +103,7 @@ lm_feature_ping_class_init (LmFeaturePingClass *class)
                       G_SIGNAL_RUN_LAST,
                       0,
                       NULL, NULL,
-                      lm_marshal_VOID__VOID,
+                      _lm_marshal_VOID__VOID,
                       G_TYPE_NONE, 0);
     
     g_type_class_add_private (object_class, sizeof (LmFeaturePingPriv));

@@ -1,14 +1,15 @@
-AC_INIT(Loudmouth, 1.5.0, loudmouth)
-AC_PREREQ(2.59)
+AC_PREREQ(2.60)
+AC_INIT([Loudmouth], [1.5.0], [http://loudmouth.lighthouseapp.com/projects/17276-libloudmouth/tickets/new], [loudmouth])
 AC_COPYRIGHT([
-	Copyright (C) 2003-2007 Imendio AB
+	Copyright (C) 2003-2008 Imendio AB
 	Copyright (C) 2007 Collabora Ltd
 	Copyright (C) 2007 Nokia Corporation
 ])
 
 AC_CONFIG_SRCDIR(loudmouth/loudmouth.h)
-AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(1.9 dist-bzip2 no-define)
+AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_AUX_DIR(build)
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-define -Wall])
 
 AM_MAINTAINER_MODE
 

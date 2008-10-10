@@ -1,4 +1,6 @@
 include $(top_srcdir)/Makefile.decl
+include $(top_srcdir)/build/Makefile.am.common
+include $(top_srcdir)/build/Makefile.am.marshal
 
 NULL=
 
@@ -38,7 +40,8 @@ libloudmouth_1_la_SOURCES =		\
 	lm-dummy.c                      \
 	lm-dummy.h                      \
 	lm-error.c			\
-	lm-marshal-main.c               \
+	lm-marshal.c               \
+	lm-marshal.h                    \
 	lm-message.c	 		\
 	lm-message-handler.c		\
 	lm-message-node.c		\
@@ -113,19 +116,7 @@ libloudmouth_1_la_LDFLAGS = \
 	-export-symbols $(srcdir)/loudmouth.sym
 libloudmouthincludedir = $(includedir)/loudmouth-1.0/loudmouth
 
-lm-marshal.h: lm-marshal.list
-	(cd $(srcdir) && \
-	$(GLIB_GENMARSHAL) --prefix=lm_marshal lm-marshal.list --header) > xgen-gmh \
-	&& (cmp -s xgen-gmh lm-marshal.h || cp xgen-gmh lm-marshal.h) \
-	&& rm -f xgen-gmh xgen-gmh~
-
-lm-marshal.c: lm-marshal.list
-	(cd $(srcdir) && \
-	$(GLIB_GENMARSHAL) --prefix=lm_marshal lm-marshal.list --body) > xgen-gmc \
-	&& cp xgen-gmc lm-marshal.c \
-	&& rm -f xgen-gmc xgen-gmc~
-
-lm-marshal-main.c: lm-marshal.c lm-marshal.h
+MARSHAL=lm
 
 BUILT_SOURCES =				\
 	lm-marshal.h			\

@@ -69,7 +69,7 @@ socket_base_init (LmSocketIface *iface)
                           G_SIGNAL_RUN_LAST,
                           0,
                           NULL, NULL,
-                          lm_marshal_VOID__VOID,
+                          _lm_marshal_VOID__VOID,
                           G_TYPE_NONE,
                           0);
         signals[WRITABLE] = 
@@ -78,7 +78,7 @@ socket_base_init (LmSocketIface *iface)
                           G_SIGNAL_RUN_LAST,
                           0,
                           NULL, NULL,
-                          lm_marshal_VOID__VOID,
+                          _lm_marshal_VOID__VOID,
                           G_TYPE_NONE,
                           0);
         signals[DISCONNECTED] =
@@ -87,7 +87,7 @@ socket_base_init (LmSocketIface *iface)
                           G_SIGNAL_RUN_LAST,
                           0,
                           NULL, NULL,
-                          lm_marshal_VOID__VOID,
+                          _lm_marshal_VOID__VOID,
                           G_TYPE_NONE,
                           0);
         initialized = TRUE;

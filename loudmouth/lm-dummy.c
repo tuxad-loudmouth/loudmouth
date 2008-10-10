@@ -77,7 +77,7 @@ lm_dummy_class_init (LmDummyClass *class)
                       G_SIGNAL_RUN_LAST,
                       0,
                       NULL, NULL,
-                      lm_marshal_VOID__INT,
+                      _lm_marshal_VOID__INT,
                       G_TYPE_NONE, 
                       1, G_TYPE_INT);
     

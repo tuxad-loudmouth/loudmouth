@@ -90,7 +90,7 @@ lm_tcp_socket_class_init (LmTcpSocketClass *class)
                       G_SIGNAL_RUN_LAST,
                       0,
                       NULL, NULL,
-                      lm_marshal_VOID__INT,
+                      _lm_marshal_VOID__INT,
                       G_TYPE_NONE, 
                       1, G_TYPE_INT);
     
