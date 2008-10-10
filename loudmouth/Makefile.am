@@ -118,18 +118,7 @@ libloudmouthincludedir = $(includedir)/loudmouth-1.0/loudmouth
 
 MARSHAL=lm
 
-BUILT_SOURCES =				\
-	lm-marshal.h			\
-	lm-marshal.c
-
-# an explicit dependency here so all generated files get built
-$(OBJECTS): $(BUILT_SOURCES)
-
-CLEANFILES = $(BUILT_SOURCES)
-
 EXTRA_DIST += \
 	lm-ssl-gnutls.c \
 	lm-ssl-openssl.c \
-	loudmouth.sym \
-	lm-marshal.list
-
+	loudmouth.sym
