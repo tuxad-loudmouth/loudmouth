@@ -97,9 +97,6 @@
 #include "lm-old-socket.h"
 #include "lm-sasl.h"
 
-#define IN_BUFFER_SIZE 1024
-#define SRV_LEN 8192
-
 typedef struct {
     LmHandlerPriority  priority;
     LmMessageHandler  *handler;
