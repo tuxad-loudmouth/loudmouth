@@ -1,16 +1,16 @@
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES =                                         \
-	-I$(top_srcdir)                            \
-	$(LOUDMOUTH_CFLAGS)
+INCLUDES =                                          \
+    -I$(top_srcdir)                                 \
+    $(LOUDMOUTH_CFLAGS)
 
-noinst_PROGRAMS =                                  \
-	test-lm                                    \
-	test-http-proxy                            \
-	test-tunnel                                \
-	lm-send-async                              \
-	lm-change-password                         \
-	lm-register
+noinst_PROGRAMS =                                   \
+    test-lm                                         \
+    test-http-proxy                                 \
+    test-tunnel                                     \
+    lm-send-async                                   \
+    lm-change-password                              \
+    lm-register
 
 test_lm_SOURCES = test-lm.c
 
@@ -24,8 +24,6 @@ lm_change_password_SOURCES = lm-change-password.c
 
 lm_register_SOURCES = lm-register.c
 
-LDADD =                                            \
-	$(LOUDMOUTH_LIBS)                          \
-	$(top_builddir)/loudmouth/libloudmouth-1.la
-
-	
+LDADD =                                             \
+    $(LOUDMOUTH_LIBS)                               \
+    $(top_builddir)/loudmouth/libloudmouth-1.la
