@@ -1,4 +1,3 @@
+include $(top_srcdir)/build/Makefile.am.lm
+
 SUBDIRS = reference
-
-include $(top_srcdir)/Makefile.decl
-

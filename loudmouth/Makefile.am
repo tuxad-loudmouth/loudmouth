@@ -1,5 +1,4 @@
-include $(top_srcdir)/Makefile.decl
-include $(top_srcdir)/build/Makefile.am.common
+include $(top_srcdir)/build/Makefile.am.lm
 include $(top_srcdir)/build/Makefile.am.marshal
 
 NULL=

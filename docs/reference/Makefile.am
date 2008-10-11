@@ -1,4 +1,4 @@
-include $(top_srcdir)/Makefile.decl
+include $(top_srcdir)/build/Makefile.am.lm
 
 ## Process this file with automake to produce Makefile.in
 
