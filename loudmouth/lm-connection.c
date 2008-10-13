@@ -30,37 +30,37 @@
  * int
  * main (int argc, char **argv)
  * {
- *       LmConnection *connection;
- *       GError       *error = NULL;
- *       gint          i;
- *   LmMessage    *m;
+ *      LmConnection *connection;
+ *      GError       *error = NULL;
+ *      gint          i;
+ *      LmMessage    *m;
  *
- *       connection = lm_connection_new ("myserver");
+ *      connection = lm_connection_new ("myserver");
  * 
- *       if (!lm_connection_open_and_block (connection, &amp;error)) {
- *               g_error ("Failed to open: &percnt;s\n", error->message);
- *       }
+ *      if (!lm_connection_open_and_block (connection, &amp;error)) {
+ *          g_error ("Failed to open: &percnt;s\n", error->message);
+ *      }
  * 
- *       if (!lm_connection_authenticate_and_block (connection,
- *                         "username", "password", 
- *                         "resource",
- *                         &amp;error)) {
- *      g_error ("Failed to authenticate: &percnt;s\n", error->message);
- *  }
+ *      if (!lm_connection_authenticate_and_block (connection,
+ *                                                 "username", "password", 
+ *                                                 "resource",
+ *                                                 &amp;error)) {
+ *          g_error ("Failed to authenticate: &percnt;s\n", error->message);
+ *      }
  *  
- *  m = lm_message_new ("recipient", LM_MESSAGE_TYPE_MESSAGE);
- *  lm_message_node_add_child (m->node, "body", "message");
+ *      m = lm_message_new ("recipient", LM_MESSAGE_TYPE_MESSAGE);
+ *      lm_message_node_add_child (m->node, "body", "message");
  *  
- *  if (!lm_connection_send (connection, m, &amp;error)) {
- *      g_error ("Send failed: &percnt;s\n", error->message);
- *  }
+ *      if (!lm_connection_send (connection, m, &amp;error)) {
+ *          g_error ("Send failed: &percnt;s\n", error->message);
+ *      }
  * 
- *  lm_message_unref (m);
+ *      lm_message_unref (m);
  * 
- *  lm_connection_close (connection, NULL);
- *  lm_connection_unref (connection);
+ *      lm_connection_close (connection, NULL);
+ *      lm_connection_unref (connection);
  *  
- *         return 0;
+ *      return 0;
  * }
  * </programlisting></informalexample>
  */
@@ -104,51 +104,51 @@ typedef struct {
 
 struct _LmConnection {
     /* Parameters */
-    GMainContext *context;
-    gchar        *server;
-    gchar        *jid;
-    gchar        *effective_jid;
-    guint         port;
-    gboolean      use_srv;
+    GMainContext      *context;
+    gchar             *server;
+    gchar             *jid;
+    gchar             *effective_jid;
+    guint              port;
+    gboolean           use_srv;
 
-    LmOldSocket     *socket;
-    LmSSL        *ssl;
-    LmProxy      *proxy;
-    LmParser     *parser;
+    LmOldSocket       *socket;
+    LmSSL             *ssl;
+    LmProxy           *proxy;
+    LmParser          *parser;
 
-    gchar        *stream_id;
+    gchar             *stream_id;
 
-    GHashTable   *id_handlers;
-    GSList       *handlers[LM_MESSAGE_TYPE_UNKNOWN];
+    GHashTable        *id_handlers;
+    GSList            *handlers[LM_MESSAGE_TYPE_UNKNOWN];
 
     /* XMPP1.0 stuff (SASL, resource binding, StartTLS) */
-    gboolean      use_sasl;
-    LmSASL       *sasl;
-    gchar        *resource;
-    LmMessageHandler *features_cb;
-    LmMessageHandler *starttls_cb;
-    gboolean      tls_started;
+    gboolean           use_sasl;
+    LmSASL            *sasl;
+    gchar             *resource;
+    LmMessageHandler  *features_cb;
+    LmMessageHandler  *starttls_cb;
+    gboolean           tls_started;
 
     /* Communication */
-    guint         open_id;
-    LmCallback   *open_cb;
+    guint              open_id;
+    LmCallback        *open_cb;
 
-    gboolean      async_connect_waiting;
-    gboolean      blocking;
+    gboolean           async_connect_waiting;
+    gboolean           blocking;
 
-    gboolean      cancel_open;
-    LmCallback   *auth_cb;
+    gboolean           cancel_open;
+    LmCallback        *auth_cb;
 
-    LmCallback   *disconnect_cb;
+    LmCallback        *disconnect_cb;
 
-    LmMessageQueue *queue;
+    LmMessageQueue    *queue;
 
-    LmConnectionState state;
+    LmConnectionState  state;
 
-    guint          keep_alive_rate;
-    LmFeaturePing *feature_ping;
+    guint              keep_alive_rate;
+    LmFeaturePing     *feature_ping;
 
-    gint          ref_count;
+    gint               ref_count;
 };
 
 typedef enum {
@@ -207,31 +207,31 @@ static void     connection_message_queue_cb  (LmMessageQueue      *queue,
 static void      
 connection_signal_disconnect                 (LmConnection        *connection,
                                               LmDisconnectReason   reason);
-static void     connection_incoming_data     (LmOldSocket            *socket, 
+static void     connection_incoming_data     (LmOldSocket         *socket, 
                                               const gchar         *buf,
                                               LmConnection        *connection);
 static void     connection_socket_closed_cb  (LmOldSocket            *socket,
                                               LmDisconnectReason   reason,
                                               LmConnection        *connection);
 static void      
-connection_socket_connect_cb                 (LmOldSocket            *socket,
+connection_socket_connect_cb                 (LmOldSocket         *socket,
                                               gboolean             result,
                                               LmConnection        *connection);
 static gboolean
-connection_get_server_from_jid              (const gchar          *jid,
-                                             gchar               **server);
+connection_get_server_from_jid               (const gchar         *jid,
+                                              gchar              **server);
 static void
-connection_send_stream_header               (LmConnection         *connection);
+connection_send_stream_header                (LmConnection        *connection);
 static LmHandlerResult 
-connection_features_cb                      (LmMessageHandler     *handler,
-                                             LmConnection         *connection,
-                                             LmMessage            *message,
-                                             gpointer              user_data);
-static gboolean connection_old_auth         (LmConnection         *connection,
-                                             const gchar          *username,
-                                             const gchar          *password,
-                                             const gchar          *resource,
-                                             GError              **errror);
+connection_features_cb                       (LmMessageHandler    *handler,
+                                              LmConnection        *connection,
+                                              LmMessage           *message,
+                                              gpointer             user_data);
+static gboolean connection_old_auth          (LmConnection        *connection,
+                                              const gchar         *username,
+                                              const gchar         *password,
+                                              const gchar         *resource,
+                                              GError             **errror);
 
 static void
 connection_free_handlers (LmConnection *connection)
@@ -389,8 +389,7 @@ connection_new_message_cb (LmParser     *parser,
 }
 
 static void
-connection_ping_timed_out (LmFeaturePing *fp, 
-                           LmConnection  *connection)
+connection_ping_timed_out (LmFeaturePing *fp, LmConnection  *connection)
 {
     connection_do_close (connection);
     connection_signal_disconnect (connection,
@@ -755,9 +754,9 @@ connection_auth_reply (LmMessageHandler *handler,
 
 static LmHandlerResult
 _lm_connection_starttls_cb (LmMessageHandler *handler,
-                            LmConnection *connection,
-                            LmMessage *message,
-                            gpointer user_data)
+                            LmConnection     *connection,
+                            LmMessage        *message,
+                            gpointer          user_data)
 {
     if (lm_old_socket_starttls (connection->socket)) {
         connection->tls_started = TRUE;
@@ -799,7 +798,7 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
     g_return_if_fail (m != NULL);
     
     connection->stream_id = g_strdup (lm_message_node_get_attribute (m->node,
-                                                                     "id"));;
+                                                                     "id"));
 
     xmpp_version = lm_message_node_get_attribute (m->node, "version");
     if (xmpp_version && strcmp (xmpp_version, "1.0") == 0) {
@@ -872,7 +871,7 @@ connection_stream_error (LmConnection *connection, LmMessage *m)
     lm_verbose ("Stream error: Unrecognised error\n");
     reason = LM_DISCONNECT_REASON_ERROR;
     connection->stream_id = g_strdup (lm_message_node_get_attribute (m->node,
-                                                                     "id"));;
+                                                                     "id"));
     connection_do_close (connection);
     connection_signal_disconnect (connection, reason);
 }
@@ -899,7 +898,7 @@ connection_signal_disconnect (LmConnection       *connection,
 }
 
 static void
-connection_incoming_data (LmOldSocket     *socket, 
+connection_incoming_data (LmOldSocket  *socket, 
                           const gchar  *buf, 
                           LmConnection *connection)
 {
@@ -916,9 +915,9 @@ connection_socket_closed_cb (LmOldSocket        *socket,
 }
 
 static void
-connection_socket_connect_cb (LmOldSocket           *socket,
-                              gboolean            result,
-                              LmConnection       *connection)
+connection_socket_connect_cb (LmOldSocket  *socket,
+                              gboolean      result,
+                              LmConnection *connection)
 {
     if (result == FALSE) {
         connection_do_close (connection);
@@ -951,8 +950,7 @@ connection_socket_connect_cb (LmOldSocket           *socket,
 }
 
 static gboolean
-connection_get_server_from_jid (const gchar     *jid,
-                                gchar          **server)
+connection_get_server_from_jid (const gchar *jid, gchar **server)
 {
     gchar *ch;
     gchar *ch_end;
@@ -1060,9 +1058,9 @@ connection_call_auth_cb (LmConnection *connection, gboolean success)
 
 static LmHandlerResult
 connection_bind_reply (LmMessageHandler *handler,
-                       LmConnection    *connection,
-                       LmMessage       *message,
-                       gpointer         user_data)
+                       LmConnection     *connection,
+                       LmMessage        *message,
+                       gpointer          user_data)
 {
     LmMessage        *m;
     LmMessageNode    *session_node;
@@ -1420,8 +1418,7 @@ lm_connection_cancel_open (LmConnection *connection)
  * Return value: Returns #TRUE if no errors where detected, otherwise #FALSE.
  **/
 gboolean
-lm_connection_close (LmConnection      *connection, 
-                     GError           **error)
+lm_connection_close (LmConnection *connection, GError **error)
 {
     gboolean no_errors = TRUE;
     
@@ -1457,10 +1454,10 @@ lm_connection_close (LmConnection      *connection,
 }
 
 static void
-connection_sasl_auth_finished (LmSASL *sasl,
+connection_sasl_auth_finished (LmSASL       *sasl,
                                LmConnection *connection,
-                               gboolean success,
-                               const gchar *reason)
+                               gboolean      success,
+                               const gchar  *reason)
 {
     if (!success) {
         lm_verbose ("SASL authentication failed, closing connection\n");
@@ -2068,10 +2065,10 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
  * To unregister the handler call lm_connection_unregister_message_handler().
  **/
 void
-lm_connection_register_message_handler  (LmConnection       *connection,
-                                         LmMessageHandler   *handler,
-                                         LmMessageType       type,
-                                         LmHandlerPriority   priority)
+lm_connection_register_message_handler  (LmConnection      *connection,
+                                         LmMessageHandler  *handler,
+                                         LmMessageType      type,
+                                         LmHandlerPriority  priority)
 {
     HandlerData      *hd;
     
@@ -2098,9 +2095,9 @@ lm_connection_register_message_handler  (LmConnection       *connection,
  * when incoming messages of @type arrive.
  **/
 void
-lm_connection_unregister_message_handler (LmConnection      *connection,
-                                          LmMessageHandler  *handler,
-                                          LmMessageType      type)
+lm_connection_unregister_message_handler (LmConnection     *connection,
+                                          LmMessageHandler *handler,
+                                          LmMessageType     type)
 {
     GSList *l;
     
