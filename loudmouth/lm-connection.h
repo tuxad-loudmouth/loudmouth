@@ -140,9 +140,9 @@ typedef void          (* LmResultFunction)     (LmConnection       *connection,
  * 
  * Callback called when a connection is closed.
  */
-typedef void          (* LmDisconnectFunction) (LmConnection       *connection,
-                                                LmDisconnectReason  reason,
-                                                gpointer            user_data);
+typedef void         (* LmDisconnectFunction) (LmConnection       *connection,
+                                               LmDisconnectReason  reason,
+                                               gpointer            user_data);
 
 LmConnection *lm_connection_new               (const gchar        *server);
 LmConnection *lm_connection_new_with_context  (const gchar        *server,

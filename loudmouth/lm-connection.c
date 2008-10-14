@@ -389,7 +389,7 @@ connection_new_message_cb (LmParser     *parser,
 }
 
 static void
-connection_ping_timed_out (LmFeaturePing *fp, LmConnection  *connection)
+connection_ping_timed_out (LmFeaturePing *fp, LmConnection *connection)
 {
     connection_do_close (connection);
     connection_signal_disconnect (connection,
@@ -571,9 +571,9 @@ connection_do_close (LmConnection *connection)
 }
 
 typedef struct {
-    gchar        *username;
-    gchar        *password;
-    gchar        *resource;
+    gchar *username;
+    gchar *password;
+    gchar *resource;
 } AuthReqData;
 
 static void 
