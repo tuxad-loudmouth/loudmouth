@@ -58,76 +58,76 @@
 #define SRV_LEN 8192
 
 struct _LmOldSocket {
-    LmConnection *connection;
-    GMainContext *context;
+    LmConnection      *connection;
+    GMainContext      *context;
 
-    gchar        *domain;
-    gchar        *server;
-    guint         port;
+    gchar             *domain;
+    gchar             *server;
+    guint              port;
 
-    gboolean      blocking;
+    gboolean           blocking;
 
-    LmSSL        *ssl;
-    gboolean      ssl_started;
-    LmProxy      *proxy;
+    LmSSL             *ssl;
+    gboolean           ssl_started;
+    LmProxy           *proxy;
 
-    GIOChannel   *io_channel;
-    GSource      *watch_in;
-    GSource      *watch_err;
-    GSource      *watch_hup;
+    GIOChannel        *io_channel;
+    GSource           *watch_in;
+    GSource           *watch_err;
+    GSource           *watch_hup;
 
-    LmOldSocketT      fd;
+    LmOldSocketT       fd;
 
-    GSource      *watch_connect;
+    GSource           *watch_connect;
 
-    gboolean      cancel_open;
+    gboolean           cancel_open;
     
-    GSource      *watch_out;
-    GString      *out_buf;
+    GSource           *watch_out;
+    GString           *out_buf;
 
-    LmConnectData *connect_data;
+    LmConnectData     *connect_data;
 
-    IncomingDataFunc data_func;
-    SocketClosedFunc closed_func;
-    ConnectResultFunc connect_func;
-    gpointer         user_data;
+    IncomingDataFunc   data_func;
+    SocketClosedFunc   closed_func;
+    ConnectResultFunc  connect_func;
+    gpointer           user_data;
 
-    guint          ref_count;
+    guint              ref_count;
 
-    LmResolver      *resolver;
+    LmResolver        *resolver;
 
 #ifdef HAVE_ASYNCNS
-    GSource     *watch_resolv;
-    asyncns_query_t *resolv_query;
-    asyncns_t   *asyncns_ctx;
-    GIOChannel  *resolv_channel;
+    GSource           *watch_resolv;
+    asyncns_query_t   *resolv_query;
+    asyncns_t         *asyncns_ctx;
+    GIOChannel        *resolv_channel;
 #endif
 }; 
 
-static void         socket_free               (LmOldSocket       *socket);
-static gboolean     socket_do_connect         (LmConnectData  *connect_data);
-static gboolean     socket_connect_cb         (GIOChannel     *source, 
-                                               GIOCondition    condition,
-                                               LmConnectData  *connect_data);
-static gboolean     socket_in_event           (GIOChannel     *source,
-                                               GIOCondition    condition,
-                                               LmOldSocket       *socket);
-static gboolean     socket_hup_event          (GIOChannel     *source,
-                                               GIOCondition    condition,
-                                               LmOldSocket       *socket);
-static gboolean     socket_error_event        (GIOChannel     *source,
-                                               GIOCondition    condition,
-                                               LmOldSocket       *socket);
-static gboolean     socket_buffered_write_cb  (GIOChannel     *source, 
-                                               GIOCondition    condition,
-                                               LmOldSocket       *socket);
-static void         socket_close_io_channel   (GIOChannel     *io_channel);
-static gboolean     old_socket_output_is_buffered    (LmOldSocket       *socket,
-                                                      const gchar    *buffer,
-                                                      gint            len);
-static void         old_socket_setup_output_buffer   (LmOldSocket       *socket,
-                                                      const gchar    *buffer,
-                                                      gint            len);
+static void         socket_free                    (LmOldSocket    *socket);
+static gboolean     socket_do_connect              (LmConnectData  *connect_data);
+static gboolean     socket_connect_cb              (GIOChannel     *source, 
+                                                    GIOCondition    condition,
+                                                    LmConnectData  *connect_data);
+static gboolean     socket_in_event                (GIOChannel     *source,
+                                                    GIOCondition    condition,
+                                                    LmOldSocket    *socket);
+static gboolean     socket_hup_event               (GIOChannel     *source,
+                                                    GIOCondition    condition,
+                                                    LmOldSocket    *socket);
+static gboolean     socket_error_event             (GIOChannel     *source,
+                                                    GIOCondition    condition,
+                                                    LmOldSocket    *socket);
+static gboolean     socket_buffered_write_cb       (GIOChannel     *source, 
+                                                    GIOCondition    condition,
+                                                    LmOldSocket    *socket);
+static void         socket_close_io_channel        (GIOChannel     *io_channel);
+static gboolean     old_socket_output_is_buffered  (LmOldSocket    *socket,
+                                                    const gchar    *buffer,
+                                                    gint            len);
+static void         old_socket_setup_output_buffer (LmOldSocket    *socket,
+                                                    const gchar    *buffer,
+                                                    gint            len);
 
 static void
 socket_free (LmOldSocket *socket)
@@ -258,11 +258,11 @@ socket_in_event (GIOChannel   *source,
                  GIOCondition  condition,
                  LmOldSocket     *socket)
 {
-    gchar     buf[IN_BUFFER_SIZE];
-    gsize     bytes_read = 0;
-    gboolean  read_anything = FALSE;
-    gboolean  hangup = 0;
-    gint      reason = 0;
+    gchar    buf[IN_BUFFER_SIZE];
+    gsize    bytes_read = 0;
+    gboolean read_anything = FALSE;
+    gboolean hangup = 0;
+    gint     reason = 0;
 
     if (!socket->io_channel) {
         return FALSE;
@@ -398,7 +398,7 @@ lm_old_socket_starttls (LmOldSocket *socket)
 void
 _lm_old_socket_succeeded (LmConnectData *connect_data)
 {
-    LmOldSocket     *socket;
+    LmOldSocket *socket;
     
     socket = connect_data->socket;
 
@@ -522,11 +522,11 @@ socket_connect_cb (GIOChannel   *source,
                    GIOCondition  condition,
                    LmConnectData *connect_data) 
 {
-    LmOldSocket        *socket;
+    LmOldSocket     *socket;
     struct addrinfo *addr;
     int              err;
     socklen_t        len;
-    LmOldSocketT        fd;
+    LmOldSocketT     fd;
     gboolean         result = FALSE;
 
     socket = lm_old_socket_ref (connect_data->socket);
@@ -597,8 +597,8 @@ socket_connect_cb (GIOChannel   *source,
 static gboolean
 socket_do_connect (LmConnectData *connect_data) 
 {
-    LmOldSocket        *socket;
-    LmOldSocketT        fd;
+    LmOldSocket     *socket;
+    LmOldSocketT     fd;
     int              res, err;
     int              port;
     char             name[NI_MAXHOST];
@@ -720,7 +720,6 @@ socket_buffered_write_cb (GIOChannel   *source,
 {
     gint     b_written;
     GString *out_buf;
-    /* FIXME: Do the writing */
 
     out_buf = socket->out_buf;
     if (!out_buf) {

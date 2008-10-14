@@ -1115,14 +1115,14 @@ connection_features_cb (LmMessageHandler *handler,
                         gpointer          user_data)
 {
     LmMessageNode *bind_node;
-    LmMessageNode    *starttls_node;
+    LmMessageNode *starttls_node;
     LmMessageNode *old_auth;
     LmMessageNode *sasl_mechanisms;
     
     starttls_node = lm_message_node_find_child (message->node, "starttls");
     if (connection->ssl && lm_old_socket_get_use_starttls (connection->socket)) {
         if (starttls_node) {
-            LmMessage        *msg;
+            LmMessage *msg;
 
             msg = lm_message_new (NULL, LM_MESSAGE_TYPE_STARTTLS);
 
@@ -1200,7 +1200,8 @@ connection_features_cb (LmMessageHandler *handler,
         connection->use_sasl = FALSE;
 
         if (connection->sasl) {
-            const gchar *user, *pass;
+            const gchar *user;
+            const gchar *pass;
 
             lm_sasl_get_auth_params (connection->sasl, &user, &pass);
             if (user && pass) {
@@ -1587,7 +1588,7 @@ lm_connection_authenticate_and_block (LmConnection  *connection,
                                       const gchar   *resource,
                                       GError       **error)
 {
-    gboolean          result;
+    gboolean result;
 
     result = lm_connection_authenticate (connection, username, password,
                                          resource, NULL, NULL, NULL, error);
@@ -2070,7 +2071,7 @@ lm_connection_register_message_handler  (LmConnection      *connection,
                                          LmMessageType      type,
                                          LmHandlerPriority  priority)
 {
-    HandlerData      *hd;
+    HandlerData *hd;
     
     g_return_if_fail (connection != NULL);
     g_return_if_fail (handler != NULL);
