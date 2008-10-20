@@ -1246,27 +1246,14 @@ lm_connection_new (const gchar *server)
 
     if (server) {
         connection->server  = _lm_utils_hostname_to_punycode (server);
-        connection->use_srv = FALSE;
     } else {
-        connection->server  = NULL;
         connection->use_srv = TRUE;
     }
 
-    connection->context           = NULL;
     connection->port              = LM_CONNECTION_DEFAULT_PORT;
-    connection->jid               = NULL;
-    connection->effective_jid     = NULL;
-    connection->ssl               = NULL;
-    connection->proxy             = NULL;
-    connection->disconnect_cb     = NULL;
     connection->queue             = lm_message_queue_new ((LmMessageQueueCallback) connection_message_queue_cb, 
                                                           connection);
-    connection->cancel_open       = FALSE;
     connection->state             = LM_CONNECTION_STATE_CLOSED;
-    connection->keep_alive_rate   = 0;
-    connection->socket            = NULL;
-    connection->use_sasl          = FALSE;
-    connection->tls_started       = FALSE;
     
     connection->id_handlers = g_hash_table_new_full (g_str_hash, 
                                                      g_str_equal,
