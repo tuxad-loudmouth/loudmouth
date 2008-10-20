@@ -1250,16 +1250,16 @@ lm_connection_new (const gchar *server)
         connection->use_srv = TRUE;
     }
 
-    connection->port              = LM_CONNECTION_DEFAULT_PORT;
-    connection->queue             = lm_message_queue_new ((LmMessageQueueCallback) connection_message_queue_cb, 
+    connection->port        = LM_CONNECTION_DEFAULT_PORT;
+    connection->queue       = lm_message_queue_new ((LmMessageQueueCallback) connection_message_queue_cb, 
                                                           connection);
-    connection->state             = LM_CONNECTION_STATE_CLOSED;
+    connection->state       = LM_CONNECTION_STATE_CLOSED;
     
     connection->id_handlers = g_hash_table_new_full (g_str_hash, 
                                                      g_str_equal,
                                                      g_free, 
                                                      (GDestroyNotify) lm_message_handler_unref);
-    connection->ref_count         = 1;
+    connection->ref_count   = 1;
     
     for (i = 0; i < LM_MESSAGE_TYPE_UNKNOWN; ++i) {
         connection->handlers[i] = NULL;
