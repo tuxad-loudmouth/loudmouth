@@ -105,6 +105,8 @@ typedef struct {
 struct _LmConnection {
     /* Parameters */
     GMainContext      *context;
+    
+    /* TODO: Clean up this and make some parameter object for server, jid, effective jid etc */
     gchar             *server;
     gchar             *jid;
     gchar             *effective_jid;
@@ -145,6 +147,7 @@ struct _LmConnection {
 
     LmConnectionState  state;
 
+    /* TODO: Move the rate to use the one in LmFeaturePing instead of keeping the two in sync */
     guint              keep_alive_rate;
     LmFeaturePing     *feature_ping;
 
@@ -1504,6 +1507,8 @@ lm_connection_authenticate (LmConnection      *connection,
     connection->effective_jid = g_strdup_printf ("%s/%s", 
                                                  connection->jid, connection->resource);
 
+    /* TODO: Break out Credentials (or use the already existing AuthReqData struct for *
+     *       Username/Password and Resource                                            */
     if (connection->use_sasl) {
         lm_sasl_authenticate (connection->sasl,
                               username, password,

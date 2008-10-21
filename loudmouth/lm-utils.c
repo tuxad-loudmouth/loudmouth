@@ -48,8 +48,8 @@
 #include "lm-utils.h"
 
 LmCallback *
-_lm_utils_new_callback (gpointer func, 
-                        gpointer user_data,
+_lm_utils_new_callback (gpointer       func, 
+                        gpointer       user_data,
                         GDestroyNotify notify)
 {
     LmCallback *cb;
