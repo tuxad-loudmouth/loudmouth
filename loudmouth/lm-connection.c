@@ -847,8 +847,9 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
 static void
 connection_stream_error (LmConnection *connection, LmMessage *m)
 {
-    LmMessageNode *node, *reason_node;
-    LmDisconnectReason reason;
+    LmMessageNode      *node;
+    LmMessageNode      *reason_node;
+    LmDisconnectReason  reason;
 
     g_return_if_fail (connection != NULL);
     g_return_if_fail (m != NULL);
