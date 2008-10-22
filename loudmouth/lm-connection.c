@@ -790,7 +790,7 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
         /* stream is started multiple times, but we only want
          * one sasl mechanism */
         if (!connection->sasl) {
-            connection->sasl = lm_sasl_new(connection);
+            connection->sasl = lm_sasl_new (connection);
         }
 
         connection_possibly_register_starttls_handler (connection);
