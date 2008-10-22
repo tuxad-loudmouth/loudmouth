@@ -27,28 +27,28 @@
 
 #include <glib.h>
 
+#include "lm-data-objects.h"
+
 G_BEGIN_DECLS
 
 typedef struct _LmSASL LmSASL;
 
-typedef void (*LmSASLResultHandler) (LmSASL *sasl,
-                                     LmConnection *connection,
-                                     gboolean success,
-                                     const gchar *reason);
+typedef void (*LmSASLResultHandler) (LmSASL               *sasl,
+                                     LmConnection         *connection,
+                                     gboolean              success,
+                                     const gchar          *reason);
 
-LmSASL *lm_sasl_new (LmConnection *connection);
+LmSASL *           lm_sasl_new              (LmConnection         *connection);
 
-void lm_sasl_authenticate (LmSASL *sasl, 
-                           const gchar *username,
-                           const gchar *password,
-                           const gchar *server,
-                           LmSASLResultHandler handler);
+void               lm_sasl_authenticate     (LmSASL               *sasl, 
+                                             LmAuthParameters     *auth_params,
+                                             const gchar          *server,
+                                             LmSASLResultHandler   handler);
 
-void lm_sasl_free (LmSASL *sasl);
+void               lm_sasl_free             (LmSASL               *sasl);
 
-void
-lm_sasl_get_auth_params (LmSASL *sasl, const gchar **username,
-                         const gchar **password);
+LmAuthParameters * lm_sasl_get_auth_params  (LmSASL               *sasl);
+
 
 G_END_DECLS
 

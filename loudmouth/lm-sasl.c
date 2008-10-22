@@ -55,8 +55,7 @@ struct _LmSASL {
     LmConnection        *connection;
     AuthType             auth_type;
     SaslAuthState        state;
-    gchar               *username;
-    gchar               *password;
+    LmAuthParameters    *auth_params;
     gchar               *server;
     gchar               *digest_md5_rspauth;
     LmMessageHandler    *features_cb;
@@ -214,9 +213,9 @@ sasl_md5_prepare_response (LmSASL *sasl, GHashTable *challenge)
 
     response = g_string_new ("");
 
-    if (sasl->username == NULL || sasl->password == NULL) {
+    if (sasl->auth_params == NULL) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
-               "%s: no username or password provided", G_STRFUNC);
+               "%s: no authentication parameters provided", G_STRFUNC);
         if (sasl->handler) {
             sasl->handler (sasl, sasl->connection, 
                            FALSE, "no username/password provided");
@@ -245,7 +244,7 @@ sasl_md5_prepare_response (LmSASL *sasl, GHashTable *challenge)
     }
 
     /* FIXME properly escape values */
-    g_string_append_printf (response, "username=\"%s\"", sasl->username);
+    g_string_append_printf (response, "username=\"%s\"", lm_auth_parameters_get_username (sasl->auth_params));
     g_string_append_printf (response, ",realm=\"%s\"", realm);
     g_string_append_printf (response, ",digest-uri=\"xmpp/%s\"", realm);
     g_string_append_printf (response, ",nonce=\"%s\",nc=00000001", nonce);
@@ -254,7 +253,9 @@ sasl_md5_prepare_response (LmSASL *sasl, GHashTable *challenge)
     g_string_append_printf (response, ",qop=auth,charset=utf-8");
 
     tmp = g_strdup_printf ("%s:%s:%s", 
-                           sasl->username, realm, sasl->password);
+                           lm_auth_parameters_get_username (sasl->auth_params), 
+                           realm, lm_auth_parameters_get_password (sasl->auth_params));
+        
     md5_init (&md5_calc);
     md5_append (&md5_calc, (const md5_byte_t *)tmp, strlen(tmp));
     md5_finish (&md5_calc, digest_md5);
@@ -314,7 +315,7 @@ sasl_digest_md5_send_initial_response (LmSASL *sasl, GHashTable *challenge)
     gchar     *response64;
     int        result;
 
-    response = sasl_md5_prepare_response(sasl, challenge);
+    response = sasl_md5_prepare_response (sasl, challenge);
     if (response == NULL) {
         return FALSE;
     }
@@ -595,9 +596,9 @@ sasl_start (LmSASL *sasl)
         mech = "PLAIN";
         sasl->state = SASL_AUTH_STATE_PLAIN_STARTED;
 
-        if (sasl->username == NULL || sasl->password == NULL) {
+        if (sasl->auth_params == NULL) {
             g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
-                   "%s: no username or password provided", 
+                   "%s: no authentication parameters provided", 
                    G_STRFUNC);
             if (sasl->handler) {
                 sasl->handler (sasl, sasl->connection, FALSE, "no username/password provided");
@@ -607,9 +608,9 @@ sasl_start (LmSASL *sasl)
         }
 
         g_string_append_c (str, '\0');
-        g_string_append (str, sasl->username);
+        g_string_append (str, lm_auth_parameters_get_username (sasl->auth_params));
         g_string_append_c (str, '\0');
-        g_string_append (str, sasl->password);
+        g_string_append (str, lm_auth_parameters_get_password (sasl->auth_params));
         cstr = g_base64_encode ((const guchar *) str->str, 
                                 (gsize) str->len);
 
@@ -757,15 +758,13 @@ lm_sasl_new (LmConnection *connection)
 
 void
 lm_sasl_authenticate (LmSASL              *sasl,
-                      const gchar         *username,
-                      const gchar         *password,
+                      LmAuthParameters    *auth_params,
                       const gchar         *server,
                       LmSASLResultHandler  handler)
 {
-    sasl->username   = g_strdup (username);
-    sasl->password   = g_strdup (password);
-    sasl->server     = g_strdup (server);
-    sasl->handler    = handler;
+    sasl->auth_params = lm_auth_parameters_ref (auth_params);
+    sasl->server      = g_strdup (server);
+    sasl->handler     = handler;
 
     sasl->challenge_cb = lm_message_handler_new (sasl_challenge_cb,
                                                  sasl,
@@ -802,9 +801,11 @@ void
 lm_sasl_free (LmSASL *sasl)
 {
     g_return_if_fail (sasl != NULL);
+    
+    if (sasl->auth_params) {
+        lm_auth_parameters_unref (sasl->auth_params);
+    }
 
-    g_free (sasl->username);
-    g_free (sasl->password);
     g_free (sasl->server);
 
     if (sasl->features_cb) {
@@ -835,11 +836,9 @@ lm_sasl_free (LmSASL *sasl)
 }
 
 
-void
-lm_sasl_get_auth_params (LmSASL *sasl, const gchar **username,
-                         const gchar **password)
+LmAuthParameters *
+lm_sasl_get_auth_params (LmSASL *sasl)
 {
-    *username = sasl->username;
-    *password = sasl->password;
+    return sasl->auth_params;
 }
 

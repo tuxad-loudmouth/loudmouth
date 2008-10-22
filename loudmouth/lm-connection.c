@@ -82,6 +82,7 @@
 
 #include <glib-object.h>
 
+#include "lm-data-objects.h"
 #include "lm-sock.h"
 #include "lm-debug.h"
 #include "lm-error.h"
@@ -174,12 +175,11 @@ static gboolean connection_do_open           (LmConnection        *connection,
                                               GError             **error);
 void            connection_do_close          (LmConnection        *connection);
 static LmMessage *     
-connection_create_auth_req_msg               (const gchar         *username);
+connection_create_auth_req_msg               (LmAuthParameters    *auth_params);
+    
 static LmMessage *
 connection_create_auth_msg                   (LmConnection        *connection,
-                                              const gchar         *username,
-                                              const gchar         *password,
-                                              const gchar         *resource,
+                                              LmAuthParameters    *auth_params,
                                               gint                 auth_type);
 static LmHandlerResult 
 connection_auth_req_reply                    (LmMessageHandler    *handler,
@@ -231,9 +231,7 @@ connection_features_cb                       (LmMessageHandler    *handler,
                                               LmMessage           *message,
                                               gpointer             user_data);
 static gboolean connection_old_auth          (LmConnection        *connection,
-                                              const gchar         *username,
-                                              const gchar         *password,
-                                              const gchar         *resource,
+                                              LmAuthParameters    *auth_params,
                                               GError             **errror);
 
 static void
@@ -573,23 +571,8 @@ connection_do_close (LmConnection *connection)
     }
 }
 
-typedef struct {
-    gchar *username;
-    gchar *password;
-    gchar *resource;
-} AuthReqData;
-
-static void 
-auth_req_data_free (AuthReqData *data) 
-{
-    g_free (data->username);
-    g_free (data->password);
-    g_free (data->resource);
-    g_free (data);
-}
-
 static LmMessage *
-connection_create_auth_req_msg (const gchar *username)
+connection_create_auth_req_msg (LmAuthParameters *auth_params)
 {
     LmMessage     *m;
     LmMessageNode *q_node;
@@ -600,17 +583,15 @@ connection_create_auth_req_msg (const gchar *username)
     lm_message_node_set_attributes (q_node,
                                     "xmlns", "jabber:iq:auth",
                                     NULL);
-    lm_message_node_add_child (q_node, "username", username);
+    lm_message_node_add_child (q_node, "username", lm_auth_parameters_get_username (auth_params));
 
     return m;
 }
 
 static LmMessage *
-connection_create_auth_msg (LmConnection *connection,
-                            const gchar  *username,
-                            const gchar  *password,
-                            const gchar  *resource,
-                            gint          auth_type)
+connection_create_auth_msg (LmConnection     *connection,
+                            LmAuthParameters *auth_params,
+                            gint              auth_type)
 {
     LmMessage     *auth_msg;
     LmMessageNode *q_node;
@@ -624,7 +605,7 @@ connection_create_auth_msg (LmConnection *connection,
                                     "xmlns", "jabber:iq:auth", 
                                     NULL);
 
-    lm_message_node_add_child (q_node, "username", username);
+    lm_message_node_add_child (q_node, "username", lm_auth_parameters_get_username (auth_params));
     
     if (auth_type & AUTH_TYPE_0K) {
         lm_verbose ("Using 0k auth (not implemented yet)\n");
@@ -636,7 +617,7 @@ connection_create_auth_msg (LmConnection *connection,
         gchar *digest;
 
         lm_verbose ("Using digest\n");
-        str = g_strconcat (connection->stream_id, password, NULL);
+        str = g_strconcat (connection->stream_id, lm_auth_parameters_get_password (auth_params), NULL);
         digest = lm_sha_hash (str);
         g_free (str);
         lm_message_node_add_child (q_node, "digest", digest);
@@ -644,12 +625,12 @@ connection_create_auth_msg (LmConnection *connection,
     } 
     else if (auth_type & AUTH_TYPE_PLAIN) {
         lm_verbose ("Using plaintext auth\n");
-        lm_message_node_add_child (q_node, "password", password);
+        lm_message_node_add_child (q_node, "password", lm_auth_parameters_get_password (auth_params));
     } else {
         /* TODO: Report error somehow */
     }
     
-    lm_message_node_add_child (q_node, "resource", resource);
+    lm_message_node_add_child (q_node, "resource", lm_auth_parameters_get_resource (auth_params));
 
     return auth_msg;
 }
@@ -663,16 +644,12 @@ connection_auth_req_reply (LmMessageHandler *handler,
     int               auth_type;
     LmMessage        *auth_msg;
     LmMessageHandler *auth_handler;
-    AuthReqData      *data = (AuthReqData *) user_data;      
+    LmAuthParameters *auth_params = (LmAuthParameters *) user_data;
     gboolean          result;
     
     auth_type = connection_check_auth_type (m);
 
-    auth_msg = connection_create_auth_msg (connection, 
-                                           data->username,
-                                           data->password,
-                                           data->resource,
-                                           auth_type);
+    auth_msg = connection_create_auth_msg (connection, auth_params, auth_type);
 
     auth_handler = lm_message_handler_new (connection_auth_reply,
                                            NULL, NULL);
@@ -1204,14 +1181,9 @@ connection_features_cb (LmMessageHandler *handler,
         connection->use_sasl = FALSE;
 
         if (connection->sasl) {
-            const gchar *user;
-            const gchar *pass;
-
-            lm_sasl_get_auth_params (connection->sasl, &user, &pass);
-            if (user && pass) {
+            if (lm_sasl_get_auth_params (connection->sasl)) {
                 GError *error = NULL;
-                connection_old_auth (connection, user, pass,
-                                     connection->resource,
+                connection_old_auth (connection, lm_sasl_get_auth_params (connection->sasl),
                                      &error);
 
                 if (error) {
@@ -1485,10 +1457,15 @@ lm_connection_authenticate (LmConnection      *connection,
                             GDestroyNotify     notify,
                             GError           **error)
 {
+    LmAuthParameters *auth_params;
+    gboolean          ret_val;
+    
     g_return_val_if_fail (connection != NULL, FALSE);
     g_return_val_if_fail (username != NULL, FALSE);
     g_return_val_if_fail (password != NULL, FALSE);
     g_return_val_if_fail (resource != NULL, FALSE);
+
+    auth_params = lm_auth_parameters_new (username, password, resource);
 
     if (!lm_connection_is_open (connection)) {
         g_set_error (error,
@@ -1504,16 +1481,15 @@ lm_connection_authenticate (LmConnection      *connection,
                                                   user_data, 
                                                   notify);
 
-    connection->resource = g_strdup (resource);
+    connection->resource = g_strdup (lm_auth_parameters_get_resource (auth_params));
+                                              
     connection->effective_jid = g_strdup_printf ("%s/%s", 
                                                  connection->jid, connection->resource);
 
     /* TODO: Break out Credentials (or use the already existing AuthReqData struct for *
      *       Username/Password and Resource                                            */
     if (connection->use_sasl) {
-        lm_sasl_authenticate (connection->sasl,
-                              username, password,
-                              connection->server,
+        lm_sasl_authenticate (connection->sasl, auth_params, connection->server,
                               connection_sasl_auth_finished);
 
         connection->features_cb  =
@@ -1524,36 +1500,30 @@ lm_connection_authenticate (LmConnection      *connection,
                                                 LM_MESSAGE_TYPE_STREAM_FEATURES,
                                                 LM_HANDLER_PRIORITY_FIRST);
 
-        return TRUE;
+        ret_val = TRUE;
+    } else {
+        ret_val = connection_old_auth (connection, auth_params, error);
     }
 
-    return connection_old_auth (connection, username, password,
-                                resource, error);
+    lm_auth_parameters_unref (auth_params);
+
+    return ret_val;
 }
 
 static gboolean
-connection_old_auth (LmConnection  *connection,
-                     const gchar   *username,
-                     const gchar   *password,
-                     const gchar   *resource, 
-                     GError       **error)
+connection_old_auth (LmConnection      *connection,
+                     LmAuthParameters  *auth_params,
+                     GError           **error)
 {
     LmMessage        *m;
-    AuthReqData      *data;
     LmMessageHandler *handler;
     gboolean          result;
     
-
-    m = connection_create_auth_req_msg (username);
+    m = connection_create_auth_req_msg (auth_params);
         
-    data = g_new0 (AuthReqData, 1);
-    data->username = g_strdup (username);
-    data->password = g_strdup (password);
-    data->resource = g_strdup (resource);
-    
     handler = lm_message_handler_new (connection_auth_req_reply, 
-                                      data, 
-                                      (GDestroyNotify) auth_req_data_free);
+                                      lm_auth_parameters_ref (auth_params),
+                                      (GDestroyNotify) lm_auth_parameters_unref);
     result = lm_connection_send_with_reply (connection, m, handler, error);
     
     lm_message_handler_unref (handler);

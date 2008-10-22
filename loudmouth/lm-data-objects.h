@@ -17,6 +17,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#ifndef __LM_DATA_OBJECT_H__
+#define __LM_DATA_OBJECT_H__
 
 #include <glib.h>
 
@@ -44,3 +46,5 @@ guint                 lm_connect_parameters_get_port   (LmConnectParameters *par
 
 LmConnectParameters * lm_connect_parameters_ref        (LmConnectParameters *params);
 void                  lm_connect_parameters_unref      (LmConnectParameters *params);
+
+#endif /* __LM_DATA_OBJECT_H__ */
