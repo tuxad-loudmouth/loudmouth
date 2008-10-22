@@ -112,7 +112,6 @@ struct _LmConnection {
     gchar             *jid;
     gchar             *effective_jid;
     guint              port;
-    gboolean           use_srv;
 
     LmOldSocket       *socket;
     LmSSL             *ssl;
@@ -1222,8 +1221,6 @@ lm_connection_new (const gchar *server)
 
     if (server) {
         connection->server  = _lm_utils_hostname_to_punycode (server);
-    } else {
-        connection->use_srv = TRUE;
     }
 
     connection->port        = LM_CONNECTION_DEFAULT_PORT;
@@ -1698,7 +1695,6 @@ lm_connection_set_server (LmConnection *connection, const gchar *server)
     
     g_free (connection->server);
     connection->server = _lm_utils_hostname_to_punycode (server);
-    connection->use_srv = FALSE;
 }
 
 /**
