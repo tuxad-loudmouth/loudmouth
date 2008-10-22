@@ -22,12 +22,21 @@
 
 #include "lm-data-objects.h"
 
-static void auth_parameters_free (LmAuthParameters *params);
+static void auth_parameters_free      (LmAuthParameters    *params);
+static void connect_parameters_free   (LmConnectParameters *params);
 
 struct LmAuthParameters {
     gchar *username;
     gchar *password;
     gchar *resource;
+    
+    guint  ref_count;
+};
+
+struct LmConnectParameters {
+    gchar *domain;
+    gchar *host;
+    guint  port;
     
     guint  ref_count;
 };
@@ -40,6 +49,15 @@ auth_parameters_free (LmAuthParameters *params)
     g_free (params->resource);
     
     g_slice_free (LmAuthParameters, params);
+}
+
+static void
+connect_parameters_free (LmConnectParameters *params)
+{
+    g_free (params->domain);
+    g_free (params->host);
+    
+    g_slice_free (LmConnectParameters, params);
 }
 
 LmAuthParameters *
@@ -105,5 +123,69 @@ lm_auth_parameters_unref (LmAuthParameters *params)
 
     if (params->ref_count == 0) {
         auth_parameters_free (params);
+    }
+}
+
+LmConnectParameters *
+lm_connect_parameters_new (const gchar *domain,
+                           const gchar *host,
+                           guint        port)
+{
+    LmConnectParameters *params;
+    
+    params = g_slice_new0 (LmConnectParameters);
+    
+    params->domain = g_strdup (domain);
+    params->host   = g_strdup (host);
+    params->port   = port;
+    
+    params->ref_count = 1;
+    
+    return params;
+}
+
+const gchar *
+lm_connect_parameters_get_domain (LmConnectParameters *params)
+{
+    g_return_val_if_fail (params != NULL, NULL);
+    
+    return params->domain;
+}
+
+const gchar *
+lm_connect_parameters_get_host (LmConnectParameters *params)
+{
+    g_return_val_if_fail (params != NULL, NULL);
+    
+    return params->host;
+}
+
+guint
+lm_connect_parameters_get_port (LmConnectParameters *params)
+{
+    g_return_val_if_fail (params != NULL, 0);
+    
+    return params->port;
+}
+
+LmConnectParameters *
+lm_connect_parameters_ref (LmConnectParameters *params)
+{
+    g_return_val_if_fail (params != NULL, NULL);
+    
+    params->ref_count++;
+    
+    return params;
+}
+
+void
+lm_connect_parameters_unref (LmConnectParameters *params)
+{
+    g_return_if_fail (params != NULL);
+    
+    params->ref_count--;
+    
+    if (params->ref_count == 0) {
+        connect_parameters_free (params);
     }
 }

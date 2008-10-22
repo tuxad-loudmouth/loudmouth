@@ -20,7 +20,8 @@
 
 #include <glib.h>
 
-typedef struct LmAuthParameters LmAuthParameters;
+typedef struct LmAuthParameters    LmAuthParameters;
+typedef struct LmConnectParameters LmConnectParameters;
 
 LmAuthParameters * lm_auth_parameters_new (const gchar *username,
                                            const gchar *password,
@@ -32,3 +33,14 @@ const gchar *      lm_auth_parameters_get_resource (LmAuthParameters *params);
 
 LmAuthParameters * lm_auth_parameters_ref          (LmAuthParameters *params);
 void               lm_auth_parameters_unref        (LmAuthParameters *params);
+
+LmConnectParameters * lm_connect_parameters_new        (const gchar            *domain,
+                                                        const gchar            *host,
+                                                        guint                   port);
+
+const gchar *         lm_connect_parameters_get_domain (LmConnectParameters *params);
+const gchar *         lm_connect_parameters_get_host   (LmConnectParameters *params);
+guint                 lm_connect_parameters_get_port   (LmConnectParameters *params);
+
+LmConnectParameters * lm_connect_parameters_ref        (LmConnectParameters *params);
+void                  lm_connect_parameters_unref      (LmConnectParameters *params);
