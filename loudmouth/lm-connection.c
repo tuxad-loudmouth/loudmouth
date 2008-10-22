@@ -1311,8 +1311,7 @@ lm_connection_open (LmConnection      *connection,
 gboolean
 lm_connection_open_and_block (LmConnection *connection, GError **error)
 {
-    gboolean          result;
-    LmConnectionState state;
+    gboolean result;
     
     g_return_val_if_fail (connection != NULL, FALSE);
 
@@ -1325,7 +1324,7 @@ lm_connection_open_and_block (LmConnection *connection, GError **error)
         return FALSE;
     }
         
-    while ((state = lm_connection_get_state (connection)) == LM_CONNECTION_STATE_OPENING) {
+    while (lm_connection_get_state (connection) == LM_CONNECTION_STATE_OPENING) {
         if (g_main_context_pending (connection->context)) {
             g_main_context_iteration (connection->context, TRUE);
         } else {
