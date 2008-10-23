@@ -505,7 +505,7 @@ _lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
         return socket_do_connect (connect_data);
     }
 
-    lm_old_socket_unref(socket);
+    lm_old_socket_unref (socket);
 
     return FALSE;
 }
