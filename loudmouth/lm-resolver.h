@@ -65,13 +65,6 @@ typedef void (*LmResolverCallback) (LmResolver       *resolver,
 GType             lm_resolver_get_type          (void);
 LmResolver *      lm_resolver_new               (GMainContext       *context);
 
-
-void              lm_resolver_lookup_host       (LmResolver         *resolver,
-                                                 const gchar        *host);
-void              lm_resolver_lookup_srv        (LmResolver         *resolver,
-                                                 const gchar        *srv);
-
-
 LmResolver *      lm_resolver_new_for_host      (const gchar        *host,
                                                  LmResolverCallback  callback,
                                                  gpointer            user_data);

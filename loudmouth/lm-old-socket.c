@@ -49,11 +49,6 @@
 #include "lm-sock.h"
 #include "lm-old-socket.h"
 
-#ifdef HAVE_ASYNCNS
-#include <asyncns.h>
-#define freeaddrinfo(x) asyncns_freeaddrinfo(x)
-#endif
-
 #define IN_BUFFER_SIZE 1024
 #define SRV_LEN 8192
 
@@ -93,13 +88,6 @@ struct _LmOldSocket {
     guint              ref_count;
 
     LmResolver        *resolver;
-
-#ifdef HAVE_ASYNCNS
-    GSource           *watch_resolv;
-    asyncns_query_t   *resolv_query;
-    asyncns_t         *asyncns_ctx;
-    GIOChannel        *resolv_channel;
-#endif
 }; 
 
 static void         socket_free                    (LmOldSocket    *socket);
@@ -764,6 +752,32 @@ socket_close_io_channel (GIOChannel *io_channel)
     _lm_sock_close (fd);
 }
 
+static void
+old_socket_resolver_host_cb (LmResolver       *resolver,
+                             LmResolverResult  result,
+                             gpointer          user_data)
+{
+    LmOldSocket *socket = (LmOldSocket *) user_data;
+
+    if (result != LM_RESOLVER_RESULT_OK) {
+        lm_verbose ("error while resolving, bailing out\n");
+        if (socket->connect_func) {
+            (socket->connect_func) (socket, FALSE, socket->user_data);
+        }
+        g_object_unref (socket->resolver);
+        socket->resolver = NULL;
+        g_free (socket->connect_data);
+        socket->connect_data = NULL;
+
+        return;
+    }
+
+    socket->connect_data->current_addr = 
+        lm_resolver_results_get_next (resolver);
+
+    socket_do_connect (socket->connect_data);
+}
+
 /* FIXME: Need to have a way to only get srv reply and then decide if the 
  *        resolver should continue to look the host up. 
  *
@@ -791,40 +805,17 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
     } else {
         remote_addr = socket->server;
     }
+    
+    g_object_unref (socket->resolver);
+    
+    socket->resolver = 
+            lm_resolver_new_for_host (remote_addr,
+                                      old_socket_resolver_host_cb,
+                                      socket);
        
-    g_object_set (resolver, 
-                  "host", remote_addr, 
-                  "type", LM_RESOLVER_HOST,
-                  NULL);
-       
-    lm_resolver_lookup (resolver);
+    lm_resolver_lookup (socket->resolver);
 }
 
-static void
-old_socket_resolver_host_cb (LmResolver       *resolver,
-                             LmResolverResult  result,
-                             gpointer          user_data)
-{
-    LmOldSocket *socket = (LmOldSocket *) user_data;
-
-    if (result != LM_RESOLVER_RESULT_OK) {
-        lm_verbose ("error while resolving, bailing out\n");
-        if (socket->connect_func) {
-            (socket->connect_func) (socket, FALSE, socket->user_data);
-        }
-        g_object_unref (socket->resolver);
-        socket->resolver = NULL;
-        g_free (socket->connect_data);
-        socket->connect_data = NULL;
-
-        return;
-    }
-
-    socket->connect_data->current_addr = 
-        lm_resolver_results_get_next (resolver);
-
-    socket_do_connect (socket->connect_data);
-}
 
 LmOldSocket *
 lm_old_socket_create (GMainContext      *context,

@@ -229,7 +229,7 @@ asyncns_resolver_srv_done (LmResolver *resolver)
 {
     LmAsyncnsResolverPriv *priv = GET_PRIV (resolver);
     unsigned char         *srv_ans;
-    int                srv_len;
+    int                    srv_len;
     gboolean               result = FALSE;
 
     g_print ("srv_done callback\n");
@@ -266,9 +266,11 @@ asyncns_resolver_srv_done (LmResolver *resolver)
     }
 
     asyncns_resolver_cleanup (resolver);
-
+    
     if (result == TRUE) {
-        asyncns_resolver_lookup_host (resolver);
+        g_object_ref (resolver);
+        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK, NULL);
+        g_object_unref (resolver);
     }
 }
 
@@ -281,7 +283,6 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
     gchar                 *protocol;
     gchar                 *srv;
 
-
     g_object_get (resolver,
                   "domain", &domain,
                   "service", &service,
@@ -290,7 +291,7 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
         
     srv = _lm_resolver_create_srv_string (domain, service, protocol);
         
-    g_print ("Looking up service: %s %s %s\n[%s]", domain, service, protocol, srv);
+    g_print ("ASYNCNS: Looking up service: %s %s %s\n[%s]", domain, service, protocol, srv);
 
     if (!asyncns_resolver_prep (resolver, /* Use GError? */ NULL)) {
         g_warning ("Failed to initiate the asyncns library");

@@ -276,7 +276,7 @@ lm_resolver_new (GMainContext *context)
 {
     LmResolver *resolver;
 
-#if HAVE_ASYNCNS
+#ifdef HAVE_ASYNCNS
     resolver = g_object_new (LM_TYPE_ASYNCNS_RESOLVER, NULL);
 #else
     resolver = g_object_new (LM_TYPE_BLOCKING_RESOLVER, NULL);
@@ -285,6 +285,16 @@ lm_resolver_new (GMainContext *context)
     g_object_set (resolver, "context", context, NULL);
 
     return resolver;
+}
+
+static GType
+resolver_get_gtype (void)
+{
+#ifdef HAVE_ASYNCNS
+    return LM_TYPE_ASYNCNS_RESOLVER;
+#else
+    return LM_TYPE_BLOCKING_RESOLVER;
+#endif /* HAVE_ASYNCNS */
 }
 
 LmResolver *
@@ -298,7 +308,7 @@ lm_resolver_new_for_host (const gchar        *host,
     g_return_val_if_fail (host != NULL, NULL);
     g_return_val_if_fail (callback != NULL, NULL);
 
-    resolver =  g_object_new (LM_TYPE_ASYNCNS_RESOLVER,
+    resolver =  g_object_new (resolver_get_gtype (),
                               "type", LM_RESOLVER_HOST,
                               "host", host,
                               NULL);
@@ -326,7 +336,7 @@ lm_resolver_new_for_service (const gchar        *domain,
     g_return_val_if_fail (protocol != NULL, NULL);
     g_return_val_if_fail (callback != NULL, NULL);
 
-    resolver = g_object_new (LM_TYPE_ASYNCNS_RESOLVER, 
+    resolver = g_object_new (resolver_get_gtype (),
                              "type", LM_RESOLVER_SRV,
                              "domain", domain,
                              "service", service,
@@ -350,14 +360,6 @@ lm_resolver_lookup (LmResolver *resolver)
 
     LM_RESOLVER_GET_CLASS(resolver)->lookup (resolver);
 }
-
-void
-lm_resolver_lookup_host (LmResolver *resolver, const gchar *host)
-{}
-
-void
-lm_resolver_lookup_srv (LmResolver *resolver, const gchar *srv)
-{}
 
 void
 lm_resolver_cancel (LmResolver *resolver)

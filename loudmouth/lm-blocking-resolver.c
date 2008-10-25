@@ -110,6 +110,10 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
     if (err != 0) {
         /* FIXME: Report error */
         g_print ("ERROR: %d in %s\n", err, G_STRFUNC);
+        
+        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
+                                 NULL);
+        
         return;
     }
 
@@ -117,6 +121,11 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
         /* Couldn't find any results */
         /* FIXME: Report no results  */
         g_print ("No results in %s\n", G_STRFUNC);
+        
+        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
+                                 NULL);
+
+        return;
     }
 
     /* FIXME: How to set and iterate the results */
@@ -173,8 +182,12 @@ blocking_resolver_lookup_service (LmBlockingResolver *resolver)
                   "port", new_port,
                   NULL);
 
+    g_object_ref (resolver);
+    _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK, NULL);
+    g_object_unref (resolver);
+
     /* Lookup the new server and the new port */
-    blocking_resolver_lookup_host (resolver);
+   /* blocking_resolver_lookup_host (resolver); */
 
     g_free (new_server);
     g_free (srv);
