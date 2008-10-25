@@ -309,10 +309,10 @@ _lm_sock_addrinfo_get_error_str (int err)
     return _("The remote address could not be obtained ");
 }
 
-#ifdef USE_TCP_KEEPALIVES
 gboolean
 _lm_sock_set_keepalive (LmOldSocketT sock, int delay)
 {
+#ifdef USE_TCP_KEEPALIVES
     int opt;
 
     opt = 1;
@@ -334,10 +334,10 @@ _lm_sock_set_keepalive (LmOldSocketT sock, int delay)
     if (setsockopt (sock, IPPROTO_TCP, TCP_KEEPINTVL, &opt, sizeof (opt)) < 0) {
         return FALSE;
     }
+#endif /* USE_TCP_KEEPALIVES */
 
     return TRUE;
 }
-#endif /* USE_TCP_KEEPALIVES */
 
 gchar *
 _lm_sock_get_local_host (LmOldSocketT sock)
