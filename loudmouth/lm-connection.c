@@ -135,9 +135,6 @@ struct _LmConnection {
     guint              open_id;
     LmCallback        *open_cb;
 
-    gboolean           async_connect_waiting;
-    gboolean           blocking;
-
     gboolean           cancel_open;
     LmCallback        *auth_cb;
 
@@ -521,7 +518,6 @@ connection_do_open (LmConnection *connection, GError **error)
                                                (ConnectResultFunc) connection_socket_connect_cb,
                                                connection,
                                                connection,
-                                               connection->blocking,
                                                connection->server,
                                                domain,
                                                connection->port,
@@ -538,7 +534,6 @@ connection_do_open (LmConnection *connection, GError **error)
     lm_message_queue_attach (connection->queue, connection->context);
     
     connection->state = LM_CONNECTION_STATE_OPENING;
-    connection->async_connect_waiting = FALSE;
 
     return TRUE;
 }
@@ -557,12 +552,10 @@ connection_do_close (LmConnection *connection)
     if (!lm_connection_is_open (connection)) {
         /* lm_connection_is_open is FALSE for state OPENING as well */
         connection->state = LM_CONNECTION_STATE_CLOSED;
-        connection->async_connect_waiting = FALSE;
         return;
     }
     
     connection->state = LM_CONNECTION_STATE_CLOSED;
-    connection->async_connect_waiting = FALSE;
 
     if (connection->sasl) {
         lm_sasl_free (connection->sasl);
@@ -999,19 +992,6 @@ _lm_connection_get_server (LmConnection *conn)
     return server;
 }
 
-gboolean 
-_lm_connection_async_connect_waiting (LmConnection *connection)
-{
-    return connection->async_connect_waiting;
-}
-
-void
-_lm_connection_set_async_connect_waiting (LmConnection *connection,
-                                          gboolean      waiting)
-{
-    connection->async_connect_waiting = waiting;
-}
-
 static void
 connection_call_auth_cb (LmConnection *connection, gboolean success)
 {
@@ -1294,7 +1274,6 @@ lm_connection_open (LmConnection      *connection,
     
     connection->open_cb = _lm_utils_new_callback (function, 
                                                   user_data, notify);
-    connection->blocking = FALSE;
 
     return connection_do_open (connection, error);
 }
@@ -1316,7 +1295,6 @@ lm_connection_open_and_block (LmConnection *connection, GError **error)
     g_return_val_if_fail (connection != NULL, FALSE);
 
     connection->open_cb = NULL;
-    connection->blocking = TRUE;
 
     result = connection_do_open (connection, error);
 

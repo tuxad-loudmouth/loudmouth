@@ -66,11 +66,6 @@ gboolean         _lm_old_socket_failed_with_error (LmConnectData         *data,
                                                    int                    error);
 gboolean         _lm_old_socket_failed            (LmConnectData         *data);
 void             _lm_old_socket_succeeded         (LmConnectData         *data);
-gboolean 
-_lm_connection_async_connect_waiting          (LmConnection          *conn);
-void
-_lm_connection_set_async_connect_waiting      (LmConnection          *conn,
-                                               gboolean               waiting);
 
 LmCallback *     _lm_utils_new_callback       (gpointer               func, 
                                                gpointer               data,

@@ -65,8 +65,6 @@ struct _LmOldSocket {
     gchar             *server;
     guint              port;
 
-    gboolean           blocking;
-
     LmSSL             *ssl;
     gboolean           ssl_started;
     LmProxy           *proxy;
@@ -549,6 +547,7 @@ socket_connect_cb (GIOChannel   *source,
         }
     }
 
+#if 0
     if (_lm_connection_async_connect_waiting (socket->connection)) {
         gint res;
 
@@ -578,7 +577,9 @@ socket_connect_cb (GIOChannel   *source,
                 goto out;
             }
         } 
-    } else {        
+    } else {
+#endif
+    {        
         /* for blocking sockets, G_IO_OUT means we are connected */
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "Connection success (2).\n");
@@ -650,8 +651,6 @@ socket_do_connect (LmConnectData *connect_data)
     
     g_io_channel_set_encoding (connect_data->io_channel, NULL, NULL);
     g_io_channel_set_buffered (connect_data->io_channel, FALSE);
-
-    _lm_sock_set_blocking (connect_data->fd, socket->blocking);
     
     if (socket->proxy) {
         socket->watch_connect =
@@ -668,8 +667,6 @@ socket_do_connect (LmConnectData *connect_data)
                                   (GIOFunc) socket_connect_cb,
                                   connect_data);
     }
-
-    _lm_connection_set_async_connect_waiting (socket->connection, !socket->blocking);
 
     res = _lm_sock_connect (connect_data->fd, 
                             addr->ai_addr, (int)addr->ai_addrlen);  
@@ -836,7 +833,6 @@ lm_old_socket_create (GMainContext      *context,
                       ConnectResultFunc  connect_func,
                       gpointer           user_data,
                       LmConnection      *connection,
-                      gboolean           blocking,
                       const gchar       *server,
                       const gchar       *domain,
                       guint              port, 
@@ -865,7 +861,6 @@ lm_old_socket_create (GMainContext      *context,
     socket->ssl = ssl;
     socket->ssl_started = FALSE;
     socket->proxy = NULL;
-    socket->blocking = blocking;
 
     if (context) {
         socket->context = g_main_context_ref (context);
