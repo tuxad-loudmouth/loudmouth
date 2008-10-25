@@ -430,7 +430,7 @@ _lm_resolver_set_result (LmResolver       *resolver,
     priv->result = result;
     priv->results = priv->current_result = results;
 
-    g_print ("Calling resolver callback\n");
+    lm_verbose ("Calling resolver callback: %s\n", priv->host);
 
     priv->callback (resolver, result, priv->user_data);
 }

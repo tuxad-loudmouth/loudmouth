@@ -759,6 +759,8 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
 {
     LmOldSocket *socket = (LmOldSocket *) user_data;
 
+    lm_verbose ("LmOldSocket::host_cb (result=%d)\n", result);
+
     if (result != LM_RESOLVER_RESULT_OK) {
         lm_verbose ("error while resolving, bailing out\n");
         if (socket->connect_func) {
@@ -791,6 +793,8 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
 {
     LmOldSocket *socket = (LmOldSocket *) user_data;
     const gchar *remote_addr;
+    
+    lm_verbose ("LmOldSocket::srv_cb (result=%d)\n", result);
 
     if (result != LM_RESOLVER_RESULT_OK) {
         lm_verbose ("SRV lookup failed, trying jid domain\n");
