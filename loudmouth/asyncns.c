@@ -41,6 +41,12 @@
 #include <resolv.h>
 #include <dirent.h>
 
+/* Needed on Mac OS X where it is not included from arpa/nameser.h */
+#if HAVE_ARPA_NAMESER_COMPAT_H
+#include <arpa/nameser_compat.h>
+#endif
+
+
 #ifdef HAVE_SYS_PRCTL_H
 #include <sys/prctl.h>
 #endif
@@ -197,7 +203,6 @@ static char *strndup(const char *s, size_t l) {
 static int close_allv(const int except_fds[]) {
     struct rlimit rl;
     int fd;
-    int saved_errno;
 
 #ifdef __linux__
 
@@ -289,7 +294,7 @@ static int reset_sigsv(const int except[]) {
     int sig;
     assert(except);
 
-    for (sig = 1; sig < _NSIG; sig++) {
+    for (sig = 1; sig < NSIG; sig++) {
         int reset = 1;
 
         switch (sig) {
