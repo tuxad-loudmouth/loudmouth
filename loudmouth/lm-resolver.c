@@ -32,6 +32,7 @@
 
 #include "lm-asyncns-resolver.h"
 #include "lm-blocking-resolver.h"
+#include "lm-debug.h"
 #include "lm-internals.h"
 #include "lm-marshal.h"
 #include "lm-resolver.h"

@@ -820,7 +820,6 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
     lm_resolver_lookup (socket->resolver);
 }
 
-
 LmOldSocket *
 lm_old_socket_create (GMainContext      *context,
                       IncomingDataFunc   data_func,
