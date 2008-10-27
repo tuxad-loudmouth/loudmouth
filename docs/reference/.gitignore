@@ -2,6 +2,7 @@ html-build.stamp
 html.stamp
 loudmouth-decl-list.txt
 loudmouth-decl.txt
+loudmouth-undeclared.txt
 loudmouth-undocumented.txt
 loudmouth-unused.txt
 loudmouth.args
