@@ -640,6 +640,8 @@ socket_do_connect (LmConnectData *connect_data)
     g_io_channel_set_encoding (connect_data->io_channel, NULL, NULL);
     g_io_channel_set_buffered (connect_data->io_channel, FALSE);
     
+    _lm_sock_set_blocking (connect_data->fd, FALSE);
+	
     if (socket->proxy) {
         socket->watch_connect =
             lm_misc_add_io_watch (socket->context,
