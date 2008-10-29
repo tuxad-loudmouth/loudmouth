@@ -254,8 +254,8 @@ socket_in_event (GIOChannel   *source,
         return FALSE;
     }
 
-    while ((condition & G_IO_IN) && socket_read_incoming (socket, buf, IN_BUFFER_SIZE, 
-                                                          &bytes_read, &hangup, &reason)) {
+    while (socket_read_incoming (socket, buf, IN_BUFFER_SIZE, 
+                                 &bytes_read, &hangup, &reason)) {
         
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "\nRECV [%d]:\n", 
                (int)bytes_read);
@@ -270,8 +270,6 @@ socket_in_event (GIOChannel   *source,
         (socket->data_func) (socket, buf, socket->user_data);
 
         read_anything = TRUE;
-
-        condition = g_io_channel_get_buffer_condition (socket->io_channel);
     }
 
     /* If we have read something, delay the hangup so that the data can be
