@@ -21,7 +21,7 @@ gtk-doc (optional, if you want documentation built):
 ftp://ftp.gnome.org/pub/GNOME/sources/gtk-doc/1.0
 
 If you want SSL-support you'll also need:
-GnuTLS >= 1.2.0 with libtasn support.
+GnuTLS >= 1.4.0 with libtasn support.
 
 If you want to run the unit tests, you'll also need:
 Check
@@ -62,7 +62,7 @@ Questions, remarks, bug reports:
 
 See the web page for more information and issue reporting.
 
-http://projects.imendio.com/loudmouth
+http://www.loudmouth-project.org/
 
 Questions and others can be sent to me at:
 email: micke@imendio.com
