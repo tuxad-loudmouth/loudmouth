@@ -204,6 +204,8 @@ socket_read_incoming (LmSocket *socket,
 			break;
 		case G_IO_STATUS_AGAIN:
 			/* No data readable but we didn't hangup */
+			/* No need to do anything since we will get a new in_event when data is 
+			 * available or writable. */
 			return FALSE;
 			break;
 		case G_IO_STATUS_ERROR:
@@ -225,6 +227,22 @@ socket_read_incoming (LmSocket *socket,
 	return TRUE;
 }
 
+/* 
+ * When a non-blocking socket is used we will simply try to read again but when using a blocking socket
+ * it means that the read operation will block in case there is no data available. 
+ * This function checks if the socket is in blocking mode and checks the IO Condition to see whether there
+ * is more data to be read before trying to read again
+ */
+static gboolean
+socket_attempt_another_read (LmSocket *socket, GIOCondition condition)
+{
+	if (socket->blocking) {
+		return (condition & G_IO_IN); 
+	}
+
+	return TRUE;
+}
+
 static gboolean
 socket_in_event (GIOChannel   *source,
 		     GIOCondition  condition,
@@ -240,7 +258,8 @@ socket_in_event (GIOChannel   *source,
 		return FALSE;
 	}
 
-	while ((condition & G_IO_IN) && socket_read_incoming (socket, buf, IN_BUFFER_SIZE, 
+	while (socket_attempt_another_read (socket, condition) && 
+	       socket_read_incoming (socket, buf, IN_BUFFER_SIZE, 
 				     &bytes_read, &hangup, &reason)) {
 		
 		g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "\nRECV [%d]:\n", 
