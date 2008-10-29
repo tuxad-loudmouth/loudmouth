@@ -20,11 +20,11 @@ Represents a message that can be sent with lm_connection_send(), lm_connection_s
 
 <!-- ##### STRUCT LmMessage ##### -->
 <para>
-Struct 
+The LmMessage struct 
 </para>
 
-@node: 
-@priv: 
+@node: The root node of the message, you can also use lm_message_get_node() to retrieve this.
+@priv: A pointer to message private data. Should never be touched from application code.
 
 <!-- ##### ENUM LmMessageType ##### -->
 <para>
@@ -36,14 +36,14 @@ Describes what type of message a message is. This maps directly to top level ele
 @LM_MESSAGE_TYPE_IQ: an info/query element, <iq/>
 @LM_MESSAGE_TYPE_STREAM: the stream:stream element, you probably don't need to create a message of this type.
 @LM_MESSAGE_TYPE_STREAM_ERROR: a stream:error element
-@LM_MESSAGE_TYPE_STREAM_FEATURES: 
-@LM_MESSAGE_TYPE_AUTH: 
-@LM_MESSAGE_TYPE_CHALLENGE: 
-@LM_MESSAGE_TYPE_RESPONSE: 
-@LM_MESSAGE_TYPE_SUCCESS: 
-@LM_MESSAGE_TYPE_FAILURE: 
-@LM_MESSAGE_TYPE_PROCEED: 
-@LM_MESSAGE_TYPE_STARTTLS: 
+@LM_MESSAGE_TYPE_STREAM_FEATURES: Internal
+@LM_MESSAGE_TYPE_AUTH: Internal
+@LM_MESSAGE_TYPE_CHALLENGE: Internal
+@LM_MESSAGE_TYPE_RESPONSE: Internal
+@LM_MESSAGE_TYPE_SUCCESS: Internal
+@LM_MESSAGE_TYPE_FAILURE: Internal
+@LM_MESSAGE_TYPE_PROCEED: Internal
+@LM_MESSAGE_TYPE_STARTTLS: Internal
 @LM_MESSAGE_TYPE_UNKNOWN: incoming message is of some unknown type.
 
 <!-- ##### ENUM LmMessageSubType ##### -->
@@ -53,7 +53,7 @@ Describes the sub type of a message. This is equal to the "type" attribute in th
 
 @LM_MESSAGE_SUB_TYPE_NOT_SET: the default. No "type" attribute will be sent.
 @LM_MESSAGE_SUB_TYPE_AVAILABLE: presence is available, applies to message type "presence"
-@LM_MESSAGE_SUB_TYPE_NORMAL: 
+@LM_MESSAGE_SUB_TYPE_NORMAL: a normal message.
 @LM_MESSAGE_SUB_TYPE_CHAT: message is a chat message, applies to message type "message"
 @LM_MESSAGE_SUB_TYPE_GROUPCHAT: message is a group chat message, applies to message type "message"
 @LM_MESSAGE_SUB_TYPE_HEADLINE: message is a headline message, applies to message type "message"

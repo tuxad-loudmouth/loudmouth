@@ -6,7 +6,7 @@ Error reporting.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+N/A
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -33,7 +33,7 @@ Describes the problem of the error.
 @LM_ERROR_CONNECTION_NOT_OPEN: Connection not open when trying to send a message
 @LM_ERROR_CONNECTION_OPEN: Connection is already open when trying to open it again.
 @LM_ERROR_AUTH_FAILED: Authentication failed while opening connection
-@LM_ERROR_CONNECTION_FAILED: 
+@LM_ERROR_CONNECTION_FAILED: Connection failed to open.
 
 <!-- ##### MACRO LM_ERROR ##### -->
 <para>

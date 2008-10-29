@@ -107,6 +107,9 @@ LmSSLFunction
 lm_ssl_new
 lm_ssl_is_supported
 lm_ssl_get_fingerprint
+lm_ssl_use_starttls
+lm_ssl_get_use_starttls
+lm_ssl_get_require_starttls
 lm_ssl_ref
 lm_ssl_unref
 </SECTION>

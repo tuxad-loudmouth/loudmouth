@@ -172,6 +172,8 @@ lm_ssl_ref (LmSSL *ssl)
 /**
  * lm_ssl_use_starttls:
  * @ssl: an #LmSSL
+ * @use_starttls: #TRUE if STARTTLS should be used.
+ * @require_starttls: #TRUE if STARTTLS should be required.
  *
  * Set whether STARTTLS should be used.
  **/
@@ -189,8 +191,11 @@ lm_ssl_use_starttls (LmSSL *ssl,
 
 /**
  * lm_ssl_get_use_starttls:
+ * @ssl: an #LmSSL
  *
- * Return value: TRUE is @ssl is configured to use STARTTLS.
+ * Fetches whether STARTTLS is used.
+ *
+ * Return value: #TRUE is @ssl is configured to use STARTTLS.
  **/
 gboolean
 lm_ssl_get_use_starttls (LmSSL *ssl)
@@ -203,8 +208,11 @@ lm_ssl_get_use_starttls (LmSSL *ssl)
 
 /**
  * lm_ssl_get_require_starttls:
+ * @ssl: an #LmSSL
  *
- * Return value: TRUE if @ssl requires that STARTTLS succeed.
+ * Fetches whether STARTTLS is required.
+ *
+ * Return value: #TRUE if @ssl requires that STARTTLS succeed.
  **/
 gboolean
 lm_ssl_get_require_starttls (LmSSL *ssl)

@@ -128,7 +128,7 @@ _lm_message_node_add_child_node (LmMessageNode *node, LmMessageNode *child)
  * 
  * Retrieves the value of @node.
  * 
- * Return value: 
+ * Return value: The value of the node or %NULL.
  **/
 const gchar *
 lm_message_node_get_value (LmMessageNode *node)

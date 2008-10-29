@@ -1551,7 +1551,9 @@ lm_connection_authenticate_and_block (LmConnection  *connection,
  *
  * Get the keep alive rate, in seconds. Zero is returned if no keep alive rate has been set.
  *
- * Since 1.3.5
+ * Since 1.4.0
+ *
+ * Return value: The keep alive rate in seconds.
  **/
 guint
 lm_connection_get_keep_alive_rate (LmConnection *connection)
@@ -1720,7 +1722,7 @@ lm_connection_set_jid (LmConnection *connection, const gchar *jid)
  * 
  * Fetches the port that @connection is using.
  * 
- * Return value: 
+ * Return value: The port used.
  **/
 guint
 lm_connection_get_port (LmConnection *connection)

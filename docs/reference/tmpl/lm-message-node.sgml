@@ -6,7 +6,7 @@ A node in the message tree
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Represents a node in the #LmMessage tree. These map to XML nodes in the XMPP protocol.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

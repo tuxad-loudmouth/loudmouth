@@ -22,6 +22,13 @@
 #include <glib/gerror.h>
 #include "lm-error.h"
 
+/**
+ * lm_error_quark:
+ *
+ * Returns the Loudmouth #GError domain quark.
+ * 
+ * Return value: The Loudmouth domain quark used by #GError.
+ */
 GQuark
 lm_error_quark (void)
 {

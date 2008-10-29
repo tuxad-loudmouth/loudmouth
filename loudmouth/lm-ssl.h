@@ -67,7 +67,7 @@ const gchar *         lm_ssl_get_fingerprint (LmSSL          *ssl);
 
 void                  lm_ssl_use_starttls    (LmSSL *ssl,
 					      gboolean use_starttls,
-					      gboolean require);
+					      gboolean require_starttls);
 
 gboolean              lm_ssl_get_use_starttls (LmSSL *ssl);
 

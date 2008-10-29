@@ -102,6 +102,34 @@ This function is called if something goes wrong during the connecting phase.
 @Returns: 
 
 
+<!-- ##### FUNCTION lm_ssl_use_starttls ##### -->
+<para>
+
+</para>
+
+@ssl: 
+@use_starttls: 
+@require_starttls: 
+
+
+<!-- ##### FUNCTION lm_ssl_get_use_starttls ##### -->
+<para>
+
+</para>
+
+@ssl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lm_ssl_get_require_starttls ##### -->
+<para>
+
+</para>
+
+@ssl: 
+@Returns: 
+
+
 <!-- ##### FUNCTION lm_ssl_ref ##### -->
 <para>
 

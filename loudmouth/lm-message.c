@@ -288,7 +288,7 @@ lm_message_get_type (LmMessage *message)
 
 /**
  * lm_message_get_sub_type:
- * @message: 
+ * @message: an #LmMessage
  * 
  * Fetches the sub type of @message.
  * 
