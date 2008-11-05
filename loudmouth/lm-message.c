@@ -231,10 +231,12 @@ lm_message_new (const gchar *to, LmMessageType type)
     
     m->node = _lm_message_node_new (_lm_message_type_to_string (type));
 
-    id = _lm_utils_generate_id ();
-    lm_message_node_set_attribute (m->node, "id", id);
-    g_free (id);
-    
+    if (type != LM_MESSAGE_TYPE_STREAM) {
+        id = _lm_utils_generate_id ();
+        lm_message_node_set_attribute (m->node, "id", id);
+        g_free (id);
+    }
+
     if (to) {
         lm_message_node_set_attribute (m->node, "to", to);
     }
