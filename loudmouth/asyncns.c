@@ -256,6 +256,7 @@ static int close_allv(const int except_fds[]) {
                 continue;
 
             if (close(fd) < 0) {
+                int saved_errno;
                 saved_errno = errno;
                 closedir(d);
                 errno = saved_errno;
