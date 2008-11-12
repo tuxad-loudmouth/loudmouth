@@ -182,8 +182,6 @@ asyncns_resolver_prep (LmResolver *resolver, GError **error)
 
     g_object_get (resolver, "context", &context, NULL);
         
-    g_print ("Setting up io watch\n");
-
     priv->watch_resolv = 
         lm_misc_add_io_watch (context,
                               priv->resolv_channel,
