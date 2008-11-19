@@ -117,39 +117,41 @@ sasl_gssapi_fail (LmSASL     *sasl,
                   guint32     major_status,
                   guint32     minor_status)
 {
-    guint32 err_major_status, err_minor_status;
-    guint32	msg_ctx = 0;
-    gss_buffer_desc major_status_string = GSS_C_EMPTY_BUFFER,
-                    minor_status_string = GSS_C_EMPTY_BUFFER;
+    guint32         err_major_status;
+    guint32         err_minor_status;
+    guint32         msg_ctx = 0;
+    gss_buffer_desc major_status_string = GSS_C_EMPTY_BUFFER;
+    gss_buffer_desc minor_status_string = GSS_C_EMPTY_BUFFER;
 
     err_major_status = gss_display_status (&err_minor_status, major_status,
                                            GSS_C_GSS_CODE, GSS_C_NO_OID, 
                                            &msg_ctx, &major_status_string);
 
-    if (!GSS_ERROR(err_major_status))
+    if (!GSS_ERROR(err_major_status)) {
         err_major_status = gss_display_status (&err_minor_status, minor_status,
                                                GSS_C_MECH_CODE, GSS_C_NULL_OID,
                                                &msg_ctx, &minor_status_string);
+    }
 
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, "GSSAPI: %s: %s, %s", message,
            (char *)major_status_string.value,
            (char *)minor_status_string.value);
 
     if (sasl->handler) {
-        sasl->handler (sasl, sasl->connection,
-                       FALSE, "GSSAPI failure");
+        sasl->handler (sasl, sasl->connection, FALSE, "GSSAPI failure");
     }
 
-    gss_release_buffer(&err_minor_status, &major_status_string);
-    gss_release_buffer(&err_minor_status, &minor_status_string);
+    gss_release_buffer (&err_minor_status, &major_status_string);
+    gss_release_buffer (&err_minor_status, &minor_status_string);
 }
 
 static gss_name_t
 sasl_gssapi_get_creds (LmSASL *sasl)
 {
     gss_buffer_desc token = GSS_C_EMPTY_BUFFER;
-    gss_name_t service_name = GSS_C_NO_NAME;
-    guint32 major_status, minor_status;
+    gss_name_t      service_name = GSS_C_NO_NAME;
+    guint32         major_status;
+    guint32         minor_status;
 
     token.value	= g_strdup_printf ("xmpp@%s", sasl->server);
     token.length = strlen ((char *)token.value);
@@ -162,8 +164,7 @@ sasl_gssapi_get_creds (LmSASL *sasl)
                                     GSS_C_NT_HOSTBASED_SERVICE,
                                     &service_name);
 
-    if (GSS_ERROR(major_status))
-    {
+    if (GSS_ERROR(major_status)) {
         sasl_gssapi_fail (sasl, "while obtaining service principal",
                           major_status, minor_status);
         return GSS_C_NO_NAME;
@@ -175,12 +176,13 @@ sasl_gssapi_get_creds (LmSASL *sasl)
 static gboolean
 sasl_gssapi_start (LmSASL *sasl, LmMessageNode *node)
 {
-    gchar *response64;
-    gss_buffer_desc input_buffer_desc;
-    gss_buffer_t input_buffer;
-    gss_buffer_desc output_buffer_desc;
-    gss_buffer_t output_buffer;
-    guint32 major_status, minor_status;
+    gchar           *response64;
+    gss_buffer_desc  input_buffer_desc;
+    gss_buffer_t     input_buffer;
+    gss_buffer_desc  output_buffer_desc;
+    gss_buffer_t     output_buffer;
+    guint32          major_status;
+    guint32          minor_status;
 
     sasl->gss_ctx = GSS_C_NO_CONTEXT;
     sasl->gss_service = sasl_gssapi_get_creds (sasl);
@@ -219,8 +221,9 @@ sasl_gssapi_start (LmSASL *sasl, LmMessageNode *node)
         return FALSE;
     }
 
-    if (major_status != GSS_S_CONTINUE_NEEDED)
+    if (major_status != GSS_S_CONTINUE_NEEDED) {
         sasl->state = SASL_AUTH_STATE_GSSAPI_SENT_AUTH_RESPONSE;
+    }
 
     response64 = g_base64_encode ((const guchar *) output_buffer_desc.value,
                                   (gsize) output_buffer_desc.length);
@@ -235,15 +238,16 @@ sasl_gssapi_start (LmSASL *sasl, LmMessageNode *node)
 static gboolean
 sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
 {
-    const gchar *encoded;
-    gchar *response64;
-    gss_buffer_t input_buffer;
-    gss_buffer_desc input_buffer_desc;
-    gss_buffer_t output_buffer;
-    gss_buffer_desc output_buffer_desc;
-    guint32 major_status, minor_status;
-    gboolean result;
-    LmMessage *msg;
+    const gchar     *encoded;
+    gchar           *response64;
+    gss_buffer_t     input_buffer;
+    gss_buffer_desc  input_buffer_desc;
+    gss_buffer_t     output_buffer;
+    gss_buffer_desc  output_buffer_desc;
+    guint32          major_status;
+    guint32          minor_status;
+    gboolean         result;
+    LmMessage       *msg;
 
     encoded = lm_message_node_get_value (node);
     if (encoded == NULL) {
@@ -253,6 +257,7 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
         input_buffer_desc.value = base64_decode (encoded,
                                                  &input_buffer_desc.length);
     }
+
     input_buffer = &input_buffer_desc;
 
     output_buffer_desc.value = NULL;
@@ -280,12 +285,14 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
             return FALSE;
         }
 
-        if (major_status != GSS_S_CONTINUE_NEEDED)
+        if (major_status != GSS_S_CONTINUE_NEEDED) {
             sasl->state = SASL_AUTH_STATE_GSSAPI_SENT_AUTH_RESPONSE;
+        }
 
         major_status = gss_release_buffer (&minor_status, input_buffer);
-        if (major_status != GSS_S_COMPLETE)
+        if (major_status != GSS_S_COMPLETE) {
             return FALSE;
+        }
     } else if (sasl->state == SASL_AUTH_STATE_GSSAPI_SENT_AUTH_RESPONSE) {
         gchar *features;
 
@@ -300,12 +307,14 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
         }
 
         major_status = gss_release_buffer (&minor_status, input_buffer);
-        if (major_status != GSS_S_COMPLETE)
+        if (major_status != GSS_S_COMPLETE) {
             return FALSE;
+        }
 
         major_status = gss_release_buffer (&minor_status, output_buffer);
-        if (major_status != GSS_S_COMPLETE)
+        if (major_status != GSS_S_COMPLETE) {
             return FALSE;
+        }
 
         input_buffer_desc.length = 4 + strlen(sasl->username);
         features = g_malloc (input_buffer_desc.length);
@@ -373,11 +382,14 @@ sasl_gssapi_finish (LmSASL *sasl, LmMessageNode *node)
 {
     OM_uint32 major_status, minor_status;
 
-    if (sasl->gss_service != GSS_C_NO_NAME)
+    if (sasl->gss_service != GSS_C_NO_NAME) {
         major_status = gss_release_name (&minor_status, &sasl->gss_service);
-    if (sasl->gss_ctx != GSS_C_NO_CONTEXT)
+    } 
+
+    if (sasl->gss_ctx != GSS_C_NO_CONTEXT) {
         major_status = gss_delete_sec_context (&minor_status, &sasl->gss_ctx,
                                                GSS_C_NO_BUFFER);
+    }
 
     return TRUE;
 }
@@ -945,7 +957,7 @@ sasl_start (LmSASL *sasl)
 #ifdef HAVE_GSSAPI
     else if (sasl->auth_type == AUTH_TYPE_GSSAPI) {
         mech = "GSSAPI";
-        sasl_gssapi_start(sasl, auth_msg->node);
+        sasl_gssapi_start (sasl, auth_msg->node);
     }
 #endif
 
