@@ -382,6 +382,7 @@ static int process_worker(int in_fd, int out_fd) {
     int have_death_sig = 0;
     assert(in_fd > 2);
     assert(out_fd > 2);
+    int no_warn;
     
     close(0);
     close(1);
@@ -391,7 +392,7 @@ static int process_worker(int in_fd, int out_fd) {
     open("/dev/null", O_WRONLY);
     open("/dev/null", O_WRONLY);
 
-    chdir("/");
+    no_warn = chdir("/");
 
     if (geteuid() == 0) {
         struct passwd *pw;
