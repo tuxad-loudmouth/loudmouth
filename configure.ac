@@ -126,6 +126,20 @@ AC_CHECK_LIB(socket,socket)
 AC_CHECK_LIB(resolv,res_query)
 
 dnl +--------------------------------------------------------+
+dnl | Checking for SASL GSSAPI support                       |-
+dnl +--------------------------------------------------------+
+AC_PATH_PROG(KRB5CONFIG, krb5-config, no)
+enable_gssapi=no
+if test "x$KRB5CONFIG" != "xno"
+then
+	AC_CHECK_HEADERS([gssapi.h gssapi/gssapi.h])
+	enable_gssapi=yes
+	AC_DEFINE(HAVE_GSSAPI, 1, [whether to use GSSAPI support.])
+	LIBS="$LIBS `$KRB5CONFIG --libs gssapi`"
+fi
+AM_CONDITIONAL(USE_GSSAPI, test x$enable_gssapi = xyes)
+
+dnl +--------------------------------------------------------+
 dnl | Checking for SSL support                               |-
 dnl +--------------------------------------------------------+
 AC_ARG_WITH(ssl,
@@ -283,6 +297,7 @@ echo "
 	Asynchronous DNS:         ${enable_asyncns}
 	Linux TCP keepalives:     ${use_keepalives}
 	Enable Debug:             ${enable_debug}
+	Enable GSSAPI:            ${enable_gssapi}
 	Enable Documentation      ${enable_gtk_doc}
 
 	Now type 'make' to build Loudmouth
