@@ -2,10 +2,8 @@ include $(top_srcdir)/build/Makefile.am.lm
 
 SUBDIRS = loudmouth docs examples tests
 
-EXTRA_DIST +=				\
+EXTRA_DIST +=			\
 	loudmouth-1.0.pc.in     \
-	loudmouth.spec          \
-	loudmouth.spec.in       \
 	CONTRIBUTORS            \
 	README.WIN32
 

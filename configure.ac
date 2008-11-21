@@ -281,8 +281,7 @@ loudmouth/Makefile
 examples/Makefile
 tests/Makefile
 tests/parser-tests/Makefile
-loudmouth-1.0.pc
-loudmouth.spec])
+loudmouth-1.0.pc])
 
 dnl ==========================================================================
 echo "
