@@ -76,12 +76,10 @@ libloudmouth_1_la_SOURCES =             \
 	lm-sock.c                           \
 	lm-old-socket.c                     \
 	lm-old-socket.h                     \
-										\
+  					\
 	lm-socket.c                         \
 	lm-socket.h                         \
-	lm-tcp-socket.c                     \
-	lm-tcp-socket.h                     \
-										\
+	\
 	lm-feature-ping.c                   \
 	lm-feature-ping.h                   \
 										\
