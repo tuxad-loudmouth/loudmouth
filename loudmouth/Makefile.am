@@ -40,6 +40,8 @@ libloudmouth_1_la_SOURCES =             \
 	lm-data-objects.h					\
 	lm-dummy.c                          \
 	lm-dummy.h                          \
+	lm-idummy.c                         \
+	lm-idummy.h                         \
 	lm-error.c                          \
 	lm-marshal.c                        \
 	lm-marshal.h                        \
