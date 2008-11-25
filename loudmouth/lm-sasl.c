@@ -254,7 +254,7 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
         input_buffer_desc.value = NULL;
         input_buffer_desc.length = 0;
     } else {
-        input_buffer_desc.value = base64_decode (encoded,
+        input_buffer_desc.value = g_base64_decode (encoded,
                                                  &input_buffer_desc.length);
     }
 
@@ -316,14 +316,14 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
             return FALSE;
         }
 
-        input_buffer_desc.length = 4 + strlen(sasl->username);
+        input_buffer_desc.length = 4 + strlen(lm_auth_parameters_get_username (sasl->auth_params));
         features = g_malloc (input_buffer_desc.length);
 
         features[0] = 1;
         features[1] = 0xFF;
         features[2] = 0xFF;
         features[3] = 0xFF;
-        strcpy(features+4, sasl->username);
+        strcpy(features+4, lm_auth_parameters_get_username (sasl->auth_params));
 
         input_buffer_desc.value = features;
         major_status = gss_wrap (&minor_status, sasl->gss_ctx,
