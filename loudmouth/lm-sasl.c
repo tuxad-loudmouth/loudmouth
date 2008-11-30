@@ -807,27 +807,27 @@ lm_sasl_free (LmSASL *sasl)
 	g_free (sasl->server);
 
 	if (sasl->features_cb) {
-		lm_connection_unregister_message_handler (sasl->connection,
-							  sasl->features_cb, 
-							  LM_MESSAGE_TYPE_STREAM_FEATURES);
+        lm_connection_unregister_message_handler (sasl->connection,
+                                                  sasl->features_cb, 
+                                                  LM_MESSAGE_TYPE_STREAM_FEATURES);
 	}
 
 	if (sasl->challenge_cb) {
 		lm_connection_unregister_message_handler (sasl->connection,
-							  sasl->challenge_cb,
-							  LM_MESSAGE_TYPE_CHALLENGE);
+                                                  sasl->challenge_cb,
+                                                  LM_MESSAGE_TYPE_CHALLENGE);
 	}
 
 	if (sasl->success_cb) {
 		lm_connection_unregister_message_handler (sasl->connection,
-							  sasl->success_cb,
-							  LM_MESSAGE_TYPE_SUCCESS);
+                                                  sasl->success_cb,
+                                                  LM_MESSAGE_TYPE_SUCCESS);
 	}
 
 	if (sasl->failure_cb) {
 		lm_connection_unregister_message_handler (sasl->connection,
-							  sasl->failure_cb,
-							  LM_MESSAGE_TYPE_FAILURE);
+                                                  sasl->failure_cb,
+                                                  LM_MESSAGE_TYPE_FAILURE);
 	}
 
 	g_free (sasl);

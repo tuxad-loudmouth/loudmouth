@@ -191,13 +191,21 @@ connection_free (LmConnection *connection)
 {
 	int        i;
 
+    /* This needs to be run before starting to free internal states.
+     * It used to be run after the handlers where freed which lead to a crash
+     * when the connection was freed prior to running lm_connection_close.
+     */
+    if (connection->state >= LM_CONNECTION_STATE_OPENING) {
+		connection_do_close (connection);
+	}
+
 	g_free (connection->server);
 	g_free (connection->jid);
 	g_free (connection->effective_jid);
 	g_free (connection->stream_id);
 	g_free (connection->resource);
 
-	if (connection->sasl) {
+  	if (connection->sasl) {
 		lm_sasl_free (connection->sasl);
 	}
 
@@ -218,13 +226,9 @@ connection_free (LmConnection *connection)
 
 		g_slist_free (connection->handlers[i]);
 	}
-
 	g_hash_table_destroy (connection->id_handlers);
-	if (connection->state >= LM_CONNECTION_STATE_OPENING) {
-		connection_do_close (connection);
-	}
 
-	if (connection->open_cb) {
+   	if (connection->open_cb) {
 		_lm_utils_free_callback (connection->open_cb);
 	}
 	
@@ -2030,11 +2034,11 @@ lm_connection_unregister_message_handler (LmConnection      *connection,
 	g_return_if_fail (handler != NULL);
 	g_return_if_fail (type != LM_MESSAGE_TYPE_UNKNOWN);
 
-	for (l = connection->handlers[type]; l; l = l->next) {
-		HandlerData *hd = (HandlerData *) l->data;
-		
+    for (l = connection->handlers[type]; l; l = l->next) {
+        HandlerData *hd = (HandlerData *) l->data;
+
 		if (handler == hd->handler) {
-			connection->handlers[type] = g_slist_remove_link (connection->handlers[type], l);
+            connection->handlers[type] = g_slist_remove_link (connection->handlers[type], l);
 			g_slist_free (l);
 			lm_message_handler_unref (hd->handler);
 			g_free (hd);
@@ -2140,7 +2144,7 @@ lm_connection_ref (LmConnection *connection)
 	g_return_val_if_fail (connection != NULL, NULL);
 	
 	connection->ref_count++;
-	
+    
 	return connection;
 }
 
@@ -2157,8 +2161,8 @@ lm_connection_unref (LmConnection *connection)
 	g_return_if_fail (connection != NULL);
 	
 	connection->ref_count--;
-	
+
 	if (connection->ref_count == 0) {
-		connection_free (connection);
+        connection_free (connection);
 	}
 }
