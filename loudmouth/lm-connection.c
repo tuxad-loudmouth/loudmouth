@@ -253,6 +253,14 @@ connection_free_handlers (LmConnection *connection)
 static void
 connection_free (LmConnection *connection)
 {
+    /* This needs to be run before starting to free internal states.
+     * It used to be run after the handlers where freed which lead to a crash
+     * when the connection was freed prior to running lm_connection_close.
+     */
+    if (connection->state >= LM_CONNECTION_STATE_OPENING) {
+        connection_do_close (connection);
+    }
+
     g_free (connection->server);
     g_free (connection->jid);
     g_free (connection->effective_jid);
@@ -270,10 +278,7 @@ connection_free (LmConnection *connection)
     connection_free_handlers (connection);
     
     g_hash_table_destroy (connection->id_handlers);
-    if (connection->state >= LM_CONNECTION_STATE_OPENING) {
-        connection_do_close (connection);
-    }
-
+    
     if (connection->open_cb) {
         _lm_utils_free_callback (connection->open_cb);
     }
