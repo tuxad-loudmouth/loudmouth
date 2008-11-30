@@ -191,12 +191,13 @@ connection_free (LmConnection *connection)
 {
 	int        i;
 
-    /* This needs to be run before starting to free internal states.
-     * It used to be run after the handlers where freed which lead to a crash
-     * when the connection was freed prior to running lm_connection_close.
-     */
-    if (connection->state >= LM_CONNECTION_STATE_OPENING) {
-		connection_do_close (connection);
+        /* This needs to be run before starting to free internal states.
+         * It used to be run after the handlers where freed which lead to a 
+         * crash when the connection was freed prior to running 
+         * lm_connection_close.
+         */
+        if (connection->state >= LM_CONNECTION_STATE_OPENING) {
+          connection_do_close (connection);
 	}
 
 	g_free (connection->server);
