@@ -189,3 +189,4 @@ lm_connect_parameters_unref (LmConnectParameters *params)
         connect_parameters_free (params);
     }
 }
+
