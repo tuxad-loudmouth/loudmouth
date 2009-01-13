@@ -105,11 +105,13 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
     req.ai_socktype = SOCK_STREAM;
     req.ai_protocol = IPPROTO_TCP;
 
+g_print ("blocking_resolver_lookup_host; looking up: %s\n",host);
+
     err = getaddrinfo (host, NULL, &req, &ans);
 
     if (err != 0) {
         /* FIXME: Report error */
-        g_print ("ERROR: %d in %s\n", err, G_STRFUNC);
+        g_print ("blocking_resolver_lookup_host ERROR: %d in %s\n", err, G_STRFUNC);
         
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
                                  NULL);
@@ -164,6 +166,8 @@ blocking_resolver_lookup_service (LmBlockingResolver *resolver)
                   NULL);
 
     srv = _lm_resolver_create_srv_string (domain, service, protocol);
+
+g_print ("blocking_resolver_lookup_service: %s\n",srv);
 
     res_init ();
 

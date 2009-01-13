@@ -490,12 +490,13 @@ lm_message_node_to_string (LmMessageNode *node)
 
     for (child = node->children; child; child = child->next) {
         gchar *child_str = lm_message_node_to_string (child);
-        g_string_append_c (ret, ' ');
+/*        g_string_append_c (ret, ' '); */
         g_string_append (ret, child_str);
         g_free (child_str);
     }
 
-    g_string_append_printf (ret, "</%s>\n", node->name);
+    /* g_string_append_printf (ret, "</%s>\n", node->name); */
+    g_string_append_printf (ret, "</%s>", node->name);
     
     return g_string_free (ret, FALSE);
 }
