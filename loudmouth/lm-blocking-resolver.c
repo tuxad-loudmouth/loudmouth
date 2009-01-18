@@ -62,8 +62,8 @@ lm_blocking_resolver_class_init (LmBlockingResolverClass *class)
 
     resolver_class->lookup = blocking_resolver_lookup;
     resolver_class->cancel = blocking_resolver_cancel;
-    
-    g_type_class_add_private (object_class, 
+
+    g_type_class_add_private (object_class,
                               sizeof (LmBlockingResolverPriv));
 }
 
@@ -88,13 +88,14 @@ blocking_resolver_finalize (GObject *object)
     (G_OBJECT_CLASS (lm_blocking_resolver_parent_class)->finalize) (object);
 }
 
-static void
+static gboolean
 blocking_resolver_lookup_host (LmBlockingResolver *resolver)
 {
     gchar           *host;
     struct addrinfo  req;
     struct addrinfo *ans;
     int              err;
+    gboolean         retval = TRUE;
 
     g_object_get (resolver, "host", &host, NULL);
 
@@ -105,36 +106,26 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
     req.ai_socktype = SOCK_STREAM;
     req.ai_protocol = IPPROTO_TCP;
 
-g_print ("blocking_resolver_lookup_host; looking up: %s\n",host);
-
     err = getaddrinfo (host, NULL, &req, &ans);
 
     if (err != 0) {
-        /* FIXME: Report error */
-        g_print ("blocking_resolver_lookup_host ERROR: %d in %s\n", err, G_STRFUNC);
-        
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
                                  NULL);
-        
-        return;
+
+        retval = FALSE;
     }
 
     if (ans == NULL) {
         /* Couldn't find any results */
-        /* FIXME: Report no results  */
-        g_print ("No results in %s\n", G_STRFUNC);
-        
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
                                  NULL);
 
-        return;
+        retval = FALSE;
     }
 
     /* FIXME: How to set and iterate the results */
     /*priv->results    = ans;
       priv->cur_result = ans; */
-
-    g_print ("Found result for %s\n", host);
 
     g_object_ref (resolver);
 
@@ -144,9 +135,11 @@ g_print ("blocking_resolver_lookup_host; looking up: %s\n",host);
     g_object_unref (resolver);
 
     g_free (host);
+
+    return retval;
 }
 
-static void
+static gboolean
 blocking_resolver_lookup_service (LmBlockingResolver *resolver)
 {
     gchar *domain;
@@ -158,6 +151,7 @@ blocking_resolver_lookup_service (LmBlockingResolver *resolver)
     gboolean  result;
     unsigned char    srv_ans[SRV_LEN];
     int              len;
+    gboolean         retval = TRUE;
 
     g_object_get (resolver,
                   "domain", &domain,
@@ -167,21 +161,17 @@ blocking_resolver_lookup_service (LmBlockingResolver *resolver)
 
     srv = _lm_resolver_create_srv_string (domain, service, protocol);
 
-g_print ("blocking_resolver_lookup_service: %s\n",srv);
-
     res_init ();
 
     len = res_query (srv, C_IN, T_SRV, srv_ans, SRV_LEN);
 
-    result = _lm_resolver_parse_srv_response (srv_ans, len, 
+    result = _lm_resolver_parse_srv_response (srv_ans, len,
                                               &new_server, &new_port);
     if (result == FALSE) {
-        g_print ("Error while parsing srv response in %s\n", 
-                 G_STRFUNC);
-        /* FIXME: Report error */
+        retval = FALSE;
     }
 
-    g_object_set (resolver, 
+    g_object_set (resolver,
                   "host", new_server,
                   "port", new_port,
                   NULL);
@@ -198,10 +188,12 @@ g_print ("blocking_resolver_lookup_service: %s\n",srv);
     g_free (domain);
     g_free (service);
     g_free (protocol);
+
+    return retval;
 }
 
 static gboolean
-blocking_resolver_idle_lookup (LmBlockingResolver *resolver) 
+blocking_resolver_idle_lookup (LmBlockingResolver *resolver)
 {
     LmBlockingResolverPriv *priv = GET_PRIV (resolver);
     gint                    type;
@@ -237,7 +229,7 @@ blocking_resolver_lookup (LmResolver *resolver)
 
     g_object_get (resolver, "context", &context, NULL);
 
-    priv->idle_source = lm_misc_add_idle (context, 
+    priv->idle_source = lm_misc_add_idle (context,
                                           (GSourceFunc) blocking_resolver_idle_lookup,
                                           resolver);
 }

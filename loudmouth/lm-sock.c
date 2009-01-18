@@ -67,34 +67,34 @@ _lm_sock_library_init (void)
     WSADATA data;
     int     error;
 #endif /* G_OS_WIN32 */
-    
+
     if (initialised) {
         return TRUE;
     }
 
     lm_verbose ("Socket library initialising...\n");
-    
+
 #ifdef G_OS_WIN32
     lm_verbose ("Checking for winsock 2.0 or above...\n");
-    
+
     version = MAKEWORD (2, 0);
-        
+
     error = WSAStartup (version, &data);
     if (error != 0) {
         g_printerr ("WSAStartup() failed, error:%d\n", error);
         return FALSE;
     }
-    
+
     /* Confirm that the WinSock DLL supports 2.0.
-     * Note that if the DLL supports versions greater  
-     * than 2.0 in addition to 2.0, it will still return 
-     * 2.0 in wVersion since that is the version we      
-     * requested.                                        
+     * Note that if the DLL supports versions greater
+     * than 2.0 in addition to 2.0, it will still return
+     * 2.0 in wVersion since that is the version we
+     * requested.
      */
     if (LOBYTE (data.wVersion) != 2 ||
         HIBYTE (data.wVersion) != 0) {
         /* Tell the user that we could not find a usable
-         * WinSock DLL.                                  
+         * WinSock DLL.
          */
         g_printerr ("Socket library version is not sufficient!\n");
         WSACleanup ();
@@ -103,7 +103,7 @@ _lm_sock_library_init (void)
 #endif /* G_OS_WIN32 */
 
     initialised = TRUE;
-    
+
     return TRUE;
 }
 
@@ -124,7 +124,7 @@ _lm_sock_library_shutdown (void)
 }
 
 void
-_lm_sock_set_blocking (LmOldSocketT sock, 
+_lm_sock_set_blocking (LmOldSocketT sock,
                        gboolean block)
 {
     int res;
@@ -161,16 +161,16 @@ _lm_sock_close (LmOldSocketT sock)
 
 LmOldSocketT
 _lm_sock_makesocket (int af,
-                     int type, 
+                     int type,
                      int protocol)
 {
     return (LmOldSocketT)socket (af, type, protocol);
 }
 
-int 
-_lm_sock_connect (LmOldSocketT               sock, 
-                  const struct sockaddr *name, 
-                  int                    namelen)
+int
+_lm_sock_connect (LmOldSocketT          sock,
+                  const struct sockaddr *name,
+                  int                   namelen)
 {
     return connect (sock, name, namelen);
 }
@@ -181,8 +181,8 @@ _lm_sock_is_blocking_error (int err)
 #ifndef G_OS_WIN32
     return (err == _LM_SOCK_EINPROGRESS);
 #else  /* G_OS_WIN32 */
-    return (err == _LM_SOCK_EINPROGRESS || 
-            err == _LM_SOCK_EWOULDBLOCK || 
+    return (err == _LM_SOCK_EINPROGRESS ||
+            err == _LM_SOCK_EWOULDBLOCK ||
             err == _LM_SOCK_EINVAL);
 #endif /* G_OS_WIN32 */
 }
@@ -193,7 +193,7 @@ _lm_sock_is_blocking_success (int err)
     return (err == _LM_SOCK_EALREADY || err == _LM_SOCK_EISCONN);
 }
 
-int 
+int
 _lm_sock_get_last_error (void)
 {
 #ifndef G_OS_WIN32
@@ -203,9 +203,9 @@ _lm_sock_get_last_error (void)
 #endif /* G_OS_WIN32 */
 }
 
-void 
-_lm_sock_get_error (LmOldSocketT   sock, 
-                    void      *error, 
+void
+_lm_sock_get_error (LmOldSocketT   sock,
+                    void      *error,
                     socklen_t *len)
 {
     getsockopt (sock, SOL_SOCKET, SO_ERROR, (void*) error, len);
@@ -219,7 +219,7 @@ _lm_sock_get_error_str (int err)
 #else  /* G_OS_WIN32 */
     switch (err) {
     case WSAEINTR:              return _("Connect interrupted and canceled");
-    case WSAEACCES:             return _("Permission denied"); 
+    case WSAEACCES:             return _("Permission denied");
     case WSAEFAULT:             return _("Bad address");
     case WSAEINVAL:             return _("Invalid argument");
     case WSAEMFILE:             return _("Too many open sockets");
@@ -270,7 +270,7 @@ _lm_sock_get_error_str (int err)
         /* os dependent */
     case WSASYSCALLFAILURE:     return _("System call failure");
     }
-    
+
     return _("Unknown");
 #endif /* G_OS_WIN32 */
 }
@@ -279,23 +279,23 @@ const gchar *
 _lm_sock_addrinfo_get_error_str (int err)
 {
     switch (err) {
-    case EAI_AGAIN:    
+    case EAI_AGAIN:
         return _("The nameserver failed to return an "
                  "address, try again later");
-    case EAI_BADFLAGS: 
+    case EAI_BADFLAGS:
         return _("Internal error trying to obtain remote address");
-    case EAI_FAIL:     
+    case EAI_FAIL:
         return _("The nameserver encountered errors "
                  "looking up this address");
         /* EAI_NODATA is apparently missing on FreeBSD. On recent GNU libc,
          * it requires _GNU_SOURCE to be defined; in the unlikely case that
          * that GNU libc returns this value we'll return the default message */
 #ifdef EAI_NODATA
-    case EAI_NODATA:   
+    case EAI_NODATA:
         return _("The remote host exists but no address "
                  "is available");
 #endif
-    case EAI_NONAME:   
+    case EAI_NONAME:
         return _("The remote address is unknown");
     case EAI_FAMILY:
     case EAI_SERVICE:
@@ -330,7 +330,7 @@ _lm_sock_set_keepalive (LmOldSocketT sock, int delay)
         return FALSE;
     }
 
-    opt = delay; 
+    opt = delay;
     if (setsockopt (sock, IPPROTO_TCP, TCP_KEEPINTVL, &opt, sizeof (opt)) < 0) {
         return FALSE;
     }
@@ -354,8 +354,8 @@ _lm_sock_get_local_host (LmOldSocketT sock)
     }
 
     switch (addr_info.sa_family) {
-    case AF_INET: 
-            
+    case AF_INET:
+
         sock_addr = & (((struct sockaddr_in *) &addr_info)->sin_addr);
         break;
     case AF_INET6:
@@ -372,4 +372,3 @@ _lm_sock_get_local_host (LmOldSocketT sock)
 
     return g_strdup (host);
 }
-

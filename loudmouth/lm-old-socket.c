@@ -74,7 +74,7 @@ struct _LmOldSocket {
     GSource           *watch_connect;
 
     gboolean           cancel_open;
-    
+
     GSource           *watch_out;
     GString           *out_buf;
 
@@ -88,11 +88,11 @@ struct _LmOldSocket {
     guint              ref_count;
 
     LmResolver        *resolver;
-}; 
+};
 
 static void         socket_free                    (LmOldSocket    *socket);
 static gboolean     socket_do_connect              (LmConnectData  *connect_data);
-static gboolean     socket_connect_cb              (GIOChannel     *source, 
+static gboolean     socket_connect_cb              (GIOChannel     *source,
                                                     GIOCondition    condition,
                                                     LmConnectData  *connect_data);
 static gboolean     socket_in_event                (GIOChannel     *source,
@@ -104,7 +104,7 @@ static gboolean     socket_hup_event               (GIOChannel     *source,
 static gboolean     socket_error_event             (GIOChannel     *source,
                                                     GIOCondition    condition,
                                                     LmOldSocket    *socket);
-static gboolean     socket_buffered_write_cb       (GIOChannel     *source, 
+static gboolean     socket_buffered_write_cb       (GIOChannel     *source,
                                                     GIOCondition    condition,
                                                     LmOldSocket    *socket);
 static void         socket_close_io_channel        (GIOChannel     *io_channel);
@@ -128,7 +128,7 @@ socket_free (LmOldSocket *socket)
     if (socket->proxy) {
         lm_proxy_unref (socket->proxy);
     }
-    
+
     if (socket->out_buf) {
         g_string_free (socket->out_buf, TRUE);
     }
@@ -152,8 +152,8 @@ old_socket_do_write (LmOldSocket *socket, const gchar *buf, guint len)
         gsize     bytes_written;
 
         while (io_status == G_IO_STATUS_AGAIN) {
-            io_status = g_io_channel_write_chars (socket->io_channel, 
-                                                  buf, len, 
+            io_status = g_io_channel_write_chars (socket->io_channel,
+                                                  buf, len,
                                                   &bytes_written,
                                                   NULL);
         }
@@ -185,7 +185,7 @@ lm_old_socket_write (LmOldSocket *socket, const gchar *buf, gint len)
                                         len - b_written);
         return len;
     }
-        
+
     return b_written;
 }
 
@@ -202,7 +202,7 @@ socket_read_incoming (LmOldSocket *socket,
     *hangup = FALSE;
 
     if (socket->ssl_started) {
-        status = _lm_ssl_read (socket->ssl, 
+        status = _lm_ssl_read (socket->ssl,
                                buf, buf_size - 1, bytes_read);
     } else {
         status = g_io_channel_read_chars (socket->io_channel,
@@ -229,7 +229,7 @@ socket_read_incoming (LmOldSocket *socket,
 
         /* Notify connection_in_event that we hangup the connection */
         *hangup = TRUE;
-        
+
         return FALSE;
     }
 
@@ -254,17 +254,17 @@ socket_in_event (GIOChannel   *source,
         return FALSE;
     }
 
-    while (socket_read_incoming (socket, buf, IN_BUFFER_SIZE, 
+    while (socket_read_incoming (socket, buf, IN_BUFFER_SIZE,
                                  &bytes_read, &hangup, &reason)) {
-        
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "\nRECV [%d]:\n", 
+
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "\nRECV [%d]:\n",
                (int)bytes_read);
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "-----------------------------------\n");
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "'%s'\n", buf);
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "-----------------------------------\n");
-        
+
         lm_verbose ("Read: %d chars\n", (int)bytes_read);
 
         (socket->data_func) (socket, buf, socket->user_data);
@@ -281,22 +281,22 @@ socket_in_event (GIOChannel   *source,
 
     return TRUE;
 }
-    
+
 static gboolean
 socket_hup_event (GIOChannel   *source,
                   GIOCondition  condition,
                   LmOldSocket     *socket)
 {
-    lm_verbose ("HUP event: %d->'%s'\n", 
+    lm_verbose ("HUP event: %d->'%s'\n",
                 condition, lm_misc_io_condition_to_str (condition));
 
     if (!socket->io_channel) {
         return FALSE;
     }
 
-    (socket->closed_func) (socket, LM_DISCONNECT_REASON_HUP, 
+    (socket->closed_func) (socket, LM_DISCONNECT_REASON_HUP,
                            socket->user_data);
-    
+
     return TRUE;
 }
 
@@ -305,16 +305,16 @@ socket_error_event (GIOChannel   *source,
                     GIOCondition  condition,
                     LmOldSocket     *socket)
 {
-    lm_verbose ("ERROR event: %d->'%s'\n", 
+    lm_verbose ("ERROR event: %d->'%s'\n",
                 condition, lm_misc_io_condition_to_str (condition));
 
     if (!socket->io_channel) {
         return FALSE;
     }
 
-    (socket->closed_func) (socket, LM_DISCONNECT_REASON_ERROR, 
+    (socket->closed_func) (socket, LM_DISCONNECT_REASON_ERROR,
                            socket->user_data);
-    
+
     return TRUE;
 }
 
@@ -340,7 +340,7 @@ _lm_old_socket_ssl_init (LmOldSocket *socket, gboolean delayed)
         ssl_verify_domain = socket->domain;
     else
         ssl_verify_domain = socket->server;
-    
+
     if (!_lm_ssl_begin (socket->ssl, socket->fd, ssl_verify_domain, &error)) {
         lm_verbose ("Could not begin SSL\n");
 
@@ -356,12 +356,12 @@ _lm_old_socket_ssl_init (LmOldSocket *socket, gboolean delayed)
         if (!delayed && socket->connect_func) {
             (socket->connect_func) (socket, FALSE, socket->user_data);
         }
-        
+
         return FALSE;
     }
 
 #ifdef HAVE_GNUTLS
-    _lm_sock_set_blocking (socket->fd, FALSE); 
+    _lm_sock_set_blocking (socket->fd, FALSE);
 #endif
 
     socket->ssl_started = TRUE;
@@ -383,7 +383,7 @@ void
 _lm_old_socket_succeeded (LmConnectData *connect_data)
 {
     LmOldSocket *socket;
-    
+
     socket = connect_data->socket;
 
     if (socket->watch_connect) {
@@ -399,7 +399,7 @@ _lm_old_socket_succeeded (LmConnectData *connect_data)
         }
         return;
     }
-    
+
     socket->fd = connect_data->fd;
     socket->io_channel = connect_data->io_channel;
 
@@ -416,7 +416,7 @@ _lm_old_socket_succeeded (LmConnectData *connect_data)
         }
     }
 
-    socket->watch_in = 
+    socket->watch_in =
         lm_misc_add_io_watch (socket->context,
                               socket->io_channel,
                               G_IO_IN,
@@ -428,13 +428,13 @@ _lm_old_socket_succeeded (LmConnectData *connect_data)
      * windows handles watches, see bug #331214.
      */
 #ifndef G_OS_WIN32
-    socket->watch_err = 
+    socket->watch_err =
         lm_misc_add_io_watch (socket->context,
                               socket->io_channel,
                               G_IO_ERR,
                               (GIOFunc) socket_error_event,
                               socket);
-        
+
     socket->watch_hup =
         lm_misc_add_io_watch (socket->context,
                               socket->io_channel,
@@ -448,19 +448,19 @@ _lm_old_socket_succeeded (LmConnectData *connect_data)
     }
 }
 
-gboolean 
-_lm_old_socket_failed_with_error (LmConnectData *connect_data, int error) 
+gboolean
+_lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
 {
     LmOldSocket *socket;
-    
+
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
            "Connection failed: %s (error %d)\n",
            _lm_sock_get_error_str (error), error);
-    
+
     socket = lm_old_socket_ref (connect_data->socket);
 
     connect_data->current_addr = lm_resolver_results_get_next (socket->resolver);
-    
+
     if (socket->watch_connect) {
         g_source_destroy (socket->watch_connect);
         socket->watch_connect = NULL;
@@ -469,12 +469,12 @@ _lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
     if (connect_data->io_channel != NULL) {
         socket_close_io_channel (connect_data->io_channel);
     }
-    
+
     if (connect_data->current_addr == NULL) {
         if (socket->connect_func) {
             (socket->connect_func) (socket, FALSE, socket->user_data);
         }
-        
+
         /* if the user callback called connection_close(), this is already freed */
         if (socket->connect_data != NULL) {
             if (socket->resolver) {
@@ -494,17 +494,17 @@ _lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
     return FALSE;
 }
 
-gboolean 
+gboolean
 _lm_old_socket_failed (LmConnectData *connect_data)
 {
     return _lm_old_socket_failed_with_error (connect_data,
                                              _lm_sock_get_last_error());
 }
 
-static gboolean 
-socket_connect_cb (GIOChannel   *source, 
+static gboolean
+socket_connect_cb (GIOChannel   *source,
                    GIOCondition  condition,
-                   LmConnectData *connect_data) 
+                   LmConnectData *connect_data)
 {
     LmOldSocket     *socket;
     struct addrinfo *addr;
@@ -539,7 +539,7 @@ socket_connect_cb (GIOChannel   *source,
 
         fd = g_io_channel_unix_get_fd (source);
 
-        res = _lm_sock_connect (fd, addr->ai_addr, (int)addr->ai_addrlen);  
+        res = _lm_sock_connect (fd, addr->ai_addr, (int)addr->ai_addrlen);
         if (res < 0) {
             err = _lm_sock_get_last_error ();
             if (_lm_sock_is_blocking_success (err)) {
@@ -547,10 +547,10 @@ socket_connect_cb (GIOChannel   *source,
 
                 g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                        "Connection success (1).\n");
-                
+
                 _lm_old_socket_succeeded (connect_data);
             }
-            
+
             if (_lm_connection_async_connect_waiting (socket->connection) &&
                 !_lm_sock_is_blocking_error (err)) {
                 g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
@@ -562,14 +562,14 @@ socket_connect_cb (GIOChannel   *source,
                 socket->watch_connect = NULL;
                 goto out;
             }
-        } 
+        }
     } else {
 #endif
-    {        
+    {
         /* for blocking sockets, G_IO_OUT means we are connected */
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "Connection success (2).\n");
-        
+
         _lm_old_socket_succeeded (connect_data);
     }
 
@@ -577,12 +577,12 @@ socket_connect_cb (GIOChannel   *source,
 
  out:
     lm_old_socket_unref(socket);
-    
-    return result; 
+
+    return result;
 }
 
 static gboolean
-socket_do_connect (LmConnectData *connect_data) 
+socket_do_connect (LmConnectData *connect_data)
 {
     LmOldSocket     *socket;
     LmOldSocketT     fd;
@@ -591,16 +591,20 @@ socket_do_connect (LmConnectData *connect_data)
     char             name[NI_MAXHOST];
     char             portname[NI_MAXSERV];
     struct addrinfo *addr;
-    
+
     socket = connect_data->socket;
     addr = connect_data->current_addr;
- 
+
+    if (socket->port == 0) {
+        socket->port = 5222;
+    }
+
     if (socket->proxy) {
         port = htons (lm_proxy_get_port (socket->proxy));
     } else {
         port = htons (socket->port);
     }
-    
+
     ((struct sockaddr_in *) addr->ai_addr)->sin_port = port;
 
     res = getnameinfo (addr->ai_addr,
@@ -608,20 +612,21 @@ socket_do_connect (LmConnectData *connect_data)
                        name,     sizeof (name),
                        portname, sizeof (portname),
                        NI_NUMERICHOST | NI_NUMERICSERV);
-    
+
     if (res < 0) {
         return _lm_old_socket_failed (connect_data);
     }
 
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
            "Trying %s port %s...\n", name, portname);
-    
+
     fd = _lm_sock_makesocket (addr->ai_family,
-                              addr->ai_socktype, 
+                              addr->ai_socktype,
                               addr->ai_protocol);
-    
+
     if (!_LM_SOCK_VALID (fd)) {
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+        g_print("invalid fd\n");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "Failed making socket, error:%d...\n",
                _lm_sock_get_last_error ());
 
@@ -634,18 +639,18 @@ socket_do_connect (LmConnectData *connect_data)
      */
     connect_data->fd = fd;
     connect_data->io_channel = g_io_channel_unix_new (fd);
-    
+
     g_io_channel_set_encoding (connect_data->io_channel, NULL, NULL);
     g_io_channel_set_buffered (connect_data->io_channel, FALSE);
-    
+
     _lm_sock_set_blocking (connect_data->fd, FALSE);
-	
+
     if (socket->proxy) {
         socket->watch_connect =
             lm_misc_add_io_watch (socket->context,
                                   connect_data->io_channel,
                                   G_IO_OUT|G_IO_ERR,
-                                  (GIOFunc) _lm_proxy_connect_cb, 
+                                  (GIOFunc) _lm_proxy_connect_cb,
                                   connect_data);
     } else {
         socket->watch_connect =
@@ -656,12 +661,13 @@ socket_do_connect (LmConnectData *connect_data)
                                   connect_data);
     }
 
-    res = _lm_sock_connect (connect_data->fd, 
-                            addr->ai_addr, (int)addr->ai_addrlen);  
+    res = _lm_sock_connect (connect_data->fd,
+                            addr->ai_addr, (int)addr->ai_addrlen);
     if (res < 0) {
         err = _lm_sock_get_last_error ();
         if (!_lm_sock_is_blocking_error (err)) {
             _lm_sock_close (connect_data->fd);
+            g_print("unable to connect\n");
             return _lm_old_socket_failed_with_error (connect_data, err);
         }
     }
@@ -699,7 +705,7 @@ old_socket_setup_output_buffer (LmOldSocket *socket, const gchar *buffer, gint l
 }
 
 static gboolean
-socket_buffered_write_cb (GIOChannel   *source, 
+socket_buffered_write_cb (GIOChannel   *source,
                           GIOCondition  condition,
                           LmOldSocket     *socket)
 {
@@ -715,7 +721,7 @@ socket_buffered_write_cb (GIOChannel   *source,
     b_written = old_socket_do_write (socket, out_buf->str, out_buf->len);
 
     if (b_written < 0) {
-        (socket->closed_func) (socket, LM_DISCONNECT_REASON_ERROR, 
+        (socket->closed_func) (socket, LM_DISCONNECT_REASON_ERROR,
                                socket->user_data);
         return FALSE;
     }
@@ -742,7 +748,7 @@ socket_close_io_channel (GIOChannel *io_channel)
 {
     gint fd;
 
-    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
            "Freeing up IOChannel and file descriptor\n");
 
     fd = g_io_channel_unix_get_fd (io_channel);
@@ -774,16 +780,16 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
         return;
     }
 
-    socket->connect_data->current_addr = 
+    socket->connect_data->current_addr =
         lm_resolver_results_get_next (resolver);
 
     socket_do_connect (socket->connect_data);
 }
 
-/* FIXME: Need to have a way to only get srv reply and then decide if the 
- *        resolver should continue to look the host up. 
+/* FIXME: Need to have a way to only get srv reply and then decide if the
+ *        resolver should continue to look the host up.
  *
- *        This is needed for the case when we do a SRV lookup to lookup the 
+ *        This is needed for the case when we do a SRV lookup to lookup the
  *        real host of the service and then connect to it through a proxy.
  */
 static void
@@ -793,7 +799,7 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
 {
     LmOldSocket *socket = (LmOldSocket *) user_data;
     const gchar *remote_addr;
-    
+
     lm_verbose ("LmOldSocket::srv_cb (result=%d)\n", result);
 
     if (result != LM_RESOLVER_RESULT_OK) {
@@ -806,17 +812,20 @@ old_socket_resolver_srv_cb (LmResolver       *resolver,
 
     if (socket->proxy) {
         remote_addr = lm_proxy_get_server (socket->proxy);
-    } else {
+    } else if (socket->server) {
         remote_addr = socket->server;
     }
-    
+    else {
+        remote_addr = socket->domain;
+    }
+
     g_object_unref (socket->resolver);
-    
-    socket->resolver = 
+
+    socket->resolver =
             lm_resolver_new_for_host (remote_addr,
                                       old_socket_resolver_host_cb,
                                       socket);
-       
+
     lm_resolver_lookup (socket->resolver);
 }
 
@@ -829,7 +838,7 @@ lm_old_socket_create (GMainContext      *context,
                       LmConnection      *connection,
                       const gchar       *server,
                       const gchar       *domain,
-                      guint              port, 
+                      guint              port,
                       LmSSL             *ssl,
                       LmProxy           *proxy,
                       GError           **error)
@@ -874,10 +883,10 @@ lm_old_socket_create (GMainContext      *context,
         socket->resolver = lm_resolver_new_for_service (socket->domain,
                                                         "xmpp-client",
                                                         "tcp",
-                                                        old_socket_resolver_srv_cb, 
+                                                        old_socket_resolver_srv_cb,
                                                         socket);
     } else {
-        socket->resolver = 
+        socket->resolver =
             lm_resolver_new_for_host (socket->server ? socket->server : socket->domain,
                                       old_socket_resolver_host_cb,
                                       socket);
@@ -890,25 +899,10 @@ lm_old_socket_create (GMainContext      *context,
     socket->data_func = data_func;
     socket->closed_func = closed_func;
     socket->connect_func = connect_func;
-    socket->user_data = user_data; 
-        
+    socket->user_data = user_data;
+
     lm_resolver_lookup (socket->resolver);
 
-#if 0
-    if (socket->connect_data == NULL) {
-        /* Open failed synchronously, probably a DNS lookup problem */
-        lm_old_socket_unref(socket);
-        
-        g_set_error (error,
-                     LM_ERROR,                 
-                     LM_ERROR_CONNECTION_FAILED,   
-                     "Failed to resolve server");
-        
-        return NULL;
-    }
-        
-#endif 
-    
     return socket;
 }
 
@@ -932,7 +926,7 @@ lm_old_socket_close (LmOldSocket *socket)
         g_source_destroy (socket->watch_connect);
         socket->watch_connect = NULL;
     }
-    
+
     data = socket->connect_data;
     if (data) {
         socket->connect_data = NULL;
@@ -1043,6 +1037,3 @@ lm_old_socket_get_require_starttls (LmOldSocket *socket)
 
     return lm_ssl_get_require_starttls (socket->ssl);
 }
-
-
-
