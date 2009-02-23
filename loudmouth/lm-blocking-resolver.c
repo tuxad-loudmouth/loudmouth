@@ -102,7 +102,7 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
     /* Lookup */
 
     memset (&req, 0, sizeof(req));
-    req.ai_family   = AF_UNSPEC;
+    req.ai_family   = AF_INET;
     req.ai_socktype = SOCK_STREAM;
     req.ai_protocol = IPPROTO_TCP;
 
