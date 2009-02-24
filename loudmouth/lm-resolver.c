@@ -383,12 +383,14 @@ lm_resolver_results_get_next (LmResolver *resolver)
 
     priv = GET_PRIV (resolver);
 
-    if (!priv->current_result) {
+skipresult:
+    if (!priv->current_result)
         return NULL;
-    }
 
     ret_val = priv->current_result;
     priv->current_result = priv->current_result->ai_next;
+    if (ret_val->ai_family != AF_INET) /* FIXME: we only support IPv4 for now */
+        goto skipresult;
 
     return ret_val;
 }

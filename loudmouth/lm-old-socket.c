@@ -470,7 +470,7 @@ _lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
         socket_close_io_channel (connect_data->io_channel);
     }
 
-    if (connect_data->current_addr == NULL) {
+    if (connect_data->current_addr == NULL) { /*Ran Out Of Addresses*/
         if (socket->connect_func) {
             (socket->connect_func) (socket, FALSE, socket->user_data);
         }
@@ -784,7 +784,15 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
     socket->connect_data->current_addr =
         lm_resolver_results_get_next (resolver);
 
-    socket_do_connect (socket->connect_data);
+    if (socket->connect_data->current_addr) {
+        socket_do_connect (socket->connect_data);
+    } else { /* FIXME: IPv6 Support? */
+        g_log (LM_LOG_DOMAIN,G_LOG_LEVEL_ERROR,
+               "Unable to locate server available over IPv4.\n");
+    };
+
+    /* FIXME: What do we do here?  How to make the mainloop exit with an 
+       error, while having no ref to said mainloop */
 }
 
 /* FIXME: Need to have a way to only get srv reply and then decide if the
