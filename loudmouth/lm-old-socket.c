@@ -35,6 +35,7 @@
 #include <arpa/nameser_compat.h>
 #endif
 
+#include <arpa/inet.h>
 #include <arpa/nameser.h>
 #include <resolv.h>
 
@@ -521,7 +522,7 @@ socket_connect_cb (GIOChannel   *source,
         len = sizeof (err);
         _lm_sock_get_error (fd, &err, &len);
         if (!_lm_sock_is_blocking_error (err)) {
-            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
                    "Connection failed.\n");
 
             /* error condition, but might be possible to recover
@@ -567,7 +568,7 @@ socket_connect_cb (GIOChannel   *source,
 #endif
     {
         /* for blocking sockets, G_IO_OUT means we are connected */
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
                "Connection success (2).\n");
 
         _lm_old_socket_succeeded (connect_data);
@@ -764,6 +765,9 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
                              gpointer          user_data)
 {
     LmOldSocket *socket = (LmOldSocket *) user_data;
+    char dispbuf[128];
+    struct sockaddr_in *addr; /* FIXME:IPv6 */
+    const char *converr;
 
     lm_verbose ("LmOldSocket::host_cb (result=%d)\n", result);
 
@@ -784,7 +788,16 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
     socket->connect_data->current_addr =
         lm_resolver_results_get_next (resolver);
 
-    if (socket->connect_data->current_addr) {
+    if (socket->connect_data->current_addr) { /* FIXME:IPv6 */
+        addr = (struct sockaddr_in *) (socket->connect_data->current_addr->ai_addr);
+        converr = inet_ntop(AF_INET,&(addr->sin_addr),dispbuf,sizeof(dispbuf));
+        if (converr) {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+                   "Attempting Connection to %s\n",dispbuf);
+        } else {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+                   "Attempting Connection (unable to convert address to presentable format)\n");
+        };
         socket_do_connect (socket->connect_data);
     } else { /* FIXME: IPv6 Support? */
         g_log (LM_LOG_DOMAIN,G_LOG_LEVEL_ERROR,
