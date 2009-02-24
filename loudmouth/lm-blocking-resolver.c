@@ -117,9 +117,11 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
 
     if (ans == NULL) {
         /* Couldn't find any results */
+        g_object_ref (resolver);
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED,
                                  NULL);
 
+        g_object_unref (resolver);
         retval = FALSE;
     }
 
@@ -127,12 +129,15 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
     /*priv->results    = ans;
       priv->cur_result = ans; */
 
-    g_object_ref (resolver);
+    if (retval) {
+        assert(ans->ai_family == AF_INET);
+        g_object_ref (resolver);
 
-    _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK,
-                             ans);
+        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK,
+                                 ans);
 
-    g_object_unref (resolver);
+        g_object_unref (resolver);
+    }
 
     g_free (host);
 

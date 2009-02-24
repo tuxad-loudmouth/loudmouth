@@ -772,8 +772,9 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
         if (socket->connect_func) {
             (socket->connect_func) (socket, FALSE, socket->user_data);
         }
+        /*FIXME: Leaking Resolvers Until Clean Up Can Be Properly Handled
         g_object_unref (socket->resolver);
-        socket->resolver = NULL;
+        socket->resolver = NULL;*/
         g_free (socket->connect_data);
         socket->connect_data = NULL;
 
@@ -933,10 +934,11 @@ lm_old_socket_close (LmOldSocket *socket)
         g_free (data);
     }
 
+    /* FIXME: Leaking Resolvers Until Clean Up Can Be Corrected
     if (socket->resolver) {
         g_object_unref (socket->resolver);
         socket->resolver = NULL;
-    }
+    } */
 
     if (socket->io_channel) {
         if (socket->watch_in) {
