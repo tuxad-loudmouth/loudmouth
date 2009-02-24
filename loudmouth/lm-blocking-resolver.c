@@ -130,7 +130,6 @@ blocking_resolver_lookup_host (LmBlockingResolver *resolver)
       priv->cur_result = ans; */
 
     if (retval) {
-        assert(ans->ai_family == AF_INET);
         g_object_ref (resolver);
 
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK,
