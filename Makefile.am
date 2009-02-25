@@ -1,6 +1,7 @@
 include $(top_srcdir)/build/Makefile.am.lm
 
-SUBDIRS = loudmouth docs examples tests
+SUBDIRS = loudmouth docs examples $(TEST_DIRS)
+DIST_SUBDIRS = loudmouth docs examples tests
 
 EXTRA_DIST +=			\
 	loudmouth-1.0.pc.in     \

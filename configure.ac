@@ -79,7 +79,8 @@ changequote([,])dnl
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
 
-GLIB2_REQUIRED=2.16.0
+GLIB2_REQUIRED=2.12.4
+GLIB2_TEST_REQUIRED=2.16.0
 GNUTLS_REQUIRED=1.4.0
 LIBTASN1_REQUIRED=0.2.6
 
@@ -92,6 +93,16 @@ LM_CHECK_TIMEZONE
 PKG_CHECK_MODULES(LOUDMOUTH, 
                   glib-2.0 >= $GLIB2_REQUIRED
                   gobject-2.0 >= $GLIB2_REQUIRED)
+
+PKG_CHECK_MODULES(LOUDMOUTHTEST,
+                  glib-2.0 >= $GLIB2_TEST_REQUIRED,
+		  enable_test=yes, enable_test=no)
+if test "$enable_test" = yes; then
+  TEST_DIRS=tests
+else
+  TEST_DIRS=
+fi
+AC_SUBST([TEST_DIRS])
 
 PKG_CHECK_MODULES(LIBIDN, libidn, have_idn=yes, have_idn=no)
 if test "x$have_idn" = "xyes"; then
@@ -297,7 +308,8 @@ echo "
 	Linux TCP keepalives:     ${use_keepalives}
 	Enable Debug:             ${enable_debug}
 	Enable GSSAPI:            ${enable_gssapi}
-	Enable Documentation      ${enable_gtk_doc}
+	Enable Documentation:     ${enable_gtk_doc}
+	Enable Tests:             ${enable_test}
 
 	Now type 'make' to build Loudmouth
 "
