@@ -10,6 +10,7 @@ AM_CPPFLAGS =                           \
 	-I$(top_srcdir)                     \
 	$(LOUDMOUTH_CFLAGS)                 \
 	$(LIBIDN_CFLAGS)                    \
+	$(ASYNCNS_CFLAGS)                   \
 	-DLM_COMPILATION                    \
 	-DRUNTIME_ENDIAN                    \
 	$(NULL)
@@ -18,7 +19,7 @@ noinst_PROGRAMS = test-dns
 
 test_dns_SOURCES = test-dns.c
 
-test_dns_LDADD = $(LOUDMOUTH_LIBS) $(top_builddir)/loudmouth/libloudmouth-1.la
+test_dns_LDADD = $(LOUDMOUTHTEST_LIBS) libloudmouth-1.la
 
 lib_LTLIBRARIES = libloudmouth-1.la
 
@@ -31,6 +32,13 @@ if USE_OPENSSL
 ssl_sources =                           \
 	lm-ssl-openssl.c
 endif
+
+if ! USE_SYSTEM_ASYNCNS
+asyncns_sources = \
+	asyncns.c     \
+	asyncns.h
+endif
+
 
 libloudmouth_1_la_SOURCES =             \
 	lm-connection.c                     \
@@ -55,8 +63,7 @@ libloudmouth_1_la_SOURCES =             \
 	lm-parser.c                         \
 	lm-parser.h                         \
 										\
-	asyncns.c                           \
-	asyncns.h                           \
+	$(asyncns_sources)                  \
 	lm-resolver.c                       \
 	lm-resolver.h                       \
 	lm-asyncns-resolver.c               \
@@ -110,6 +117,7 @@ libloudmouthinclude_HEADERS =           \
 libloudmouth_1_la_LIBADD =              \
 	$(LOUDMOUTH_LIBS)                   \
 	$(LIBIDN_LIBS)                      \
+	$(ASYNCNS_LIBS)                     \
 	-lresolv
 
 libloudmouth_1_la_LDFLAGS =                                 \
