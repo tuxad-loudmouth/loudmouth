@@ -5,7 +5,6 @@ DIST_SUBDIRS = loudmouth docs examples tests
 
 EXTRA_DIST +=			\
 	loudmouth-1.0.pc.in     \
-	CONTRIBUTORS            \
 	README.WIN32
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -14,3 +13,6 @@ pkgconfig_DATA = loudmouth-1.0.pc
 DISTCHECK_CONFIGURE_FLAGS =     \
 	--enable-gtk-doc
 
+ChangeLog: OLD_VERSION=`git describe`
+ChangeLog:
+	git log --no-merges $(OLD_VERSION)..HEAD > $(srcdir)/ChangeLog

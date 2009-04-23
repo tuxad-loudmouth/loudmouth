@@ -8,6 +8,7 @@ Makefile.in
 ltmain.sh
 missing
 stamp-h1
+ChangeLog
 configure
 config.h*
 config.log
@@ -24,3 +25,5 @@ install-sh
 libtool
 *.pc
 *.spec
+*.tar.gz
+*.tar.bz2
