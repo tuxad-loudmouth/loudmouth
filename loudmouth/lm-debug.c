@@ -48,14 +48,14 @@ debug_log_handler (const gchar    *log_domain,
         }
         else if (log_level & LM_LOG_LEVEL_PARSER) {
             g_print ("LM-PARSER: ");
-        } 
+        }
         else if (log_level & LM_LOG_LEVEL_SASL) {
             g_print ("LM-SASL: ");
         }
         else if (log_level & LM_LOG_LEVEL_SSL) {
             g_print ("LM-SSL: ");
         }
-    
+
         g_print ("%s", message);
     }
 }
@@ -65,7 +65,7 @@ debug_log_handler (const gchar    *log_domain,
  *
  * Initialized the debug system.
  **/
-void 
+void
 lm_debug_init (void)
 {
     const gchar *env_lm_debug;
@@ -73,14 +73,14 @@ lm_debug_init (void)
     if (initialized) {
         return;
     }
-    
+
     env_lm_debug = g_getenv ("LM_DEBUG");
     if (env_lm_debug) {
         debug_flags = g_parse_debug_string (env_lm_debug, debug_keys,
                                             NUM_DEBUG_KEYS);
     }
 
-    g_log_set_handler (LM_LOG_DOMAIN, LM_LOG_LEVEL_ALL, 
+    g_log_set_handler (LM_LOG_DOMAIN, LM_LOG_LEVEL_ALL,
                        debug_log_handler, NULL);
 
     initialized = TRUE;
@@ -88,9 +88,19 @@ lm_debug_init (void)
 
 #else  /* LM_NO_DEBUG */
 
-void 
+static void
+do_nothing_log_handler (const gchar    *log_domain,
+                        GLogLevelFlags  log_level,
+                        const gchar    *message,
+                        gpointer        user_data)
+{
+}
+
+void
 lm_debug_init (void)
 {
+    g_log_set_handler (LM_LOG_DOMAIN, LM_LOG_LEVEL_ALL,
+                       do_nothing_log_handler, NULL);
 }
 
 #endif /* LM_NO_DEBUG */
