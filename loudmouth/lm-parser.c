@@ -154,19 +154,16 @@ parser_end_node_cb (GMarkupParseContext  *context,
             g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
                    "Couldn't create message: %s\n",
                    parser->cur_root->name);
-            return;
-        }
-
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
+        } else {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
                "Have a new message\n");
-        if (parser->function) {
-            (* parser->function) (parser, m, parser->user_data);
-        }
+            if (parser->function) {
+                (* parser->function) (parser, m, parser->user_data);
+            }
+	    lm_message_unref (m);
+	}
 
-        lm_message_unref (m);
         lm_message_node_unref (parser->cur_root);
-        
-            
         parser->cur_node = parser->cur_root = NULL;
     } else {
         LmMessageNode *tmp_node;
