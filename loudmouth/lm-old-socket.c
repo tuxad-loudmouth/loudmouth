@@ -951,6 +951,9 @@ lm_old_socket_close (LmOldSocket *socket)
 
     data = socket->connect_data;
     if (data) {
+        if (data->io_channel) {
+	    socket_close_io_channel (data->io_channel);
+        }
         socket->connect_data = NULL;
         g_free (data);
     }
