@@ -1468,8 +1468,15 @@ lm_connection_authenticate (LmConnection      *connection,
     /* TODO: Break out Credentials (or use the already existing AuthReqData struct for *
      *       Username/Password and Resource                                            */
     if (connection->use_sasl) {
-        lm_sasl_authenticate (connection->sasl, auth_params, connection->server,
+        gchar *domain = NULL;
+
+        if (!connection_get_server_from_jid (connection->jid, &domain)) {
+            domain = g_strdup (connection->server);
+        }
+
+        lm_sasl_authenticate (connection->sasl, auth_params, domain,
                               connection_sasl_auth_finished);
+        g_free (domain);
 
         connection->features_cb  =
             lm_message_handler_new (connection_features_cb,
