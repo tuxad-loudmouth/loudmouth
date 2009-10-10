@@ -265,11 +265,13 @@ asyncns_resolver_srv_done (LmResolver *resolver)
 
     asyncns_resolver_cleanup (resolver);
     
+    g_object_ref (resolver);
     if (result == TRUE) {
-        g_object_ref (resolver);
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK, NULL);
-        g_object_unref (resolver);
+    } else {
+        _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_FAILED, NULL);
     }
+    g_object_unref (resolver);
 }
 
 static void
