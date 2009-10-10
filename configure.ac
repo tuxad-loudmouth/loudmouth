@@ -172,8 +172,9 @@ AC_ARG_WITH(openssl-libs,
 enable_ssl=no
 if test "x$ac_ssl" = "xgnutls"; then
   dnl Look for GnuTLS
-  AM_PATH_LM_LIBGNUTLS($GNUTLS_REQUIRED, have_libgnutls=yes, have_libgnutls=no)
+  PKG_CHECK_EXISTS([gnutls >= $GNUTLS_REQUIRED], have_libgnutls=yes, have_libgnutls=no)
   if test "x$have_libgnutls" = "xyes"; then
+    PKG_CHECK_MODULES(LIBGNUTLS, [gnutls >= $GNUTLS_REQUIRED])
     CFLAGS="$CFLAGS $LIBGNUTLS_CFLAGS"
     LIBS="$LIBS $LIBGNUTLS_LIBS"
     AC_DEFINE(HAVE_GNUTLS, 1, [whether to use GnuTSL support.])
