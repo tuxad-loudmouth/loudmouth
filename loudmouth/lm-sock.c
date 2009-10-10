@@ -208,7 +208,8 @@ _lm_sock_get_error (LmOldSocketT   sock,
                     void      *error,
                     socklen_t *len)
 {
-    getsockopt (sock, SOL_SOCKET, SO_ERROR, (void*) error, len);
+    if (getsockopt (sock, SOL_SOCKET, SO_ERROR, (void*) error, len) != 0)
+	*((int *) error) = errno;
 }
 
 const gchar *
