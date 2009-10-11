@@ -106,7 +106,7 @@ ssl_print_state (LmSSL *ssl, const char *func, int val)
   return _ssl_error_code;
   }*/
 
-    
+
 int
 ssl_verify_cb (int preverify_ok, X509_STORE_CTX *x509_ctx)
 {
@@ -204,14 +204,14 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
       }*/
     crt_subj = X509_get_subject_name(srv_crt);
     cn = (gchar *) g_malloc0(LM_SSL_CN_MAX + 1);
-    
+
     if (X509_NAME_get_text_by_NID(crt_subj, NID_commonName, cn, LM_SSL_CN_MAX) > 0) {
         gchar *domain = cn;
 
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
                "%s: server = '%s', cn = '%s'\n",
                __FILE__, server, cn);
-        
+
         if ((cn[0] == '*') && (cn[1] == '.')) {
             domain = strstr (cn, server);
         }
@@ -227,7 +227,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
         g_warning ("X509_NAME_get_text_by_NID() failed");
     }
 
-    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, 
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
            "%s:\n\tIssuer: %s\n\tSubject: %s\n\tFor: %s\n",
            __FILE__,
            X509_NAME_oneline(X509_get_issuer_name(srv_crt), NULL, 0),
@@ -235,7 +235,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
            cn);
 
     g_free(cn);
-    
+
     return retval;
 }
 
@@ -283,7 +283,7 @@ _lm_ssl_new (const gchar    *expected_fingerprint,
 }
 
 void
-_lm_ssl_initialize (LmSSL *ssl) 
+_lm_ssl_initialize (LmSSL *ssl)
 {
     static gboolean initialized = FALSE;
     /*const char *cert_file = NULL;*/
@@ -306,8 +306,8 @@ _lm_ssl_initialize (LmSSL *ssl)
         abort();
     }
 
-    /* Set the NO_TICKET option on the context to allow for talk to Google Talk 
-     * which apparently seems to be having a problem handling empty session 
+    /* Set the NO_TICKET option on the context to allow for talk to Google Talk
+     * which apparently seems to be having a problem handling empty session
      * tickets due to a bug in Java.
      *
      * See http://twistedmatrix.com/trac/ticket/3463 and
@@ -382,8 +382,8 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
                      "*** SSL certificate verification failed");
         return FALSE;
     }
-    
-    return TRUE; 
+
+    return TRUE;
 }
 
 GIOStatus
@@ -398,7 +398,7 @@ _lm_ssl_read (LmSSL *ssl, gchar *buf, gint len, gsize *bytes_read)
     if (status == G_IO_STATUS_NORMAL) {
         *bytes_read = ssl_ret;
     }
-    
+
     return status;
 }
 
@@ -420,7 +420,7 @@ _lm_ssl_send (LmSSL *ssl, const gchar *str, gint len)
     return ssl_ret;
 }
 
-void 
+void
 _lm_ssl_close (LmSSL *ssl)
 {
     if (ssl->ssl != NULL) {

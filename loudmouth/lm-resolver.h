@@ -41,7 +41,7 @@ struct LmResolver {
 
 struct LmResolverClass {
     GObjectClass parent_class;
-    
+
     /* <vtable> */
     void (*lookup)  (LmResolver  *resolver);
     void (*cancel)  (LmResolver  *resolver);
@@ -75,21 +75,21 @@ LmResolver *      lm_resolver_new_for_service   (const gchar        *domain,
                                                  gpointer            user_data);
 void              lm_resolver_lookup            (LmResolver         *resolver);
 void              lm_resolver_cancel            (LmResolver         *resolver);
-/* To iterate through the results */ 
+/* To iterate through the results */
 struct addrinfo * lm_resolver_results_get_next  (LmResolver         *resolver);
 void              lm_resolver_results_reset     (LmResolver         *resolver);
 
 /* Only for sub classes */
-gchar *           _lm_resolver_create_srv_string (const gchar        *domain, 
+gchar *           _lm_resolver_create_srv_string (const gchar        *domain,
                                                   const gchar        *service,
                                                   const gchar        *protocol);
 
 void              _lm_resolver_set_result       (LmResolver         *resolver,
                                                  LmResolverResult    result,
                                                  struct addrinfo    *results);
-gboolean        _lm_resolver_parse_srv_response (unsigned char      *srv, 
-                                                 int                 srv_len, 
-                                                 gchar            **out_server, 
+gboolean        _lm_resolver_parse_srv_response (unsigned char      *srv,
+                                                 int                 srv_len,
+                                                 gchar            **out_server,
                                                  guint              *out_port);
 
 G_END_DECLS

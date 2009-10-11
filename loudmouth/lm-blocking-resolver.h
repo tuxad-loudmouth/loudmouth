@@ -23,7 +23,7 @@
 
 #include <glib-object.h>
 
-#include "lm-resolver.h" 
+#include "lm-resolver.h"
 
 G_BEGIN_DECLS
 

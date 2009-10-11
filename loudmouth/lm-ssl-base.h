@@ -38,7 +38,7 @@ struct _LmSSLBase {
     gint            ref_count;
 };
 
-void _lm_ssl_base_init         (LmSSLBase      *base, 
+void _lm_ssl_base_init         (LmSSLBase      *base,
                                 const gchar    *expected_fingerprint,
                                 LmSSLFunction   ssl_function,
                                 gpointer        user_data,

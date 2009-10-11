@@ -97,7 +97,7 @@ lm_feature_ping_class_init (LmFeaturePingClass *class)
                                                         0,
                                                         G_PARAM_READWRITE));
 
-    signals[TIMED_OUT] = 
+    signals[TIMED_OUT] =
         g_signal_new ("timed-out",
                       G_OBJECT_CLASS_TYPE (object_class),
                       G_SIGNAL_RUN_LAST,
@@ -105,7 +105,7 @@ lm_feature_ping_class_init (LmFeaturePingClass *class)
                       NULL, NULL,
                       _lm_marshal_VOID__VOID,
                       G_TYPE_NONE, 0);
-    
+
     g_type_class_add_private (object_class, sizeof (LmFeaturePingPriv));
 }
 
@@ -183,7 +183,7 @@ feature_ping_keep_alive_reply (LmMessageHandler *handler,
     priv = GET_PRIV (user_data);
 
     priv->keep_alive_counter = 0;
-    
+
     return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 
@@ -211,7 +211,7 @@ feature_ping_send_keep_alive (LmFeaturePing *fp)
     }
 
     server = _lm_connection_get_server (priv->connection);
-    
+
     ping = lm_message_new_with_sub_type (server,
                                          LM_MESSAGE_TYPE_IQ,
                                          LM_MESSAGE_SUB_TYPE_GET);

@@ -38,8 +38,8 @@ G_BEGIN_DECLS
  * @prev: previous sibling
  * @parent: node parent
  * @children: pointing to first child
- * 
- * A struct representing a node in a message. 
+ *
+ * A struct representing a node in a message.
  */
 typedef struct _LmMessageNode LmMessageNode;
 

@@ -70,17 +70,17 @@ lm_dummy_class_init (LmDummyClass *class)
                                                           "My Property",
                                                           NULL,
                                                           G_PARAM_READWRITE));
-    
-    signals[SIGNAL_NAME] = 
+
+    signals[SIGNAL_NAME] =
         g_signal_new ("signal-name",
                       G_OBJECT_CLASS_TYPE (object_class),
                       G_SIGNAL_RUN_LAST,
                       0,
                       NULL, NULL,
                       _lm_marshal_VOID__INT,
-                      G_TYPE_NONE, 
+                      G_TYPE_NONE,
                       1, G_TYPE_INT);
-    
+
     g_type_class_add_private (object_class, sizeof (LmDummyPriv));
 }
 

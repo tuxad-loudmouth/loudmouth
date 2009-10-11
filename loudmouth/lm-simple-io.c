@@ -72,7 +72,7 @@ lm_simple_io_class_init (LmSimpleIOClass *class)
                                                           "My Property",
                                                           NULL,
                                                           G_PARAM_READWRITE));
-    
+
     g_type_class_add_private (object_class, sizeof (LmSimpleIOPriv));
 }
 

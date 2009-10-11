@@ -22,7 +22,7 @@
 #include "lm-ssl-internals.h"
 
 void
-_lm_ssl_base_init (LmSSLBase      *base, 
+_lm_ssl_base_init (LmSSLBase      *base,
                    const gchar    *expected_fingerprint,
                    LmSSLFunction   ssl_function,
                    gpointer        user_data,
@@ -33,7 +33,7 @@ _lm_ssl_base_init (LmSSLBase      *base,
     base->func_data      = user_data;
     base->data_notify    = notify;
     base->fingerprint[0] = '\0';
-    
+
     if (expected_fingerprint) {
         base->expected_fingerprint = g_memdup (expected_fingerprint, 16);
     } else {

@@ -40,7 +40,7 @@ typedef void (*LmSASLResultHandler) (LmSASL               *sasl,
 
 LmSASL *           lm_sasl_new              (LmConnection         *connection);
 
-void               lm_sasl_authenticate     (LmSASL               *sasl, 
+void               lm_sasl_authenticate     (LmSASL               *sasl,
                                              LmAuthParameters     *auth_params,
                                              const gchar          *server,
                                              LmSASLResultHandler   handler);

@@ -67,19 +67,19 @@ gboolean         _lm_old_socket_failed_with_error (LmConnectData         *data,
 gboolean         _lm_old_socket_failed            (LmConnectData         *data);
 void             _lm_old_socket_succeeded         (LmConnectData         *data);
 
-LmCallback *     _lm_utils_new_callback       (gpointer               func, 
+LmCallback *     _lm_utils_new_callback       (gpointer               func,
                                                gpointer               data,
                                                GDestroyNotify         notify);
 void             _lm_utils_free_callback      (LmCallback            *cb);
 
 gchar *          _lm_utils_generate_id        (void);
-gchar *          
+gchar *
 _lm_utils_hostname_to_punycode                (const gchar           *hostname);
 const gchar *    _lm_message_type_to_string   (LmMessageType          type);
-const gchar * 
+const gchar *
 _lm_message_sub_type_to_string                (LmMessageSubType       type);
 LmMessage *      _lm_message_new_from_node    (LmMessageNode         *node);
-void            
+void
 _lm_message_node_add_child_node               (LmMessageNode         *node,
                                                LmMessageNode         *child);
 LmMessageNode *  _lm_message_node_new         (const gchar           *name);
@@ -87,7 +87,7 @@ void             _lm_debug_init               (void);
 gboolean         _lm_proxy_connect_cb         (GIOChannel            *source,
                                                GIOCondition           condition,
                                                gpointer               data);
-LmHandlerResult    
+LmHandlerResult
 _lm_message_handler_handle_message            (LmMessageHandler      *handler,
                                                LmConnection          *conn,
                                                LmMessage             *messag);
@@ -106,11 +106,11 @@ int              _lm_sock_connect             (LmOldSocketT              sock,
 gboolean         _lm_sock_is_blocking_error   (int                    err);
 gboolean         _lm_sock_is_blocking_success (int                    err);
 int              _lm_sock_get_last_error      (void);
-void             _lm_sock_get_error           (LmOldSocketT              sock, 
-                                               void                  *error, 
+void             _lm_sock_get_error           (LmOldSocketT              sock,
+                                               void                  *error,
                                                socklen_t             *len);
 const gchar *    _lm_sock_get_error_str       (int                    err);
-const gchar * 
+const gchar *
 _lm_sock_addrinfo_get_error_str               (int                    err);
 gchar       *    _lm_sock_get_local_host      (LmOldSocketT              sock);
 

@@ -82,7 +82,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
             return FALSE;
         }
     }
-    
+
     if (status & GNUTLS_CERT_INVALID
         || status & GNUTLS_CERT_REVOKED) {
         if (base->func (ssl, LM_SSL_STATUS_UNTRUSTED_CERT,
@@ -90,27 +90,27 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
             return FALSE;
         }
     }
-    
+
     if (gnutls_certificate_expiration_time_peers (ssl->gnutls_session) < time (0)) {
         if (base->func (ssl, LM_SSL_STATUS_CERT_EXPIRED,
                         base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
             return FALSE;
         }
     }
-    
+
     if (gnutls_certificate_activation_time_peers (ssl->gnutls_session) > time (0)) {
         if (base->func (ssl, LM_SSL_STATUS_CERT_NOT_ACTIVATED,
                         base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
             return FALSE;
         }
     }
-    
+
     if (gnutls_certificate_type_get (ssl->gnutls_session) == GNUTLS_CRT_X509) {
         const gnutls_datum* cert_list;
         guint cert_list_size;
         size_t digest_size;
         gnutls_x509_crt cert;
-        
+
         cert_list = gnutls_certificate_get_peers (ssl->gnutls_session, &cert_list_size);
         if (cert_list == NULL) {
             if (base->func (ssl, LM_SSL_STATUS_NO_CERT_FOUND,
@@ -123,7 +123,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
 
         if (gnutls_x509_crt_import (cert, &cert_list[0],
                                     GNUTLS_X509_FMT_DER) != 0) {
-            if (base->func (ssl, LM_SSL_STATUS_NO_CERT_FOUND, 
+            if (base->func (ssl, LM_SSL_STATUS_NO_CERT_FOUND,
                             base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
                 return FALSE;
             }
@@ -144,7 +144,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
                                 base->fingerprint,
                                 &digest_size) >= 0) {
             if (base->expected_fingerprint &&
-                memcmp (base->expected_fingerprint, 
+                memcmp (base->expected_fingerprint,
                         base->fingerprint,
                         digest_size) &&
                 base->func (ssl,
@@ -152,11 +152,11 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
                             base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
                 return FALSE;
             }
-        } 
+        }
         else if (base->func (ssl, LM_SSL_STATUS_GENERIC_ERROR,
                              base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
-            return FALSE; 
-        } 
+            return FALSE;
+        }
     }
 
     return TRUE;
@@ -182,7 +182,7 @@ _lm_ssl_new (const gchar    *expected_fingerprint,
 }
 
 void
-_lm_ssl_initialize (LmSSL *ssl) 
+_lm_ssl_initialize (LmSSL *ssl)
 {
     gnutls_global_init ();
     gnutls_certificate_allocate_credentials (&ssl->gnutls_xcred);
@@ -229,10 +229,10 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
             errmsg = "handshake failed";
         }
 
-        g_set_error (error, 
+        g_set_error (error,
                      LM_ERROR, LM_ERROR_CONNECTION_OPEN,
                      "*** GNUTLS %s: %s",
-                     errmsg, gnutls_strerror (ret));            
+                     errmsg, gnutls_strerror (ret));
 
         return FALSE;
     }
@@ -283,15 +283,15 @@ _lm_ssl_send (LmSSL *ssl, const gchar *str, gint len)
             bytes_written != GNUTLS_E_AGAIN) {
             return -1;
         }
-    
-        bytes_written = gnutls_record_send (ssl->gnutls_session, 
+
+        bytes_written = gnutls_record_send (ssl->gnutls_session,
                                             str, len);
     }
 
     return bytes_written;
 }
 
-void 
+void
 _lm_ssl_close (LmSSL *ssl)
 {
     if (!ssl->started)

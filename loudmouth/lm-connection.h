@@ -34,21 +34,21 @@ G_BEGIN_DECLS
 /**
  * LM_CONNECTION:
  * @o: pointer to cast
- * 
+ *
  * Convenience macro used to cast a pointer to a #LmConnection.
  */
 #define LM_CONNECTION(o) (LmConnection *) o;
 
 /**
  * LM_CONNECTION_DEFAULT_PORT:
- * 
+ *
  * Default jabber client port.
  */
 #define LM_CONNECTION_DEFAULT_PORT     5222
 
 /**
  * LM_CONNECTION_DEFAULT_PORT_SSL:
- * 
+ *
  * Default jabber client port when using SSL encryption.
  */
 #define LM_CONNECTION_DEFAULT_PORT_SSL 5223
@@ -61,7 +61,7 @@ typedef struct LmMessageHandler LmMessageHandler;
  * LmHandlerResult:
  * @LM_HANDLER_RESULT_REMOVE_MESSAGE: Stop calling message handlers. The message handler returning this declares the message has been handled and should be removed.
  * @LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS: Return to continue the calling handlers from the handler list. This declares that another handlers should handle the message.
- * 
+ *
  * The return type of an LmMessageHandler. This determines whether more message handlers should be called.
  */
 typedef enum {
@@ -74,7 +74,7 @@ typedef enum {
  * @LM_HANDLER_PRIORITY_LAST: Call the handler after all handlers with #NORMAL and #FIRST priority.
  * @LM_HANDLER_PRIORITY_NORMAL: Called before handlers with priority #LAST and after those with #FIRST.
  * @LM_HANDLER_PRIORITY_FIRST: These are called before all other handlers.
- * 
+ *
  * Since the handlers decide whether to stop the calling chain with there return values it's sometimes decirable to be able to set priority. For example a handler that only logs all incoming messages and then pass the message on to another handler wants to have priority %LM_HANDLER_PRIORITY_FIRST. An handler that should take all messages that wasn't handled by anything else would want to have priority %LM_HANDLER_PRIORITY_LAST. If several handlers have the same priority nothing can be said about the order the handlers will be called in.
  */
 typedef enum {
@@ -89,7 +89,7 @@ typedef enum {
  * @LM_DISCONNECT_REASON_HUP: The socket emitted that the connection was hung up.
  * @LM_DISCONNECT_REASON_ERROR: A generic error somewhere in the transport layer.
  * @LM_DISCONNECT_REASON_RESOURCE_CONFLICT:  * @LM_DISCONNECT_REASON_INVALID_XML:  * @LM_DISCONNECT_REASON_UNKNOWN: An unknown error.
- * 
+ *
  * Sent with #LmDisconnectFunction to describe why a connection was closed.
  */
 typedef enum {
@@ -109,7 +109,7 @@ typedef enum {
  * @LM_CONNECTION_STATE_OPEN: The connection is open.
  * @LM_CONNECTION_STATE_AUTHENTICATING: The connection is in the process of authenticating.
  * @LM_CONNECTION_STATE_AUTHENTICATED: The connection is authenticated and is ready to start sending/receiving messages.
- * 
+ *
  * Describes the current state of an #LmConnection.
  */
 typedef enum {
@@ -125,7 +125,7 @@ typedef enum {
  * @connection: an #LmConnection
  * @success: the result, %TRUE if operation succeeded, otherwise %FALSE
  * @user_data: User data passed when function being called.
- * 
+ *
  * Callback for informing if an asynchronous operation was successful.
  */
 typedef void          (* LmResultFunction)     (LmConnection       *connection,
@@ -137,7 +137,7 @@ typedef void          (* LmResultFunction)     (LmConnection       *connection,
  * @connection: an #LmConnection
  * @reason: the reason the connection was closed.
  * @user_data: User data passed when function being called.
- * 
+ *
  * Callback called when a connection is closed.
  */
 typedef void         (* LmDisconnectFunction) (LmConnection       *connection,
@@ -205,7 +205,7 @@ gboolean      lm_connection_send_with_reply   (LmConnection       *connection,
                                                LmMessage          *message,
                                                LmMessageHandler   *handler,
                                                GError            **error);
-LmMessage *   
+LmMessage *
 lm_connection_send_with_reply_and_block       (LmConnection       *connection,
                                                LmMessage          *message,
                                                GError            **error);
@@ -218,12 +218,12 @@ void
 lm_connection_unregister_message_handler      (LmConnection       *connection,
                                                LmMessageHandler   *handler,
                                                LmMessageType       type);
-void 
+void
 lm_connection_set_disconnect_function         (LmConnection       *connection,
                                                LmDisconnectFunction function,
                                                gpointer             user_data,
                                                GDestroyNotify       notify);
-                           
+
 gboolean      lm_connection_send_raw          (LmConnection       *connection,
                                                const gchar        *str,
                                                GError            **error);

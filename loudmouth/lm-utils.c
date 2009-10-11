@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- * Copyright (C) 2003 Imendio AB 
+ * Copyright (C) 2003 Imendio AB
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -22,7 +22,7 @@
  * SECTION:lm-utils
  * @Title: Miscellaneous Utility Functions
  * @Short_description: Miscellaneous Utility Functions
- * 
+ *
  * Functions to help application developers when writing XMPP applications using Loudmouth.
  */
 
@@ -48,12 +48,12 @@
 #include "lm-utils.h"
 
 LmCallback *
-_lm_utils_new_callback (gpointer       func, 
+_lm_utils_new_callback (gpointer       func,
                         gpointer       user_data,
                         GDestroyNotify notify)
 {
     LmCallback *cb;
-    
+
     cb = g_new0 (LmCallback, 1);
     cb->func = func;
     cb->user_data = user_data;
@@ -84,7 +84,7 @@ _lm_utils_generate_id (void)
 
     g_get_current_time (&tv);
     val = (tv.tv_sec & tv.tv_usec) + last_id++;
-        
+
     return g_strdup_printf ("%ld%ld", val, tv.tv_usec);
 }
 
@@ -123,7 +123,7 @@ _lm_utils_hostname_to_punycode (const gchar *hostname)
  * @stamp: An XMPP timestamp
  *
  * Converts an XMPP timestamp to a struct tm showing local time.
- * 
+ *
  * Return value: The local time struct.
  **/
 struct tm *
@@ -132,12 +132,12 @@ lm_utils_get_localtime (const gchar *stamp)
     struct tm tm;
     time_t    t;
     gint      year, month;
-    
+
     g_return_val_if_fail (stamp != NULL, NULL);
 
     /* 20021209T23:51:30 */
 
-    sscanf (stamp, "%4d%2d%2dT%2d:%2d:%2d", 
+    sscanf (stamp, "%4d%2d%2dT%2d:%2d:%2d",
             &year, &month, &tm.tm_mday, &tm.tm_hour,
             &tm.tm_min, &tm.tm_sec);
 
@@ -154,7 +154,7 @@ lm_utils_get_localtime (const gchar *stamp)
     if (tm.tm_isdst > 0) {
         t += 3600;
     }
-#endif  
+#endif
 
     return localtime (&t);
 }

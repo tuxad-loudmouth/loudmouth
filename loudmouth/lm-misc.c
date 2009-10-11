@@ -43,9 +43,9 @@ lm_misc_add_io_watch (GMainContext *context,
                       gpointer      data)
 {
     GSource *source;
-                                                                                
+
     g_return_val_if_fail (channel != NULL, 0);
-                                                                                
+
     source = g_io_create_watch (channel, condition);
     misc_setup_source (context, source, (GSourceFunc) function, data);
 
@@ -58,12 +58,12 @@ lm_misc_add_idle (GMainContext *context,
                   gpointer      data)
 {
     GSource *source;
-                                                                                
+
     g_return_val_if_fail (function != NULL, 0);
-                                                                                
+
     source = g_idle_source_new ();
     misc_setup_source (context, source, function, data);
-  
+
     return source;
 }
 
@@ -74,12 +74,12 @@ lm_misc_add_timeout (GMainContext *context,
                      gpointer      data)
 {
     GSource *source;
-                                                                                
+
     g_return_val_if_fail (function != NULL, 0);
-                                                                                
+
     source = g_timeout_source_new (interval);
     misc_setup_source (context, source, function, data);
-  
+
     return source;
 }
 

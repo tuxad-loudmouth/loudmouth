@@ -22,7 +22,7 @@
  * SECTION:lm-message-handler
  * @Title: LmMessageHandler
  * @Short_description: A handler for incoming messages.
- * 
+ *
  *  A handler can be registered to listen to incoming messages with lm_connection_register_message_handler(). When a message is recieved the handlers of the correct type will be called.
  */
 
@@ -39,23 +39,23 @@ struct LmMessageHandler {
     GDestroyNotify          notify;
 };
 
-LmHandlerResult 
+LmHandlerResult
 _lm_message_handler_handle_message (LmMessageHandler *handler,
                                     LmConnection     *connection,
                                     LmMessage        *message)
 {
-    g_return_val_if_fail (handler != NULL, 
+    g_return_val_if_fail (handler != NULL,
                           LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS);
 
     if (!handler->valid) {
         return LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
     }
-        
+
     if (handler->function) {
-        return (* handler->function) (handler, connection, 
+        return (* handler->function) (handler, connection,
                                       message, handler->user_data);
     }
-        
+
     return LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
 }
 
@@ -64,13 +64,13 @@ _lm_message_handler_handle_message (LmMessageHandler *handler,
  * @function: a callback
  * @user_data: user data passed to function
  * @notify: function called when the message handler is freed
- * 
+ *
  * Creates a new message handler. This can be set to handle incoming messages
  * and when a message of the type the handler is registered to handle is
  * received @function will be called and @user_data will be passed to it.
  * @notify is called when the message handler is freed, that way any memory
  * allocated by @user_data can be freed.
- * 
+ *
  * Return value: a newly created message handler
  **/
 LmMessageHandler *
@@ -81,19 +81,19 @@ lm_message_handler_new (LmHandleMessageFunction function,
     LmMessageHandler *handler;
 
     g_return_val_if_fail (function != NULL, NULL);
-        
+
     handler = g_new0 (LmMessageHandler, 1);
-        
+
     if (handler == NULL) {
         return NULL;
     }
-        
-    handler->valid     = TRUE;  
+
+    handler->valid     = TRUE;
     handler->ref_count = 1;
     handler->function  = function;
     handler->user_data = user_data;
     handler->notify    = notify;
-        
+
     return handler;
 }
 
@@ -128,16 +128,16 @@ lm_message_handler_is_valid (LmMessageHandler *handler)
 /**
  * lm_message_handler_ref:
  * @handler: an #LmMessageHandler
- * 
+ *
  * Adds a reference to @handler.
- * 
+ *
  * Return value: the message handler
  **/
 LmMessageHandler *
 lm_message_handler_ref (LmMessageHandler *handler)
 {
     g_return_val_if_fail (handler != NULL, NULL);
-        
+
     handler->ref_count++;
 
     return handler;
@@ -146,17 +146,17 @@ lm_message_handler_ref (LmMessageHandler *handler)
 /**
  * lm_message_handler_unref:
  * @handler: an #LmMessagHandler
- * 
- * Removes a reference from @handler. When no more references are present the 
+ *
+ * Removes a reference from @handler. When no more references are present the
  * handler is freed.
  **/
 void
 lm_message_handler_unref (LmMessageHandler *handler)
 {
     g_return_if_fail (handler != NULL);
-        
+
     handler->ref_count --;
-        
+
     if (handler->ref_count == 0) {
         if (handler->notify) {
             (* handler->notify) (handler->user_data);

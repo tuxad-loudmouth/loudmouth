@@ -22,7 +22,7 @@
  * SECTION:lm-message
  * @Title: LmMessage
  * @Short_description: A message is built up like a tree of message nodes.
- * 
+ *
  * Represents a message that can be sent with lm_connection_send(), lm_connection_send_with_reply() or lm_connection_send_with_reply_and_block(). Either use lm_message_new() or lm_message_new_with_subtype() to create a message. You need to call lm_message_unref() when are finished with it.
  */
 
@@ -34,7 +34,7 @@
 
 #define PRIV(o) ((LmMessage *)o)->priv
 
-static struct TypeNames 
+static struct TypeNames
 {
     LmMessageType  type;
     const gchar   *name;
@@ -55,7 +55,7 @@ static struct TypeNames
     { LM_MESSAGE_TYPE_UNKNOWN,         NULL              }
 };
 
-static struct SubTypeNames 
+static struct SubTypeNames
 {
     LmMessageSubType  type;
     const gchar      *name;
@@ -72,7 +72,7 @@ static struct SubTypeNames
     { LM_MESSAGE_SUB_TYPE_UNSUBSCRIBED,    "unsubscribed"  },
     { LM_MESSAGE_SUB_TYPE_GET,             "get"           },
     { LM_MESSAGE_SUB_TYPE_SET,             "set"           },
-    { LM_MESSAGE_SUB_TYPE_RESULT,          "result"        }, 
+    { LM_MESSAGE_SUB_TYPE_RESULT,          "result"        },
     { LM_MESSAGE_SUB_TYPE_ERROR,           "error"         }
 };
 
@@ -126,7 +126,7 @@ message_sub_type_from_string (const gchar *type_str)
     for (i = LM_MESSAGE_SUB_TYPE_NORMAL;
          i <= LM_MESSAGE_SUB_TYPE_ERROR;
          ++i) {
-        if (g_ascii_strcasecmp (type_str, 
+        if (g_ascii_strcasecmp (type_str,
                                 sub_type_names[i].name) == 0) {
             return i;
         }
@@ -178,7 +178,7 @@ _lm_message_new_from_node (LmMessageNode *node)
     LmMessageType     type;
     LmMessageSubType  sub_type;
     const gchar      *sub_type_str;
-    
+
     type = message_type_from_string (node->name);
 
     if (type == LM_MESSAGE_TYPE_UNKNOWN) {
@@ -194,13 +194,13 @@ _lm_message_new_from_node (LmMessageNode *node)
 
     m = g_new0 (LmMessage, 1);
     m->priv = g_new0 (LmMessagePriv, 1);
-    
+
     PRIV(m)->ref_count = 1;
     PRIV(m)->type = type;
     PRIV(m)->sub_type = sub_type;
-    
+
     m->node = lm_message_node_ref (node);
-    
+
     return m;
 }
 
@@ -208,12 +208,12 @@ _lm_message_new_from_node (LmMessageNode *node)
  * lm_message_new:
  * @to: receipient jid
  * @type: message type
- * 
- * Creates a new #LmMessage which can be sent with lm_connection_send() or 
+ *
+ * Creates a new #LmMessage which can be sent with lm_connection_send() or
  * lm_connection_send_with_reply(). If @to is %NULL the message is sent to the
- * server. The returned message should be unreferenced with lm_message_unref() 
+ * server. The returned message should be unreferenced with lm_message_unref()
  * when caller is finished with it.
- * 
+ *
  * Return value: a newly created #LmMessage
  **/
 LmMessage *
@@ -228,7 +228,7 @@ lm_message_new (const gchar *to, LmMessageType type)
     PRIV(m)->ref_count = 1;
     PRIV(m)->type      = type;
     PRIV(m)->sub_type  = message_sub_type_when_unset (type);
-    
+
     m->node = _lm_message_node_new (_lm_message_type_to_string (type));
 
     if (type != LM_MESSAGE_TYPE_STREAM) {
@@ -244,7 +244,7 @@ lm_message_new (const gchar *to, LmMessageType type)
     if (type == LM_MESSAGE_TYPE_IQ) {
         lm_message_node_set_attribute (m->node, "type", "get");
     }
-    
+
     return m;
 }
 
@@ -253,15 +253,15 @@ lm_message_new (const gchar *to, LmMessageType type)
  * @to: receipient jid
  * @type: message type
  * @sub_type: message sub type
- * 
- * Creates a new #LmMessage with sub type set. See lm_message_new() for more 
+ *
+ * Creates a new #LmMessage with sub type set. See lm_message_new() for more
  * information.
- * 
+ *
  * Return value: a newly created #LmMessage
  **/
 LmMessage *
 lm_message_new_with_sub_type (const gchar      *to,
-                              LmMessageType     type, 
+                              LmMessageType     type,
                               LmMessageSubType  sub_type)
 {
     LmMessage   *m;
@@ -283,74 +283,74 @@ lm_message_new_with_sub_type (const gchar      *to,
 /**
  * lm_message_get_type:
  * @message: an #LmMessage
- * 
+ *
  * Fetches the type of @message.
- * 
+ *
  * Return value: the message type
  **/
 LmMessageType
 lm_message_get_type (LmMessage *message)
 {
     g_return_val_if_fail (message != NULL, LM_MESSAGE_TYPE_UNKNOWN);
-    
+
     return PRIV(message)->type;
 }
 
 /**
  * lm_message_get_sub_type:
- * @message: 
- * 
+ * @message:
+ *
  * Fetches the sub type of @message.
- * 
+ *
  * Return value: the message sub type
  **/
 LmMessageSubType
 lm_message_get_sub_type (LmMessage *message)
 {
     g_return_val_if_fail (message != NULL, LM_MESSAGE_TYPE_UNKNOWN);
-    
+
     return PRIV(message)->sub_type;
 }
 
 /**
  * lm_message_get_node:
  * @message: an #LmMessage
- * 
+ *
  * Retrieves the root node from @message.
- * 
+ *
  * Return value: an #LmMessageNode
  **/
 LmMessageNode *
 lm_message_get_node (LmMessage *message)
 {
     g_return_val_if_fail (message != NULL, NULL);
-    
+
     return message->node;
 }
 
 /**
  * lm_message_ref:
  * @message: an #LmMessage
- * 
+ *
  * Adds a reference to @message.
- * 
+ *
  * Return value: the message
  **/
 LmMessage *
 lm_message_ref (LmMessage *message)
 {
     g_return_val_if_fail (message != NULL, NULL);
-    
+
     PRIV(message)->ref_count++;
-    
+
     return message;
 }
 
 /**
  * lm_message_unref:
  * @message: an #LmMessage
- * 
- * Removes a reference from @message. When no more references are present the 
+ *
+ * Removes a reference from @message. When no more references are present the
  * message is freed.
  **/
 void
@@ -359,7 +359,7 @@ lm_message_unref (LmMessage *message)
     g_return_if_fail (message != NULL);
 
     PRIV(message)->ref_count--;
-    
+
     if (PRIV(message)->ref_count == 0) {
         lm_message_node_unref (message->node);
         g_free (message->priv);

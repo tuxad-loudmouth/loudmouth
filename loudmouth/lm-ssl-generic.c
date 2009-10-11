@@ -24,7 +24,7 @@
 #include "lm-ssl-base.h"
 #include "lm-ssl-internals.h"
 
-LmSSLResponse  
+LmSSLResponse
 _lm_ssl_func_always_continue (LmSSL       *ssl,
                               LmSSLStatus  status,
                               gpointer     user_data)
@@ -71,13 +71,13 @@ _lm_ssl_read (LmSSL *ssl,
     return G_IO_STATUS_EOF;
 }
 
-gboolean 
+gboolean
 _lm_ssl_send (LmSSL *ssl, const gchar *str, gint len)
 {
     /* NOOP */
     return TRUE;
 }
-void 
+void
 _lm_ssl_close (LmSSL *ssl)
 {
     /* NOOP */
@@ -100,7 +100,7 @@ _lm_ssl_free (LmSSL *ssl)
  * @user_data: Data sent with the callback.
  * @notify: Function to free @user_dataa when the connection is finished. %NULL if @user_data should not be freed.
  *
- * Creates a new SSL struct, call #lm_connection_set_ssl to use it. 
+ * Creates a new SSL struct, call #lm_connection_set_ssl to use it.
  *
  * Return value: A new #LmSSL struct.
  **/
@@ -111,7 +111,7 @@ lm_ssl_new (const gchar    *expected_fingerprint,
             GDestroyNotify  notify)
 {
     /* The implementation of this function will be different depending
-     * on which implementation is used 
+     * on which implementation is used
      */
     return _lm_ssl_new (expected_fingerprint,
                         ssl_function, user_data, notify);
@@ -136,27 +136,27 @@ lm_ssl_is_supported (void)
 
 
 /**
- * lm_ssl_get_fingerprint: 
+ * lm_ssl_get_fingerprint:
  * @ssl: an #LmSSL
  *
  * Returns the MD5 fingerprint of the remote server's certificate.
- * 
+ *
  * Return value: A 16-byte array representing the fingerprint or %NULL if unknown.
  **/
 const gchar *
 lm_ssl_get_fingerprint (LmSSL *ssl)
 {
     g_return_val_if_fail (ssl != NULL, NULL);
-    
+
     return LM_SSL_BASE(ssl)->fingerprint;
 }
 
 /**
  * lm_ssl_ref:
  * @ssl: an #LmSSL
- * 
+ *
  * Adds a reference to @ssl.
- * 
+ *
  * Return value: the ssl
  **/
 LmSSL *
@@ -218,26 +218,26 @@ lm_ssl_get_require_starttls (LmSSL *ssl)
 /**
  * lm_ssl_unref
  * @ssl: an #LmSSL
- * 
+ *
  * Removes a reference from @ssl. When no more references are present
  * @ssl is freed.
  **/
-void 
+void
 lm_ssl_unref (LmSSL *ssl)
 {
     LmSSLBase *base;
-    
+
     g_return_if_fail (ssl != NULL);
-        
+
     base = LM_SSL_BASE (ssl);
 
     base->ref_count --;
-        
+
     if (base->ref_count == 0) {
         if (base->data_notify) {
             (* base->data_notify) (base->func_data);
         }
-             
+
         _lm_ssl_free (ssl);
     }
 }

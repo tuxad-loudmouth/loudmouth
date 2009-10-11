@@ -2,7 +2,7 @@
 
 #include <loudmouth.h>
 #include "lm-blocking-resolver.h"
-        
+
 GMainLoop *main_loop;
 
 static void

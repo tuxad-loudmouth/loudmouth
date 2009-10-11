@@ -24,7 +24,7 @@
  * SECTION:lm-connection
  * @Title: LmConnection
  * @Short_description: A client connection to the server
- * 
+ *
  * An example of how to use Loudmouth with the synchronous API.
  * <informalexample><programlisting>
  * int
@@ -36,30 +36,30 @@
  *      LmMessage    *m;
  *
  *      connection = lm_connection_new ("myserver");
- * 
+ *
  *      if (!lm_connection_open_and_block (connection, &amp;error)) {
  *          g_error ("Failed to open: &percnt;s\n", error->message);
  *      }
- * 
+ *
  *      if (!lm_connection_authenticate_and_block (connection,
- *                                                 "username", "password", 
+ *                                                 "username", "password",
  *                                                 "resource",
  *                                                 &amp;error)) {
  *          g_error ("Failed to authenticate: &percnt;s\n", error->message);
  *      }
- *  
+ *
  *      m = lm_message_new ("recipient", LM_MESSAGE_TYPE_MESSAGE);
  *      lm_message_node_add_child (m->node, "body", "message");
- *  
+ *
  *      if (!lm_connection_send (connection, m, &amp;error)) {
  *          g_error ("Send failed: &percnt;s\n", error->message);
  *      }
- * 
+ *
  *      lm_message_unref (m);
- * 
+ *
  *      lm_connection_close (connection, NULL);
  *      lm_connection_unref (connection);
- *  
+ *
  *      return 0;
  * }
  * </programlisting></informalexample>
@@ -68,7 +68,7 @@
 #include <config.h>
 
 #include <string.h>
-#include <sys/stat.h> 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
@@ -106,7 +106,7 @@ typedef struct {
 struct _LmConnection {
     /* Parameters */
     GMainContext      *context;
-    
+
     /* TODO: Clean up this and make some parameter object for server, jid, effective jid etc */
     gchar             *server;
     gchar             *jid;
@@ -170,14 +170,14 @@ static void     connection_new_message_cb    (LmParser            *parser,
 static gboolean connection_do_open           (LmConnection        *connection,
                                               GError             **error);
 void            connection_do_close          (LmConnection        *connection);
-static LmMessage *     
+static LmMessage *
 connection_create_auth_req_msg               (LmAuthParameters    *auth_params);
-    
+
 static LmMessage *
 connection_create_auth_msg                   (LmConnection        *connection,
                                               LmAuthParameters    *auth_params,
                                               gint                 auth_type);
-static LmHandlerResult 
+static LmHandlerResult
 connection_auth_req_reply                    (LmMessageHandler    *handler,
                                               LmConnection        *connection,
                                               LmMessage           *m,
@@ -188,31 +188,31 @@ connection_auth_reply                        (LmMessageHandler    *handler,
                                               LmConnection        *connection,
                                               LmMessage           *m,
                                               gpointer             user_data);
-static void     connection_stream_received   (LmConnection        *connection, 
+static void     connection_stream_received   (LmConnection        *connection,
                                               LmMessage           *m);
-static void     connection_stream_error      (LmConnection        *connection, 
+static void     connection_stream_error      (LmConnection        *connection,
                                               LmMessage           *m);
-static gint      
+static gint
 connection_handler_compare_func              (HandlerData         *a,
                                               HandlerData         *b);
 static void     connection_start_keep_alive  (LmConnection        *connection);
 static void     connection_stop_keep_alive   (LmConnection        *connection);
-static gboolean connection_send              (LmConnection        *connection, 
-                                              const gchar         *str, 
-                                              gint                 len, 
+static gboolean connection_send              (LmConnection        *connection,
+                                              const gchar         *str,
+                                              gint                 len,
                                               GError             **error);
 static void     connection_message_queue_cb  (LmMessageQueue      *queue,
                                               LmConnection        *connection);
-static void      
+static void
 connection_signal_disconnect                 (LmConnection        *connection,
                                               LmDisconnectReason   reason);
-static void     connection_incoming_data     (LmOldSocket         *socket, 
+static void     connection_incoming_data     (LmOldSocket         *socket,
                                               const gchar         *buf,
                                               LmConnection        *connection);
 static void     connection_socket_closed_cb  (LmOldSocket            *socket,
                                               LmDisconnectReason   reason,
                                               LmConnection        *connection);
-static void      
+static void
 connection_socket_connect_cb                 (LmOldSocket         *socket,
                                               gboolean             result,
                                               LmConnection        *connection);
@@ -221,7 +221,7 @@ connection_get_server_from_jid               (const gchar         *jid,
                                               gchar              **server);
 static void
 connection_send_stream_header                (LmConnection        *connection);
-static LmHandlerResult 
+static LmHandlerResult
 connection_features_cb                       (LmMessageHandler    *handler,
                                               LmConnection        *connection,
                                               LmMessage           *message,
@@ -241,7 +241,7 @@ connection_free_handlers (LmConnection *connection)
 
         for (l = connection->handlers[i]; l; l = l->next) {
             HandlerData *hd = (HandlerData *) l->data;
-            
+
             lm_message_handler_unref (hd->handler);
             g_free (hd);
         }
@@ -276,13 +276,13 @@ connection_free (LmConnection *connection)
     }
 
     connection_free_handlers (connection);
-    
+
     g_hash_table_destroy (connection->id_handlers);
-    
+
     if (connection->open_cb) {
         _lm_utils_free_callback (connection->open_cb);
     }
-    
+
     if (connection->auth_cb) {
         _lm_utils_free_callback (connection->auth_cb);
     }
@@ -348,11 +348,11 @@ connection_handle_message (LmConnection *connection, LmMessage *m)
         goto out;
     }
 
-    for (l = connection->handlers[lm_message_get_type (m)]; 
-         l && result == LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS; 
+    for (l = connection->handlers[lm_message_get_type (m)];
+         l && result == LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS;
          l = l->next) {
         HandlerData *hd = (HandlerData *) l->data;
-        
+
         result = _lm_message_handler_handle_message (hd->handler,
                                                      connection,
                                                      m);
@@ -362,10 +362,10 @@ connection_handle_message (LmConnection *connection, LmMessage *m)
         connection_stream_error (connection, m);
         goto out;
     }
-    
+
  out:
     lm_connection_unref (connection);
-    
+
     return;
 }
 
@@ -375,14 +375,14 @@ connection_new_message_cb (LmParser     *parser,
                            LmConnection *connection)
 {
     const gchar *from;
-    
+
     lm_message_ref (m);
 
     from = lm_message_node_get_attribute (m->node, "from");
     if (!from) {
         from = "unknown";
     }
-    
+
     lm_verbose ("New message with type=\"%s\" from: %s\n",
                 _lm_message_type_to_string (lm_message_get_type (m)),
                 from);
@@ -427,7 +427,7 @@ connection_stop_keep_alive (LmConnection *connection)
                                               connection);
         g_object_unref (connection->feature_ping);
     }
-        
+
     connection->feature_ping = NULL;
 }
 
@@ -437,17 +437,17 @@ connection_log_send (LmConnection *connection,
                      gint          len)
 {
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "\nSEND:\n");
-    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
            "-----------------------------------\n");
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "%s\n", str);
-    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, 
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
            "-----------------------------------\n");
 }
 
 static gboolean
-connection_send (LmConnection  *connection, 
-                 const gchar   *str, 
-                 gint           len, 
+connection_send (LmConnection  *connection,
+                 const gchar   *str,
+                 gint           len,
                  GError       **error)
 {
     gint b_written;
@@ -501,7 +501,7 @@ connection_message_queue_cb (LmMessageQueue *queue, LmConnection *connection)
 /* Returns directly */
 /* Setups all data needed to start the connection attempts */
 static gboolean
-connection_do_open (LmConnection *connection, GError **error) 
+connection_do_open (LmConnection *connection, GError **error)
 {
     gchar *domain = NULL;
 
@@ -537,12 +537,12 @@ connection_do_open (LmConnection *connection, GError **error)
     }
 
     lm_message_queue_attach (connection->queue, connection->context);
-    
+
     connection->state = LM_CONNECTION_STATE_OPENING;
 
     return TRUE;
 }
-                    
+
 void
 connection_do_close (LmConnection *connection)
 {
@@ -553,13 +553,13 @@ connection_do_close (LmConnection *connection)
     }
 
     lm_message_queue_detach (connection->queue);
-    
+
     if (!lm_connection_is_open (connection)) {
         /* lm_connection_is_open is FALSE for state OPENING as well */
         connection->state = LM_CONNECTION_STATE_CLOSED;
         return;
     }
-    
+
     connection->state = LM_CONNECTION_STATE_CLOSED;
 
     if (connection->sasl) {
@@ -573,7 +573,7 @@ connection_create_auth_req_msg (LmAuthParameters *auth_params)
 {
     LmMessage     *m;
     LmMessageNode *q_node;
-    
+
     m = lm_message_new_with_sub_type (NULL, LM_MESSAGE_TYPE_IQ,
                                       LM_MESSAGE_SUB_TYPE_GET);
     q_node = lm_message_node_add_child (m->node, "query", NULL);
@@ -595,15 +595,15 @@ connection_create_auth_msg (LmConnection     *connection,
 
     auth_msg = lm_message_new_with_sub_type (NULL, LM_MESSAGE_TYPE_IQ,
                                              LM_MESSAGE_SUB_TYPE_SET);
-    
+
     q_node = lm_message_node_add_child (auth_msg->node, "query", NULL);
-    
+
     lm_message_node_set_attributes (q_node,
-                                    "xmlns", "jabber:iq:auth", 
+                                    "xmlns", "jabber:iq:auth",
                                     NULL);
 
     lm_message_node_add_child (q_node, "username", lm_auth_parameters_get_username (auth_params));
-    
+
     if (auth_type & AUTH_TYPE_0K) {
         lm_verbose ("Using 0k auth (not implemented yet)\n");
         /* TODO: Should probably use this? */
@@ -619,14 +619,14 @@ connection_create_auth_msg (LmConnection     *connection,
         g_free (str);
         lm_message_node_add_child (q_node, "digest", digest);
         g_free (digest);
-    } 
+    }
     else if (auth_type & AUTH_TYPE_PLAIN) {
         lm_verbose ("Using plaintext auth\n");
         lm_message_node_add_child (q_node, "password", lm_auth_parameters_get_password (auth_params));
     } else {
         /* TODO: Report error somehow */
     }
-    
+
     lm_message_node_add_child (q_node, "resource", lm_auth_parameters_get_resource (auth_params));
 
     return auth_msg;
@@ -643,18 +643,18 @@ connection_auth_req_reply (LmMessageHandler *handler,
     LmMessageHandler *auth_handler;
     LmAuthParameters *auth_params = (LmAuthParameters *) user_data;
     gboolean          result;
-    
+
     auth_type = connection_check_auth_type (m);
 
     auth_msg = connection_create_auth_msg (connection, auth_params, auth_type);
 
     auth_handler = lm_message_handler_new (connection_auth_reply,
                                            NULL, NULL);
-    result = lm_connection_send_with_reply (connection, auth_msg, 
+    result = lm_connection_send_with_reply (connection, auth_msg,
                                             auth_handler, NULL);
     lm_message_handler_unref (auth_handler);
     lm_message_unref (auth_msg);
-    
+
     return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 
@@ -662,10 +662,10 @@ static int
 connection_check_auth_type (LmMessage *auth_req_rpl)
 {
     LmMessageNode *q_node;
-    gint           ret_val = 0; 
+    gint           ret_val = 0;
 
     q_node = lm_message_node_get_child (auth_req_rpl->node, "query");
-    
+
     if (!q_node) {
         return AUTH_TYPE_PLAIN;
     }
@@ -686,7 +686,7 @@ connection_check_auth_type (LmMessage *auth_req_rpl)
     return ret_val;
 }
 
-static LmHandlerResult 
+static LmHandlerResult
 connection_auth_reply (LmMessageHandler *handler,
                        LmConnection     *connection,
                        LmMessage        *m,
@@ -694,37 +694,37 @@ connection_auth_reply (LmMessageHandler *handler,
 {
     const gchar *type;
     gboolean     result = TRUE;
-    
-    g_return_val_if_fail (connection != NULL, 
+
+    g_return_val_if_fail (connection != NULL,
                           LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS);
-    
+
 
     type = lm_message_node_get_attribute (m->node, "type");
     if (strcmp (type, "result") == 0) {
         result = TRUE;
         connection->state = LM_CONNECTION_STATE_AUTHENTICATED;
-    } 
+    }
     else if (strcmp (type, "error") == 0) {
         result = FALSE;
         connection->state = LM_CONNECTION_STATE_OPEN;
     }
-    
+
     lm_verbose ("AUTH reply: %d\n", result);
-    
+
     if (connection->auth_cb) {
         LmCallback *cb = connection->auth_cb;
 
         connection->auth_cb = NULL;
 
         if (cb->func) {
-            (* ((LmResultFunction) cb->func)) (connection, 
+            (* ((LmResultFunction) cb->func)) (connection,
                                                result,
                                                cb->user_data);
         }
 
         _lm_utils_free_callback (cb);
     }
-    
+
     return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 
@@ -740,7 +740,7 @@ _lm_connection_starttls_cb (LmMessageHandler *handler,
         connection_send_stream_header (connection);
     } else {
         connection_do_close (connection);
-        connection_signal_disconnect (connection, 
+        connection_signal_disconnect (connection,
                                       LM_DISCONNECT_REASON_ERROR);
     }
 
@@ -748,7 +748,7 @@ _lm_connection_starttls_cb (LmMessageHandler *handler,
 }
 
 static void
-connection_possibly_register_starttls_handler (LmConnection *connection) 
+connection_possibly_register_starttls_handler (LmConnection *connection)
 {
     /* if we'd like to use tls and we didn't already start
      * it, prepare for it now */
@@ -770,10 +770,10 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
 {
     gboolean result;
     const char *xmpp_version;
-    
+
     g_return_if_fail (connection != NULL);
     g_return_if_fail (m != NULL);
-    
+
     connection->stream_id = g_strdup (lm_message_node_get_attribute (m->node,
                                                                      "id"));
 
@@ -783,7 +783,7 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
                     connection->stream_id);
 
         connection->use_sasl = TRUE;
-        
+
         /* stream is started multiple times, but we only want
          * one sasl mechanism */
         if (!connection->sasl) {
@@ -792,14 +792,14 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
 
         connection_possibly_register_starttls_handler (connection);
     } else {
-        lm_verbose ("Old Jabber stream received: %s\n", 
+        lm_verbose ("Old Jabber stream received: %s\n",
                     connection->stream_id);
     }
-    
+
     if (connection->state < LM_CONNECTION_STATE_OPEN) {
         connection->state = LM_CONNECTION_STATE_OPEN;
     }
-    
+
     /* Check to see if the stream is correctly set up */
     result = TRUE;
 
@@ -809,7 +809,7 @@ connection_stream_received (LmConnection *connection, LmMessage *m)
         LmCallback *cb = connection->open_cb;
 
         connection->open_cb = NULL;
-        
+
         if (cb->func) {
             (* ((LmResultFunction) cb->func)) (connection, result,
                                                cb->user_data);
@@ -866,7 +866,7 @@ connection_signal_disconnect (LmConnection       *connection,
 {
     if (connection->disconnect_cb && connection->disconnect_cb->func) {
         LmCallback *cb = connection->disconnect_cb;
-        
+
         lm_connection_ref (connection);
         (* ((LmDisconnectFunction) cb->func)) (connection,
                                                reason,
@@ -876,8 +876,8 @@ connection_signal_disconnect (LmConnection       *connection,
 }
 
 static void
-connection_incoming_data (LmOldSocket  *socket, 
-                          const gchar  *buf, 
+connection_incoming_data (LmOldSocket  *socket,
+                          const gchar  *buf,
                           LmConnection *connection)
 {
     lm_parser_parse (connection->parser, buf);
@@ -904,18 +904,18 @@ connection_socket_connect_cb (LmOldSocket  *socket,
             LmCallback *cb = connection->open_cb;
 
             connection->open_cb = NULL;
-            
+
             (* ((LmResultFunction) cb->func)) (connection, FALSE,
                                                cb->user_data);
             _lm_utils_free_callback (cb);
         }
-    
+
         return;
     }
-    
+
     /* FIXME: Set up according to XMPP 1.0 specification */
     /*        StartTLS and the like */
-    if (!connection_send (connection, 
+    if (!connection_send (connection,
                           "<?xml version='1.0' encoding='UTF-8'?>", -1,
                           NULL)) {
         lm_verbose ("Failed to send xml version and encoding\n");
@@ -942,8 +942,8 @@ connection_get_server_from_jid (const gchar *jid, gchar **server)
         }
 
         return TRUE;
-    } 
-    
+    }
+
     return FALSE;
 }
 
@@ -959,19 +959,19 @@ connection_send_stream_header (LmConnection *connection)
 
     m = lm_message_new (server_from_jid, LM_MESSAGE_TYPE_STREAM);
     lm_message_node_set_attributes (m->node,
-                                    "xmlns:stream", 
+                                    "xmlns:stream",
                                     "http://etherx.jabber.org/streams",
                                     "xmlns", "jabber:client",
                                     "version", "1.0",
                                     NULL);
-    
+
     g_free (server_from_jid);
 
     if (!lm_connection_send (connection, m, NULL)) {
         lm_verbose ("Failed to send stream information\n");
         connection_do_close (connection);
     }
-        
+
     lm_message_unref (m);
 }
 
@@ -1012,7 +1012,7 @@ connection_call_auth_cb (LmConnection *connection, gboolean success)
         connection->auth_cb = NULL;
 
         if (cb->func) {
-            (* ((LmResultFunction) cb->func)) (connection, 
+            (* ((LmResultFunction) cb->func)) (connection,
                                                success,
                                                cb->user_data);
         }
@@ -1035,11 +1035,11 @@ connection_bind_reply (LmMessageHandler *handler,
 
     type = lm_message_get_sub_type (message);
     if (type == LM_MESSAGE_SUB_TYPE_ERROR) {
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, 
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
                "%s: error while binding to resource\n", G_STRFUNC);
-    
+
         connection_call_auth_cb (connection, FALSE);
-        
+
         return LM_HANDLER_RESULT_REMOVE_MESSAGE;
     }
 
@@ -1053,7 +1053,7 @@ connection_bind_reply (LmMessageHandler *handler,
 
 
     m = lm_message_new_with_sub_type (NULL,
-                                      LM_MESSAGE_TYPE_IQ, 
+                                      LM_MESSAGE_TYPE_IQ,
                                       LM_MESSAGE_SUB_TYPE_SET);
 
     session_node = lm_message_node_add_child (m->node, "session", NULL);
@@ -1083,7 +1083,7 @@ connection_features_cb (LmMessageHandler *handler,
     LmMessageNode *starttls_node;
     LmMessageNode *old_auth;
     LmMessageNode *sasl_mechanisms;
-    
+
     starttls_node = lm_message_node_find_child (message->node, "starttls");
     if (connection->ssl && lm_old_socket_get_use_starttls (connection->socket)) {
         if (starttls_node) {
@@ -1105,7 +1105,7 @@ connection_features_cb (LmMessageHandler *handler,
             /* If there were no starttls features present and we require it, this is
              * the place to scream. */
 
-            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, 
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
                    "%s: required StartTLS feature not supported by server\n", G_STRFUNC);
             connection_do_close (connection);
             connection_signal_disconnect (connection,
@@ -1127,10 +1127,10 @@ connection_features_cb (LmMessageHandler *handler,
         }
 
         bind_msg = lm_message_new_with_sub_type (NULL,
-                                                 LM_MESSAGE_TYPE_IQ, 
+                                                 LM_MESSAGE_TYPE_IQ,
                                                  LM_MESSAGE_SUB_TYPE_SET);
 
-        bind_node = lm_message_node_add_child (bind_msg->node, 
+        bind_node = lm_message_node_add_child (bind_msg->node,
                                                "bind", NULL);
         lm_message_node_set_attributes (bind_node,
                                         "xmlns", XMPP_NS_BIND,
@@ -1141,13 +1141,13 @@ connection_features_cb (LmMessageHandler *handler,
 
         bind_handler = lm_message_handler_new (connection_bind_reply,
                                                NULL, NULL);
-        result = lm_connection_send_with_reply (connection, bind_msg, 
+        result = lm_connection_send_with_reply (connection, bind_msg,
                                                 bind_handler, NULL);
         lm_message_handler_unref (bind_handler);
         lm_message_unref (bind_msg);
 
         if (result < 0) {
-            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, 
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
                    "%s: can't send resource binding request\n", G_STRFUNC);
             connection_do_close (connection);
         }
@@ -1157,7 +1157,7 @@ connection_features_cb (LmMessageHandler *handler,
 
     sasl_mechanisms = lm_message_node_find_child (message->node, "mechanisms");
     if (connection->use_sasl && old_auth != NULL && sasl_mechanisms == NULL) {
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL, 
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SASL,
                "Server uses XEP-0078 (jabber iq auth) instead of SASL\n");
         /* So the server is XMPP1.0, but doesn't support SASL and uses
          * obsolete XEP-0078 instead. Let's cope. */
@@ -1186,10 +1186,10 @@ connection_features_cb (LmMessageHandler *handler,
 /**
  * lm_connection_new:
  * @server: The hostname to the server for the connection.
- * 
- * Creates a new closed connection. To open the connection call 
+ *
+ * Creates a new closed connection. To open the connection call
  * lm_connection_open(). @server can be #NULL but must be set before calling lm_connection_open().
- * 
+ *
  * Return value: A newly created LmConnection, should be unreffed with lm_connection_unref().
  **/
 LmConnection *
@@ -1209,22 +1209,22 @@ lm_connection_new (const gchar *server)
     }
 
     connection->port        = LM_CONNECTION_DEFAULT_PORT;
-    connection->queue       = lm_message_queue_new ((LmMessageQueueCallback) connection_message_queue_cb, 
+    connection->queue       = lm_message_queue_new ((LmMessageQueueCallback) connection_message_queue_cb,
                                                           connection);
     connection->state       = LM_CONNECTION_STATE_CLOSED;
-    
-    connection->id_handlers = g_hash_table_new_full (g_str_hash, 
+
+    connection->id_handlers = g_hash_table_new_full (g_str_hash,
                                                      g_str_equal,
-                                                     g_free, 
+                                                     g_free,
                                                      (GDestroyNotify) lm_message_handler_unref);
     connection->ref_count   = 1;
-    
+
     for (i = 0; i < LM_MESSAGE_TYPE_UNKNOWN; ++i) {
         connection->handlers[i] = NULL;
     }
 
-    connection->parser = lm_parser_new 
-        ((LmParserMessageFunction) connection_new_message_cb, 
+    connection->parser = lm_parser_new
+        ((LmParserMessageFunction) connection_new_message_cb,
          connection, NULL);
 
     return connection;
@@ -1234,11 +1234,11 @@ lm_connection_new (const gchar *server)
  * lm_connection_new_with_context:
  * @server: The hostname to the server for the connection.
  * @context: The context this connection should be running in.
- * 
- * Creates a new closed connection running in a certain context. To open the 
- * connection call #lm_connection_open. @server can be #NULL but must be set 
+ *
+ * Creates a new closed connection running in a certain context. To open the
+ * connection call #lm_connection_open. @server can be #NULL but must be set
  * before calling #lm_connection_open.
- * 
+ *
  * Return value: A newly created LmConnection, should be unreffed with lm_connection_unref().
  **/
 LmConnection *
@@ -1263,21 +1263,21 @@ lm_connection_new_with_context (const gchar *server, GMainContext *context)
  * @user_data: User data that will be passed to @function.
  * @notify: Function for freeing that user_data, can be NULL.
  * @error: location to store error, or %NULL
- * 
+ *
  * An async call to open @connection. When the connection is open @function will be called.
- * 
+ *
  * Return value: #TRUE if everything went fine, otherwise #FALSE.
  **/
 gboolean
-lm_connection_open (LmConnection      *connection, 
+lm_connection_open (LmConnection      *connection,
                     LmResultFunction   function,
                     gpointer           user_data,
                     GDestroyNotify     notify,
                     GError           **error)
 {
     g_return_val_if_fail (connection != NULL, FALSE);
-    
-    connection->open_cb = _lm_utils_new_callback (function, 
+
+    connection->open_cb = _lm_utils_new_callback (function,
                                                   user_data, notify);
 
     return connection_do_open (connection, error);
@@ -1287,16 +1287,16 @@ lm_connection_open (LmConnection      *connection,
  * lm_connection_open_and_block:
  * @connection: an #LmConnection to open
  * @error: location to store error, or %NULL
- * 
- * Opens @connection and waits until the stream is setup. 
- * 
+ *
+ * Opens @connection and waits until the stream is setup.
+ *
  * Return value: #TRUE if no errors where encountered during opening and stream setup successfully, #FALSE otherwise.
  **/
 gboolean
 lm_connection_open_and_block (LmConnection *connection, GError **error)
 {
     gboolean result;
-    
+
     g_return_val_if_fail (connection != NULL, FALSE);
 
     connection->open_cb = NULL;
@@ -1306,7 +1306,7 @@ lm_connection_open_and_block (LmConnection *connection, GError **error)
     if (result == FALSE) {
         return FALSE;
     }
-        
+
     while (lm_connection_get_state (connection) == LM_CONNECTION_STATE_OPENING) {
         if (g_main_context_pending (connection->context)) {
             g_main_context_iteration (connection->context, TRUE);
@@ -1353,18 +1353,18 @@ lm_connection_cancel_open (LmConnection *connection)
 
 /**
  * lm_connection_close:
- * @connection: #LmConnection to close 
+ * @connection: #LmConnection to close
  * @error: location to store error, or %NULL
- * 
+ *
  * A synchronous call to close the connection. When returning the connection is considered to be closed and can be opened again with lm_connection_open().
- * 
+ *
  * Return value: Returns #TRUE if no errors where detected, otherwise #FALSE.
  **/
 gboolean
 lm_connection_close (LmConnection *connection, GError **error)
 {
     gboolean no_errors = TRUE;
-    
+
     g_return_val_if_fail (connection != NULL, FALSE);
 
     if (connection->socket) {
@@ -1379,9 +1379,9 @@ lm_connection_close (LmConnection *connection, GError **error)
         return FALSE;
     }
 
-    lm_verbose ("Disconnecting from: %s:%d\n", 
+    lm_verbose ("Disconnecting from: %s:%d\n",
                 connection->server, connection->port);
-    
+
     if (lm_connection_is_open (connection)) {
         if (!connection_send (connection, "</stream:stream>", -1, error)) {
             no_errors = FALSE;
@@ -1389,10 +1389,10 @@ lm_connection_close (LmConnection *connection, GError **error)
 
         lm_old_socket_flush (connection->socket);
     }
-    
+
     connection_do_close (connection);
     connection_signal_disconnect (connection, LM_DISCONNECT_REASON_OK);
-    
+
     return no_errors;
 }
 
@@ -1421,9 +1421,9 @@ connection_sasl_auth_finished (LmSASL       *sasl,
  * @user_data: Userdata passed to @function when called.
  * @notify: Destroy function to free the memory used by @user_data, can be NULL.
  * @error: location to store error, or %NULL
- * 
- * Tries to authenticate a user against the server. The #LmResult in the result callback @function will say whether it succeeded or not. 
- * 
+ *
+ * Tries to authenticate a user against the server. The #LmResult in the result callback @function will say whether it succeeded or not.
+ *
  * Return value: #TRUE if no errors where detected while sending the authentication message, #FALSE otherwise.
  **/
 gboolean
@@ -1438,7 +1438,7 @@ lm_connection_authenticate (LmConnection      *connection,
 {
     LmAuthParameters *auth_params;
     gboolean          ret_val;
-    
+
     g_return_val_if_fail (connection != NULL, FALSE);
     g_return_val_if_fail (username != NULL, FALSE);
     g_return_val_if_fail (password != NULL, FALSE);
@@ -1455,14 +1455,14 @@ lm_connection_authenticate (LmConnection      *connection,
     }
 
     connection->state = LM_CONNECTION_STATE_AUTHENTICATING;
-    
-    connection->auth_cb = _lm_utils_new_callback (function, 
-                                                  user_data, 
+
+    connection->auth_cb = _lm_utils_new_callback (function,
+                                                  user_data,
                                                   notify);
 
     connection->resource = g_strdup (lm_auth_parameters_get_resource (auth_params));
-                                              
-    connection->effective_jid = g_strdup_printf ("%s/%s", 
+
+    connection->effective_jid = g_strdup_printf ("%s/%s",
                                                  connection->jid, connection->resource);
 
     /* TODO: Break out Credentials (or use the already existing AuthReqData struct for *
@@ -1504,14 +1504,14 @@ connection_old_auth (LmConnection      *connection,
     LmMessage        *m;
     LmMessageHandler *handler;
     gboolean          result;
-    
+
     m = connection_create_auth_req_msg (auth_params);
-        
-    handler = lm_message_handler_new (connection_auth_req_reply, 
+
+    handler = lm_message_handler_new (connection_auth_req_reply,
                                       lm_auth_parameters_ref (auth_params),
                                       (GDestroyNotify) lm_auth_parameters_unref);
     result = lm_connection_send_with_reply (connection, m, handler, error);
-    
+
     lm_message_handler_unref (handler);
     lm_message_unref (m);
 
@@ -1525,9 +1525,9 @@ connection_old_auth (LmConnection      *connection,
  * @password: Password corresponding to @username.
  * @resource: Resource used for this connection.
  * @error: location to store error, or %NULL
- * 
+ *
  * Tries to authenticate a user against the server. This function blocks until a reply to the authentication attempt is returned and returns whether it was successful or not.
- * 
+ *
  * Return value: #TRUE if no errors where detected and authentication was successful. #FALSE otherwise.
  **/
 gboolean
@@ -1568,14 +1568,14 @@ lm_connection_authenticate_and_block (LmConnection  *connection,
     default:
         g_assert_not_reached ();
         break;
-    } 
+    }
 
     return FALSE;
 }
 
 /**
  * lm_connection_get_keep_alive_rate:
- * @connection: an #LmConnection 
+ * @connection: an #LmConnection
  *
  * Get the keep alive rate, in seconds. Zero is returned if no keep alive rate has been set.
  *
@@ -1593,7 +1593,7 @@ lm_connection_get_keep_alive_rate (LmConnection *connection)
  * lm_connection_set_keep_alive_rate:
  * @connection: an #LmConnection
  * @rate: Number of seconds between keep alive packages are sent.
- * 
+ *
  * Set the keep alive rate, in seconds. Set to 0 to prevent keep alive messages to be sent.
  * A keep alive message is a single space character.
  **/
@@ -1609,7 +1609,7 @@ lm_connection_set_keep_alive_rate (LmConnection *connection, guint rate)
     }
 
     connection->keep_alive_rate = rate;
-    
+
     if (lm_connection_is_open (connection)) {
         connection_start_keep_alive (connection);
     }
@@ -1618,28 +1618,28 @@ lm_connection_set_keep_alive_rate (LmConnection *connection, guint rate)
 /**
  * lm_connection_is_open:
  * @connection: #LmConnection to check if it is open.
- * 
+ *
  * Check if the @connection is currently open.
- * 
+ *
  * Return value: #TRUE if connection is open and #FALSE if it is closed.
  **/
 gboolean
 lm_connection_is_open (LmConnection *connection)
 {
     g_return_val_if_fail (connection != NULL, FALSE);
-    
+
     return connection->state >= LM_CONNECTION_STATE_OPEN;
 }
 
 /**
  * lm_connection_is_authenticated:
  * @connection: #LmConnection to check if it is authenticated
- * 
+ *
  * Check if @connection is authenticated.
- * 
+ *
  * Return value: #TRUE if connection is authenticated, #FALSE otherwise.
  **/
-gboolean 
+gboolean
 lm_connection_is_authenticated (LmConnection *connection)
 {
     g_return_val_if_fail (connection != NULL, FALSE);
@@ -1650,9 +1650,9 @@ lm_connection_is_authenticated (LmConnection *connection)
 /**
  * lm_connection_get_server:
  * @connection: an #LmConnection
- * 
- * Fetches the server address that @connection is using. 
- * 
+ *
+ * Fetches the server address that @connection is using.
+ *
  * Return value: the server address
  **/
 const gchar *
@@ -1667,21 +1667,21 @@ lm_connection_get_server (LmConnection *connection)
  * lm_connection_set_server:
  * @connection: an #LmConnection
  * @server: Address of the server
- * 
+ *
  * Sets the server address for @connection to @server. Notice that @connection
- * can't be open while doing this. 
+ * can't be open while doing this.
  **/
 void
 lm_connection_set_server (LmConnection *connection, const gchar *server)
 {
     g_return_if_fail (connection != NULL);
     g_return_if_fail (server != NULL);
-    
+
     if (lm_connection_is_open (connection)) {
         g_warning ("Can't change server address while connected");
         return;
     }
-    
+
     g_free (connection->server);
     connection->server = _lm_utils_hostname_to_punycode (server);
 }
@@ -1689,9 +1689,9 @@ lm_connection_set_server (LmConnection *connection, const gchar *server)
 /**
  * lm_connection_get_jid:
  * @connection: an #LmConnection
- * 
- * Fetches the jid set for @connection is using. 
- * 
+ *
+ * Fetches the jid set for @connection is using.
+ *
  * Return value: the jid
  **/
 const gchar *
@@ -1705,7 +1705,7 @@ lm_connection_get_jid (LmConnection *connection)
 /**
  * lm_connection_get_full_jid:
  * @connection: an #LmConnection
- * 
+ *
  * Returns the full jid that server set for us after
  * resource binding, complete with the resource.
  *
@@ -1723,10 +1723,10 @@ lm_connection_get_full_jid (LmConnection *connection)
  * lm_connection_set_jid:
  * @connection: an #LmConnection
  * @jid: JID to be used for @connection
- * 
+ *
  * Sets the JID to be used for @connection.
  **/
-void 
+void
 lm_connection_set_jid (LmConnection *connection, const gchar *jid)
 {
     g_return_if_fail (connection != NULL);
@@ -1743,10 +1743,10 @@ lm_connection_set_jid (LmConnection *connection, const gchar *jid)
 /**
  * lm_connection_get_port:
  * @connection: an #LmConnection
- * 
+ *
  * Fetches the port that @connection is using.
- * 
- * Return value: 
+ *
+ * Return value:
  **/
 guint
 lm_connection_get_port (LmConnection *connection)
@@ -1760,35 +1760,35 @@ lm_connection_get_port (LmConnection *connection)
  * lm_connection_set_port:
  * @connection: an #LmConnection
  * @port: server port
- * 
+ *
  * Sets the server port that @connection will be using.
  **/
 void
 lm_connection_set_port (LmConnection *connection, guint port)
 {
     g_return_if_fail (connection != NULL);
-    
+
     if (lm_connection_is_open (connection)) {
         g_warning ("Can't change server port while connected");
         return;
     }
-    
+
     connection->port = port;
 }
 
 /**
- * lm_connection_get_ssl: 
+ * lm_connection_get_ssl:
  * @connection: an #LmConnection
  *
  * Returns the SSL struct if the connection is using one.
- * 
+ *
  * Return value: The ssl struct or %NULL if no proxy is used.
  **/
 LmSSL *
 lm_connection_get_ssl (LmConnection *connection)
 {
     g_return_val_if_fail (connection != NULL, NULL);
-    
+
     return connection->ssl;
 }
 
@@ -1817,11 +1817,11 @@ lm_connection_set_ssl (LmConnection *connection, LmSSL *ssl)
 }
 
 /**
- * lm_connection_get_proxy: 
+ * lm_connection_get_proxy:
  * @connection: an #LmConnection
  *
  * Returns the proxy if the connection is using one.
- * 
+ *
  * Return value: The proxy or %NULL if no proxy is used.
  **/
 LmProxy *
@@ -1830,15 +1830,15 @@ lm_connection_get_proxy (LmConnection *connection)
     g_return_val_if_fail (connection != NULL, NULL);
 
     return connection->proxy;
-} 
+}
 
 /**
- * lm_connection_set_proxy: 
+ * lm_connection_set_proxy:
  * @connection: an #LmConnection
  * @proxy: an #LmProxy
  *
  * Sets the proxy to use for this connection. To unset pass #NULL.
- * 
+ *
  **/
 void
 lm_connection_set_proxy (LmConnection *connection, LmProxy *proxy)
@@ -1861,24 +1861,24 @@ lm_connection_set_proxy (LmConnection *connection, LmProxy *proxy)
 }
 
 /**
- * lm_connection_send: 
+ * lm_connection_send:
  * @connection: #LmConnection to send message over.
  * @message: #LmMessage to send.
  * @error: location to store error, or %NULL
- * 
+ *
  * Asynchronous call to send a message.
- * 
+ *
  * Return value: Returns #TRUE if no errors where detected while sending, #FALSE otherwise.
  **/
 gboolean
-lm_connection_send (LmConnection  *connection, 
-                    LmMessage     *message, 
+lm_connection_send (LmConnection  *connection,
+                    LmMessage     *message,
                     GError       **error)
 {
     gchar    *xml_str;
     gchar    *ch;
     gboolean  result;
-    
+
     g_return_val_if_fail (connection != NULL, FALSE);
     g_return_val_if_fail (message != NULL, FALSE);
 
@@ -1886,7 +1886,7 @@ lm_connection_send (LmConnection  *connection,
     if ((ch = strstr (xml_str, "</stream:stream>"))) {
         *ch = '\0';
     }
-    
+
     result = connection_send (connection, xml_str, -1, error);
     g_free (xml_str);
 
@@ -1899,34 +1899,34 @@ lm_connection_send (LmConnection  *connection,
  * @message: #LmMessage to send.
  * @handler: #LmMessageHandler that will be used when a reply to @message arrives
  * @error: location to store error, or %NULL
- * 
- * Send a #LmMessage which will result in a reply. 
- * 
+ *
+ * Send a #LmMessage which will result in a reply.
+ *
  * Return value: Returns #TRUE if no errors where detected while sending, #FALSE otherwise.
  **/
-gboolean 
+gboolean
 lm_connection_send_with_reply (LmConnection      *connection,
                                LmMessage         *message,
                                LmMessageHandler  *handler,
                                GError           **error)
 {
     gchar *id;
-    
+
     g_return_val_if_fail (connection != NULL, FALSE);
     g_return_val_if_fail (message != NULL, FALSE);
     g_return_val_if_fail (handler != NULL, FALSE);
 
     if (lm_message_node_get_attribute (message->node, "id")) {
-        id = g_strdup (lm_message_node_get_attribute (message->node, 
+        id = g_strdup (lm_message_node_get_attribute (message->node,
                                                       "id"));
     } else {
         id = _lm_utils_generate_id ();
         lm_message_node_set_attributes (message->node, "id", id, NULL);
     }
-    
-    g_hash_table_insert (connection->id_handlers, 
+
+    g_hash_table_insert (connection->id_handlers,
                          id, lm_message_handler_ref (handler));
-    
+
     return lm_connection_send (connection, message, error);
 }
 
@@ -1935,9 +1935,9 @@ lm_connection_send_with_reply (LmConnection      *connection,
  * @connection: an #LmConnection
  * @message: an #LmMessage
  * @error: Set if error was detected during sending.
- * 
+ *
  * Send @message and wait for return.
- * 
+ *
  * Return value: The reply
  **/
 LmMessage *
@@ -1961,7 +1961,7 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
 
 
     if (lm_message_node_get_attribute (message->node, "id")) {
-        id = g_strdup (lm_message_node_get_attribute (message->node, 
+        id = g_strdup (lm_message_node_get_attribute (message->node,
                                                       "id"));
     } else {
         id = _lm_utils_generate_id ();
@@ -1977,7 +1977,7 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
         guint        n;
 
         g_main_context_iteration (connection->context, TRUE);
-    
+
         if (lm_message_queue_is_empty (connection->queue)) {
             continue;
         }
@@ -1988,7 +1988,7 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
             m = (LmMessage *) lm_message_queue_peek_nth (connection->queue, n);
 
             m_id = lm_message_node_get_attribute (m->node, "id");
-            
+
             if (m_id && strcmp (m_id, id) == 0) {
                 reply = m;
                 lm_message_queue_pop_nth (connection->queue, n);
@@ -2009,7 +2009,7 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
  * @handler: Message handler to register.
  * @type: Message type that @handler will handle.
  * @priority: The priority in which to call @handler.
- * 
+ *
  * Registers a #LmMessageHandler to handle incoming messages of a certain type.
  * To unregister the handler call lm_connection_unregister_message_handler().
  **/
@@ -2020,7 +2020,7 @@ lm_connection_register_message_handler  (LmConnection      *connection,
                                          LmHandlerPriority  priority)
 {
     HandlerData *hd;
-    
+
     g_return_if_fail (connection != NULL);
     g_return_if_fail (handler != NULL);
     g_return_if_fail (type != LM_MESSAGE_TYPE_UNKNOWN);
@@ -2030,7 +2030,7 @@ lm_connection_register_message_handler  (LmConnection      *connection,
     hd->handler  = lm_message_handler_ref (handler);
 
     connection->handlers[type] = g_slist_insert_sorted (connection->handlers[type],
-                                                        hd, 
+                                                        hd,
                                                         (GCompareFunc) connection_handler_compare_func);
 }
 
@@ -2039,8 +2039,8 @@ lm_connection_register_message_handler  (LmConnection      *connection,
  * @connection: Connection to unregister a handler for.
  * @handler: The handler to unregister.
  * @type: What type of messages to unregister this handler for.
- * 
- * Unregisters a handler for @connection. @handler will no longer be called 
+ *
+ * Unregisters a handler for @connection. @handler will no longer be called
  * when incoming messages of @type arrive.
  **/
 void
@@ -2049,14 +2049,14 @@ lm_connection_unregister_message_handler (LmConnection     *connection,
                                           LmMessageType     type)
 {
     GSList *l;
-    
+
     g_return_if_fail (connection != NULL);
     g_return_if_fail (handler != NULL);
     g_return_if_fail (type != LM_MESSAGE_TYPE_UNKNOWN);
 
     for (l = connection->handlers[type]; l; l = l->next) {
         HandlerData *hd = (HandlerData *) l->data;
-        
+
         if (handler == hd->handler) {
             connection->handlers[type] = g_slist_remove_link (connection->handlers[type], l);
             g_slist_free (l);
@@ -2073,8 +2073,8 @@ lm_connection_unregister_message_handler (LmConnection     *connection,
  * @function: Function to be called when @connection is closed.
  * @user_data: User data passed to @function.
  * @notify: Function that will be called with @user_data when @user_data needs to be freed. Pass #NULL if it shouldn't be freed.
- * 
- * Set the callback that will be called when a connection is closed. 
+ *
+ * Set the callback that will be called when a connection is closed.
  **/
 void
 lm_connection_set_disconnect_function (LmConnection         *connection,
@@ -2087,9 +2087,9 @@ lm_connection_set_disconnect_function (LmConnection         *connection,
     if (connection->disconnect_cb) {
         _lm_utils_free_callback (connection->disconnect_cb);
     }
-        
+
     if (function) {
-        connection->disconnect_cb = _lm_utils_new_callback (function, 
+        connection->disconnect_cb = _lm_utils_new_callback (function,
                                                             user_data,
                                                             notify);
     } else {
@@ -2102,15 +2102,15 @@ lm_connection_set_disconnect_function (LmConnection         *connection,
  * @connection: Connection used to send
  * @str: The string to send, the entire string will be sent.
  * @error: Set if error was detected during sending.
- * 
+ *
  * Asynchronous call to send a raw string. Useful for debugging and testing.
- * 
- * Return value: Returns #TRUE if no errors was detected during sending, 
+ *
+ * Return value: Returns #TRUE if no errors was detected during sending,
  * #FALSE otherwise.
  **/
-gboolean 
-lm_connection_send_raw (LmConnection  *connection, 
-                        const gchar   *str, 
+gboolean
+lm_connection_send_raw (LmConnection  *connection,
+                        const gchar   *str,
                         GError       **error)
 {
     g_return_val_if_fail (connection != NULL, FALSE);
@@ -2126,10 +2126,10 @@ lm_connection_send_raw (LmConnection  *connection,
  *
  * Return value: The state of the connection.
  **/
-LmConnectionState 
+LmConnectionState
 lm_connection_get_state (LmConnection *connection)
 {
-    g_return_val_if_fail (connection != NULL, 
+    g_return_val_if_fail (connection != NULL,
                           LM_CONNECTION_STATE_CLOSED);
 
     return connection->state;
@@ -2152,26 +2152,26 @@ lm_connection_get_local_host (LmConnection *connection)
 /**
  * lm_connection_ref:
  * @connection: Connection to add a reference to.
- * 
- * Add a reference on @connection. To remove a reference call 
+ *
+ * Add a reference on @connection. To remove a reference call
  * lm_connection_unref().
- * 
+ *
  * Return value: Returns the same connection.
  **/
 LmConnection*
 lm_connection_ref (LmConnection *connection)
 {
     g_return_val_if_fail (connection != NULL, NULL);
-    
+
     connection->ref_count++;
-    
+
     return connection;
 }
 
 /**
  * lm_connection_unref:
  * @connection: Connection to remove reference from.
- * 
+ *
  * Removes a reference on @connection. If there are no references to
  * @connection it will be freed and shouldn't be used again.
  **/
@@ -2179,9 +2179,9 @@ void
 lm_connection_unref (LmConnection *connection)
 {
     g_return_if_fail (connection != NULL);
-    
+
     connection->ref_count--;
-    
+
     if (connection->ref_count == 0) {
         connection_free (connection);
     }

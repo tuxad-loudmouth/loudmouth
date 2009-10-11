@@ -41,7 +41,7 @@ struct LmDummy {
 
 struct LmDummyClass {
     GObjectClass parent_class;
-    
+
     /* <vtable> */
     void  (*initialize)    (LmDummy     *dummy,
                             const char *username,

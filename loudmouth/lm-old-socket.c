@@ -804,7 +804,7 @@ old_socket_resolver_host_cb (LmResolver       *resolver,
                "Unable to locate server available over IPv4.\n");
     };
 
-    /* FIXME: What do we do here?  How to make the mainloop exit with an 
+    /* FIXME: What do we do here?  How to make the mainloop exit with an
        error, while having no ref to said mainloop */
 }
 

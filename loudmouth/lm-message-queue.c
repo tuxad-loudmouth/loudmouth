@@ -64,7 +64,7 @@ static void
 message_queue_free (LmMessageQueue *queue)
 {
     lm_message_queue_detach (queue);
-    
+
     g_queue_foreach (queue->messages, (GFunc) foreach_free_message, NULL);
     g_queue_free (queue->messages);
 
@@ -138,7 +138,7 @@ lm_message_queue_attach (LmMessageQueue *queue, GMainContext *context)
     if (context)  {
         queue->context = g_main_context_ref (context);
     }
-    
+
     source = g_source_new (&source_funcs, sizeof (MessageQueueSource));
     ((MessageQueueSource *)source)->queue = queue;
     queue->source = source;
@@ -195,7 +195,7 @@ lm_message_queue_get_length (LmMessageQueue *queue)
     return g_queue_get_length (queue->messages);
 }
 
-gboolean 
+gboolean
 lm_message_queue_is_empty (LmMessageQueue *queue)
 {
     g_return_val_if_fail (queue != NULL, TRUE);

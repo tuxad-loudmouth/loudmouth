@@ -45,7 +45,7 @@ typedef struct {
  * @LM_MESSAGE_TYPE_STREAM: the stream:stream element, you probably don't need to create a message of this type.
  * @LM_MESSAGE_TYPE_STREAM_ERROR: a stream:error element
  * @LM_MESSAGE_TYPE_STREAM_FEATURES:  * @LM_MESSAGE_TYPE_AUTH:  * @LM_MESSAGE_TYPE_CHALLENGE:  * @LM_MESSAGE_TYPE_RESPONSE:  * @LM_MESSAGE_TYPE_SUCCESS:  * @LM_MESSAGE_TYPE_FAILURE:  * @LM_MESSAGE_TYPE_PROCEED:  * @LM_MESSAGE_TYPE_STARTTLS:  * @LM_MESSAGE_TYPE_UNKNOWN: incoming message is of some unknown type.
- * 
+ *
  * Describes what type of message a message is. This maps directly to top level elements in the jabber protocol.
  */
 typedef enum {
@@ -82,7 +82,7 @@ typedef enum {
  * @LM_MESSAGE_SUB_TYPE_SET: used to set information in a IQ call, applised to message type "iq"
  * @LM_MESSAGE_SUB_TYPE_RESULT: message is an IQ reply, applies to message type "iq"
  * @LM_MESSAGE_SUB_TYPE_ERROR: messages is an error, applies to all message types.
- * 
+ *
  * Describes the sub type of a message. This is equal to the "type" attribute in the jabber protocol. What sub type a message can have is depending on the type of the message.
  */
 typedef enum {

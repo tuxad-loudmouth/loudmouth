@@ -95,7 +95,7 @@ asyncns_resolver_cleanup (LmResolver *resolver)
         g_io_channel_unref (priv->resolv_channel);
         priv->resolv_channel = NULL;
     }
- 
+
     if (priv->watch_resolv) {
         g_source_destroy (priv->watch_resolv);
         priv->watch_resolv = NULL;
@@ -124,7 +124,7 @@ asyncns_resolver_done (LmResolver *resolver)
 
     if (err) {
         _lm_resolver_set_result (resolver,
-                                 LM_RESOLVER_RESULT_FAILED, 
+                                 LM_RESOLVER_RESULT_FAILED,
                                  NULL);
     } else {
         _lm_resolver_set_result (resolver,
@@ -171,8 +171,8 @@ asyncns_resolver_prep (LmResolver *resolver, GError **error)
     priv->asyncns_ctx = asyncns_new (1);
     if (priv->asyncns_ctx == NULL) {
         g_set_error (error,
-                     LM_ERROR,                 
-                     LM_ERROR_CONNECTION_FAILED,   
+                     LM_ERROR,
+                     LM_ERROR_CONNECTION_FAILED,
                      "can't initialise libasyncns");
         return FALSE;
     }
@@ -181,8 +181,8 @@ asyncns_resolver_prep (LmResolver *resolver, GError **error)
         g_io_channel_unix_new (asyncns_fd (priv->asyncns_ctx));
 
     g_object_get (resolver, "context", &context, NULL);
-        
-    priv->watch_resolv = 
+
+    priv->watch_resolv =
         lm_misc_add_io_watch (context,
                               priv->resolv_channel,
                               G_IO_IN,
@@ -232,7 +232,7 @@ asyncns_resolver_srv_done (LmResolver *resolver)
 
     g_print ("srv_done callback\n");
 
-    srv_len = asyncns_res_done (priv->asyncns_ctx, 
+    srv_len = asyncns_res_done (priv->asyncns_ctx,
                                 priv->resolv_query, &srv_ans);
 
     priv->resolv_query = NULL;
@@ -264,7 +264,7 @@ asyncns_resolver_srv_done (LmResolver *resolver)
     }
 
     asyncns_resolver_cleanup (resolver);
-    
+
     g_object_ref (resolver);
     if (result == TRUE) {
         _lm_resolver_set_result (LM_RESOLVER (resolver), LM_RESOLVER_RESULT_OK, NULL);
@@ -288,9 +288,9 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
                   "service", &service,
                   "protocol", &protocol,
                   NULL);
-        
+
     srv = _lm_resolver_create_srv_string (domain, service, protocol);
-        
+
     g_print ("ASYNCNS: Looking up service: %s %s %s\n[%s]", domain, service, protocol, srv);
 
     if (!asyncns_resolver_prep (resolver, /* Use GError? */ NULL)) {
@@ -301,9 +301,9 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
 
     priv->resolv_query =
         asyncns_res_query (priv->asyncns_ctx, srv, C_IN, T_SRV);
-        
-    asyncns_setuserdata (priv->asyncns_ctx, 
-                         priv->resolv_query, 
+
+    asyncns_setuserdata (priv->asyncns_ctx,
+                         priv->resolv_query,
                          (gpointer) asyncns_resolver_srv_done);
 
     g_free (srv);
@@ -332,7 +332,7 @@ asyncns_resolver_lookup (LmResolver *resolver)
     };
 
     /* End of DNS querying */
-} 
+}
 
 static void
 asyncns_resolver_cancel (LmResolver *resolver)

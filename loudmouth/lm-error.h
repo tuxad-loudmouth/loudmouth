@@ -31,7 +31,7 @@ G_BEGIN_DECLS
 
 /**
  * LM_ERROR:
- * 
+ *
  * Macro for getting the error quark.
  */
 #define LM_ERROR lm_error_quark ()
@@ -41,7 +41,7 @@ G_BEGIN_DECLS
  * @LM_ERROR_CONNECTION_NOT_OPEN: Connection not open when trying to send a message
  * @LM_ERROR_CONNECTION_OPEN: Connection is already open when trying to open it again.
  * @LM_ERROR_AUTH_FAILED: Authentication failed while opening connection
- * @LM_ERROR_CONNECTION_FAILED:  * 
+ * @LM_ERROR_CONNECTION_FAILED:  *
  * Describes the problem of the error.
  */
 typedef enum {

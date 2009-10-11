@@ -23,12 +23,12 @@
  * SECTION:lm-proxy
  * @Title: LmProxy
  * @Short_description: API for the proxy support in Loudmouth
- * 
+ *
  * Use this together with an #LmConnection to get the connection to use connect through a proxy. Example of how to use the #LmProxy API.
  * <informalexample><programlisting><![CDATA[
  * LmConnection *connection;
  * LmProxy      *proxy;
- * 
+ *
  * connection = lm_connection_new ("myserver");
  * proxy = lm_proxy_new_with_server (LM_PROXY_TYPE_HTTP,
  *                "myproxyserver",
@@ -70,7 +70,7 @@ struct _LmProxy {
 
 static void          proxy_free              (LmProxy       *proxy);
 static gboolean      proxy_http_negotiate    (LmProxy       *proxy,
-                                              gint           fd, 
+                                              gint           fd,
                                               const gchar   *server,
                                               guint          port);
 static gboolean      proxy_negotiate         (LmProxy       *proxy,
@@ -104,9 +104,9 @@ proxy_http_negotiate (LmProxy *proxy, gint fd, const gchar *server, guint port)
         gchar *tmp2;
 
         tmp1 = g_strdup_printf ("%s:%s",
-                                proxy->username, 
+                                proxy->username,
                                 proxy->password);
-        tmp2 = g_base64_encode ((const guchar *) tmp1, 
+        tmp2 = g_base64_encode ((const guchar *) tmp1,
                                 (gsize) strlen (tmp1));
         g_free (tmp1);
 
@@ -117,7 +117,7 @@ proxy_http_negotiate (LmProxy *proxy, gint fd, const gchar *server, guint port)
         g_free (tmp2);
     } else {
         str = g_strdup_printf ("CONNECT %s:%u HTTP/1.1\r\nHost: %s:%u\r\n\r\n",
-                               server, port, 
+                               server, port,
                                server, port);
     }
 
@@ -230,7 +230,7 @@ _lm_proxy_connect_cb (GIOChannel *source, GIOCondition condition, gpointer data)
             _lm_old_socket_failed (connect_data);
             return FALSE;
         }
-            
+
         proxy->io_watch = g_io_add_watch (connect_data->io_channel,
                                           G_IO_IN|G_IO_ERR,
                                           (GIOFunc) proxy_read_cb,
@@ -245,19 +245,19 @@ _lm_proxy_connect_cb (GIOChannel *source, GIOCondition condition, gpointer data)
 /**
  * lm_proxy_new
  * @type: the type of the new proxy
- * 
- * Creates a new Proxy. Used #lm_connection_set_proxy to make a connection 
+ *
+ * Creates a new Proxy. Used #lm_connection_set_proxy to make a connection
  * user this proxy.
- * 
+ *
  * Return value: a newly create proxy
  **/
-LmProxy * 
+LmProxy *
 lm_proxy_new (LmProxyType type)
 {
     LmProxy *proxy;
 
     proxy = g_new0 (LmProxy, 1);
-    
+
     proxy->ref_count = 1;
     proxy->type = type;
 
@@ -277,10 +277,10 @@ lm_proxy_new (LmProxyType type)
  * @type: the type of the new proxy
  * @server: the proxy server
  * @port: the proxy server port
- * 
- * Creates a new Proxy. Use #lm_connection_set_proxy to make a connection 
+ *
+ * Creates a new Proxy. Use #lm_connection_set_proxy to make a connection
  * user this proxy.
- * 
+ *
  * Return value: a newly create proxy
  **/
 LmProxy *
@@ -300,10 +300,10 @@ lm_proxy_new_with_server (LmProxyType  type,
 /**
  * lm_proxy_get_type
  * @proxy: an #LmProxy
- * 
+ *
  * Fetches the proxy type
- * 
- * Return value: the type 
+ *
+ * Return value: the type
  **/
 LmProxyType
 lm_proxy_get_type (LmProxy *proxy)
@@ -318,7 +318,7 @@ lm_proxy_get_type (LmProxy *proxy)
  * @proxy: an #LmProxy
  * @type: an LmProxyType
  *
- * Sets the proxy type for @proxy to @type. 
+ * Sets the proxy type for @proxy to @type.
  **/
 void
 lm_proxy_set_type (LmProxy *proxy, LmProxyType type)
@@ -331,16 +331,16 @@ lm_proxy_set_type (LmProxy *proxy, LmProxyType type)
 /**
  * lm_proxy_get_server:
  * @proxy: an #LmProxy
- * 
+ *
  * Fetches the server address that @proxy is using.
- * 
+ *
  * Return value: the proxy server address
  **/
 const gchar *
 lm_proxy_get_server (LmProxy *proxy)
 {
     g_return_val_if_fail (proxy != NULL, NULL);
-    
+
     return proxy->server;
 }
 
@@ -348,15 +348,15 @@ lm_proxy_get_server (LmProxy *proxy)
  * lm_proxy_set_server:
  * @proxy: an #LmProxy
  * @server: Address of the proxy server
- * 
- * Sets the server address for @proxy to @server. 
+ *
+ * Sets the server address for @proxy to @server.
  **/
 void
 lm_proxy_set_server (LmProxy *proxy, const gchar *server)
 {
     g_return_if_fail (proxy != NULL);
     g_return_if_fail (server != NULL);
-    
+
     g_free (proxy->server);
     proxy->server = _lm_utils_hostname_to_punycode (server);
 }
@@ -364,10 +364,10 @@ lm_proxy_set_server (LmProxy *proxy, const gchar *server)
 /**
  * lm_proxy_get_port:
  * @proxy: an #LmProxy
- * 
+ *
  * Fetches the port that @proxy is using.
- * 
- * Return value: The port 
+ *
+ * Return value: The port
  **/
 guint
 lm_proxy_get_port (LmProxy *proxy)
@@ -381,30 +381,30 @@ lm_proxy_get_port (LmProxy *proxy)
  * lm_proxy_set_port:
  * @proxy: an #LmProxy
  * @port: proxy server port
- * 
+ *
  * Sets the server port that @proxy will be using.
  **/
 void
 lm_proxy_set_port (LmProxy *proxy, guint port)
 {
     g_return_if_fail (proxy != NULL);
-    
+
     proxy->port = port;
 }
 
 /**
  * lm_proxy_get_username:
  * @proxy: an #LmProxy
- * 
+ *
  * Fetches the username that @proxy is using.
- * 
+ *
  * Return value: the username
  **/
 const gchar *
 lm_proxy_get_username (LmProxy *proxy)
 {
     g_return_val_if_fail (proxy != NULL, NULL);
-    
+
     return proxy->username;
 }
 
@@ -412,16 +412,16 @@ lm_proxy_get_username (LmProxy *proxy)
  * lm_proxy_set_username:
  * @proxy: an #LmProxy
  * @username: Username
- * 
- * Sets the username for @proxy to @username or %NULL to unset.  
+ *
+ * Sets the username for @proxy to @username or %NULL to unset.
  **/
 void
 lm_proxy_set_username (LmProxy *proxy, const gchar *username)
 {
     g_return_if_fail (proxy != NULL);
-    
+
     g_free (proxy->username);
-    
+
     if (username) {
         proxy->username = g_strdup (username);
     } else {
@@ -431,16 +431,16 @@ lm_proxy_set_username (LmProxy *proxy, const gchar *username)
 /**
  * lm_proxy_get_password:
  * @proxy: an #LmProxy
- * 
+ *
  * Fetches the password that @proxy is using.
- * 
+ *
  * Return value: the proxy password
  **/
 const gchar *
 lm_proxy_get_password (LmProxy *proxy)
 {
     g_return_val_if_fail (proxy != NULL, NULL);
-    
+
     return proxy->password;
 }
 
@@ -448,14 +448,14 @@ lm_proxy_get_password (LmProxy *proxy)
  * lm_proxy_set_password:
  * @proxy: an #LmProxy
  * @password: Password
- * 
- * Sets the password for @proxy to @password or %NULL to unset. 
+ *
+ * Sets the password for @proxy to @password or %NULL to unset.
  **/
 void
 lm_proxy_set_password (LmProxy *proxy, const gchar *password)
 {
     g_return_if_fail (proxy != NULL);
-    
+
     g_free (proxy->password);
 
     if (password) {
@@ -468,16 +468,16 @@ lm_proxy_set_password (LmProxy *proxy, const gchar *password)
 /**
  * lm_proxy_ref:
  * @proxy: an #LmProxy
- * 
+ *
  * Adds a reference to @proxy.
- * 
+ *
  * Return value: the proxy
  **/
 LmProxy *
 lm_proxy_ref (LmProxy *proxy)
 {
     g_return_val_if_fail (proxy != NULL, NULL);
-    
+
     proxy->ref_count++;
     return proxy;
 }
@@ -485,7 +485,7 @@ lm_proxy_ref (LmProxy *proxy)
 /**
  * lm_proxy_unref
  * @proxy: an #LmProxy
- * 
+ *
  * Removes a reference from @proxy. When no more references are present
  * @proxy is freed.
  **/
@@ -493,7 +493,7 @@ void
 lm_proxy_unref (LmProxy *proxy)
 {
     g_return_if_fail (proxy != NULL);
-    
+
     proxy->ref_count--;
 
     if (proxy->ref_count == 0) {

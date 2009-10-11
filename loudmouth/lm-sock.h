@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- * Copyright (C) 2006 Imendio AB 
+ * Copyright (C) 2006 Imendio AB
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -50,7 +50,7 @@ G_BEGIN_DECLS
 /* This means that we require Windows XP or above to build on
  * Windows, the reason for this, is that getaddrinfo() and
  * freeaddrinfo() require ws2tcpip.h functions that are only available
- * on these platforms. 
+ * on these platforms.
  *
  * This MUST be defined before windows.h is included.
  */

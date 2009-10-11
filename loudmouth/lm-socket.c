@@ -72,7 +72,7 @@ socket_base_init (LmSocketIface *iface)
                           _lm_marshal_VOID__VOID,
                           G_TYPE_NONE,
                           0);
-        signals[WRITABLE] = 
+        signals[WRITABLE] =
             g_signal_new ("writable",
                           LM_TYPE_SOCKET,
                           G_SIGNAL_RUN_LAST,
@@ -111,7 +111,7 @@ lm_socket_new_to_service (const gchar *service)
     return NULL;
 }
 
-void 
+void
 lm_socket_connect (LmSocket *socket)
 {
     g_return_if_fail (LM_IS_SOCKET (socket));
@@ -155,7 +155,7 @@ lm_socket_read (LmSocket *socket,
     return LM_SOCKET_GET_IFACE(socket)->read (socket, buf, buf_len, read_len);
 }
 
-void 
+void
 lm_socket_disconnect (LmSocket *socket)
 {
     g_return_if_fail (LM_IS_SOCKET (socket));

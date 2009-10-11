@@ -36,6 +36,6 @@ lm_error_quark (void)
     if (q == 0) {
         q = g_quark_from_static_string ("lm-error-quark");
     }
-    
+
     return q;
 }

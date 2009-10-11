@@ -125,7 +125,7 @@ lm_resolver_class_init (LmResolverClass *class)
                                                         "Port",
                                                         "Port number",
                                                         0,
-                                                        LM_MAX_PORT, 
+                                                        LM_MAX_PORT,
                                                         0,
                                                         G_PARAM_READWRITE));
 
@@ -323,7 +323,7 @@ lm_resolver_new_for_host (const gchar        *host,
 }
 
 LmResolver *
-lm_resolver_new_for_service (const gchar        *domain, 
+lm_resolver_new_for_service (const gchar        *domain,
                              const gchar        *service,
                              const gchar        *protocol,
                              LmResolverCallback  callback,
@@ -343,7 +343,7 @@ lm_resolver_new_for_service (const gchar        *domain,
                              "service", service,
                              "protocol", protocol,
                              NULL);
-        
+
     priv = GET_PRIV (resolver);
 
     priv->callback = callback;
@@ -372,7 +372,7 @@ lm_resolver_cancel (LmResolver *resolver)
     LM_RESOLVER_GET_CLASS(resolver)->cancel (resolver);
 }
 
-/* To iterate through the results */ 
+/* To iterate through the results */
 struct addrinfo *
 lm_resolver_results_get_next (LmResolver *resolver)
 {
@@ -414,7 +414,7 @@ lm_resolver_results_reset (LmResolver *resolver)
 }
 
 gchar *
-_lm_resolver_create_srv_string (const gchar *domain, 
+_lm_resolver_create_srv_string (const gchar *domain,
                                 const gchar *service,
                                 const gchar *protocol)
 {
@@ -425,7 +425,7 @@ _lm_resolver_create_srv_string (const gchar *domain,
     return g_strdup_printf ("_%s._%s.%s", service, protocol, domain);
 }
 
-void 
+void
 _lm_resolver_set_result (LmResolver       *resolver,
                          LmResolverResult  result,
                          struct addrinfo  *results)
@@ -445,9 +445,9 @@ _lm_resolver_set_result (LmResolver       *resolver,
 }
 
 gboolean
-_lm_resolver_parse_srv_response (unsigned char  *srv, 
-                                 int             srv_len, 
-                                 gchar         **out_server, 
+_lm_resolver_parse_srv_response (unsigned char  *srv,
+                                 int             srv_len,
+                                 gchar         **out_server,
                                  guint          *out_port)
 {
     int                  qdcount;
@@ -502,7 +502,7 @@ _lm_resolver_parse_srv_response (unsigned char  *srv,
         *out_server = g_strdup (pref_name);
         *out_port = pref_port;
         return TRUE;
-    } 
+    }
     return FALSE;
 }
 

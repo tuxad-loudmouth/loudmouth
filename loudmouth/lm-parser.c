@@ -37,10 +37,10 @@ struct LmParser {
     LmParserMessageFunction  function;
     gpointer                 user_data;
     GDestroyNotify           notify;
-    
+
     LmMessageNode           *cur_root;
     LmMessageNode           *cur_node;
-        
+
     GMarkupParser           *m_parser;
     GMarkupParseContext     *context;
 };
@@ -59,7 +59,7 @@ static void    parser_end_node_cb   (GMarkupParseContext  *context,
                                      GError              **error);
 static void    parser_text_cb       (GMarkupParseContext  *context,
                                      const gchar          *text,
-                                     gsize                 text_len,  
+                                     gsize                 text_len,
                                      gpointer              user_data,
                                      GError              **error);
 static void    parser_error_cb      (GMarkupParseContext  *context,
@@ -73,12 +73,12 @@ parser_start_node_cb (GMarkupParseContext  *context,
                       const gchar         **attribute_values,
                       gpointer              user_data,
                       GError              **error)
-{   
+{
     LmParser     *parser;
     gint          i;
-    
+
     parser = LM_PARSER (user_data);;
-    
+
 
 /*  parser->cur_depth++; */
 
@@ -88,30 +88,30 @@ parser_start_node_cb (GMarkupParseContext  *context,
         parser->cur_node = parser->cur_root;
     } else {
         LmMessageNode *parent_node;
-        
+
         parent_node = parser->cur_node;
-        
+
         parser->cur_node = _lm_message_node_new (node_name);
         _lm_message_node_add_child_node (parent_node,
                                          parser->cur_node);
     }
 
     for (i = 0; attribute_names[i]; ++i) {
-        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER, 
-               "ATTRIBUTE: %s = %s\n", 
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
+               "ATTRIBUTE: %s = %s\n",
                attribute_names[i],
                attribute_values[i]);
-        
+
         lm_message_node_set_attributes (parser->cur_node,
                                         attribute_names[i],
-                                        attribute_values[i], 
+                                        attribute_values[i],
                                         NULL);
     }
-    
+
     if (strcmp ("stream:stream", node_name) == 0) {
         parser_end_node_cb (context,
                             "stream:stream",
-                            user_data, 
+                            user_data,
                             error);
     }
 }
@@ -123,9 +123,9 @@ parser_end_node_cb (GMarkupParseContext  *context,
                     GError              **error)
 {
     LmParser     *parser;
-    
+
     parser = LM_PARSER (user_data);
-    
+
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
            "Trying to close node: %s\n", node_name);
 
@@ -133,12 +133,12 @@ parser_end_node_cb (GMarkupParseContext  *context,
         /* FIXME: LM-1 should look at this */
         return;
     }
-        
+
     if (strcmp (parser->cur_node->name, node_name) != 0) {
         if (strcmp (node_name, "stream:stream")) {
             g_print ("Got an stream:stream end\n");
         }
-        
+
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
                "Trying to close node that isn't open: %s",
                node_name);
@@ -147,7 +147,7 @@ parser_end_node_cb (GMarkupParseContext  *context,
 
     if (parser->cur_node == parser->cur_root) {
         LmMessage *m;
-        
+
         m = _lm_message_new_from_node (parser->cur_root);
 
         if (!m) {
@@ -177,19 +177,19 @@ parser_end_node_cb (GMarkupParseContext  *context,
 static void
 parser_text_cb (GMarkupParseContext   *context,
                 const gchar           *text,
-                gsize                  text_len,  
+                gsize                  text_len,
                 gpointer               user_data,
                 GError               **error)
 {
     LmParser *parser;
-    
+
     g_return_if_fail (user_data != NULL);
-    
+
     parser = LM_PARSER (user_data);
-    
+
     if (parser->cur_node && strcmp (text, "") != 0) {
         lm_message_node_set_value (parser->cur_node, text);
-    } 
+    }
 }
 
 static void
@@ -199,23 +199,23 @@ parser_error_cb (GMarkupParseContext *context,
 {
     g_return_if_fail (user_data != NULL);
     g_return_if_fail (error != NULL);
-    
+
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
            "Parsing failed: %s\n", error->message);
 }
 
 LmParser *
-lm_parser_new (LmParserMessageFunction function, 
-               gpointer                user_data, 
+lm_parser_new (LmParserMessageFunction function,
+               gpointer                user_data,
                GDestroyNotify          notify)
 {
     LmParser *parser;
-    
+
     parser = g_new0 (LmParser, 1);
     if (!parser) {
         return NULL;
     }
-    
+
     parser->m_parser = g_new0 (GMarkupParser, 1);
     if (!parser->m_parser) {
         g_free (parser);
@@ -225,7 +225,7 @@ lm_parser_new (LmParserMessageFunction function,
     parser->function  = function;
     parser->user_data = user_data;
     parser->notify    = notify;
-    
+
     parser->m_parser->start_element = parser_start_node_cb;
     parser->m_parser->end_element   = parser_end_node_cb;
     parser->m_parser->text          = parser_text_cb;
@@ -244,13 +244,13 @@ gboolean
 lm_parser_parse (LmParser *parser, const gchar *string)
 {
     g_return_val_if_fail (parser != NULL, FALSE);
-    
+
     if (!parser->context) {
         parser->context = g_markup_parse_context_new (parser->m_parser, 0,
                                                       parser, NULL);
     }
-        
-    if (g_markup_parse_context_parse (parser->context, string, 
+
+    if (g_markup_parse_context_parse (parser->context, string,
                                       (gssize)strlen (string), NULL)) {
         return TRUE;
     } else {
