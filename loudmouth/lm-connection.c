@@ -2001,6 +2001,33 @@ lm_connection_send_with_reply_and_block (LmConnection  *connection,
 }
 
 /**
+ * lm_connection_unregister_reply_handler:
+ * @connection: Connection to unregister a handler for.
+ * @handler: The handler to unregister.
+ *
+ * Unregisters the reply handler for @connection. @handler will no longer be
+ * called if an incoming message has the id for which it was registered.
+ **/
+void
+lm_connection_unregister_reply_handler (LmConnection     *connection,
+                                        LmMessageHandler *handler)
+{
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_return_if_fail (connection != NULL);
+    g_return_if_fail (handler != NULL);
+
+    g_hash_table_iter_init (&iter, connection -> id_handlers);
+    while (g_hash_table_iter_next (&iter, &key, &value)) {
+        if (handler == value) {
+            g_hash_table_iter_remove (&iter);
+            break;
+        }
+    }
+}
+
+/**
  * lm_connection_register_message_handler:
  * @connection: Connection to register a handler for.
  * @handler: Message handler to register.

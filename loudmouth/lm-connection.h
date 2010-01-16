@@ -210,6 +210,9 @@ lm_connection_send_with_reply_and_block       (LmConnection       *connection,
                                                LmMessage          *message,
                                                GError            **error);
 void
+lm_connection_unregister_reply_handler        (LmConnection     *connection,
+                                               LmMessageHandler *handler);
+void
 lm_connection_register_message_handler        (LmConnection       *connection,
                                                LmMessageHandler   *handler,
                                                LmMessageType       type,
