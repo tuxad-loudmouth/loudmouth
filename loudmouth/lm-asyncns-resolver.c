@@ -32,6 +32,7 @@
 #include <arpa/nameser.h>
 #include <resolv.h>
 
+#include "lm-debug.h"
 #include "lm-error.h"
 #include "lm-internals.h"
 #include "lm-marshal.h"
@@ -230,7 +231,7 @@ asyncns_resolver_srv_done (LmResolver *resolver)
     int                    srv_len;
     gboolean               result = FALSE;
 
-    g_print ("srv_done callback\n");
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "srv_done callback\n");
 
     srv_len = asyncns_res_done (priv->asyncns_ctx,
                                 priv->resolv_query, &srv_ans);
@@ -244,14 +245,16 @@ asyncns_resolver_srv_done (LmResolver *resolver)
         gchar *new_server;
         guint  new_port;
 
-        g_print ("trying to parse srv response\n");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+               "trying to parse srv response\n");
 
         result = _lm_resolver_parse_srv_response (srv_ans, srv_len,
                                                   &new_server,
                                                   &new_port);
         if (result == TRUE) {
-            g_print ("worked, new host/post is %s/%d\n",
-                     new_server, new_port);
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+                   "worked, new host/post is %s/%d\n",
+                   new_server, new_port);
 
             g_object_set (resolver,
                           "host", new_server,
@@ -291,7 +294,9 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
 
     srv = _lm_resolver_create_srv_string (domain, service, protocol);
 
-    g_print ("ASYNCNS: Looking up service: %s %s %s\n[%s]", domain, service, protocol, srv);
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+           "ASYNCNS: Looking up service: %s %s %s [%s]\n",
+           domain, service, protocol, srv);
 
     if (!asyncns_resolver_prep (resolver, /* Use GError? */ NULL)) {
         g_warning ("Failed to initiate the asyncns library");
