@@ -343,9 +343,13 @@ connection_handle_message (LmConnection *connection, LmMessage *m)
         goto out;
     }
 
-    result = connection_run_message_handler (connection, m);
-    if (result == LM_HANDLER_RESULT_REMOVE_MESSAGE) {
-        goto out;
+    if ((lm_message_get_type (m) != LM_MESSAGE_TYPE_IQ) ||
+        (lm_message_get_sub_type (m) == LM_MESSAGE_SUB_TYPE_ERROR) ||
+        (lm_message_get_sub_type (m) == LM_MESSAGE_SUB_TYPE_RESULT)) {
+        result = connection_run_message_handler (connection, m);
+        if (result == LM_HANDLER_RESULT_REMOVE_MESSAGE) {
+            goto out;
+        }
     }
 
     for (l = connection->handlers[lm_message_get_type (m)];
