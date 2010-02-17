@@ -208,7 +208,7 @@ asyncns_resolver_lookup_host (LmResolver *resolver)
     req.ai_protocol = IPPROTO_TCP;
 
     if (!asyncns_resolver_prep (resolver, NULL)) {
-        g_warning ("Signal error\n");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "Signal error\n");
         return;
     }
 
@@ -240,7 +240,8 @@ asyncns_resolver_srv_done (LmResolver *resolver)
 
     if (srv_len <= 0) {
         /* FIXME: Report error */
-        g_warning ("Failed to read srv request results");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+               "Failed to read srv request results");
     } else {
         gchar *new_server;
         guint  new_port;
@@ -299,7 +300,8 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
            domain, service, protocol, srv);
 
     if (!asyncns_resolver_prep (resolver, /* Use GError? */ NULL)) {
-        g_warning ("Failed to initiate the asyncns library");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+               "Failed to initiate the asyncns library");
         /* FIXME: Signal error */
         return;
     }

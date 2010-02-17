@@ -1679,7 +1679,8 @@ lm_connection_set_server (LmConnection *connection, const gchar *server)
     g_return_if_fail (server != NULL);
 
     if (lm_connection_is_open (connection)) {
-        g_warning ("Can't change server address while connected");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+               "Can't change server address while connected");
         return;
     }
 
@@ -1733,7 +1734,8 @@ lm_connection_set_jid (LmConnection *connection, const gchar *jid)
     g_return_if_fail (connection != NULL);
 
     if (lm_connection_is_open (connection)) {
-        g_warning ("Can't change JID while connected");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+                   "Can't change JID while connected");
         return;
     }
 
@@ -1770,7 +1772,8 @@ lm_connection_set_port (LmConnection *connection, guint port)
     g_return_if_fail (connection != NULL);
 
     if (lm_connection_is_open (connection)) {
-        g_warning ("Can't change server port while connected");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+               "Can't change server port while connected");
         return;
     }
 
@@ -1847,7 +1850,8 @@ lm_connection_set_proxy (LmConnection *connection, LmProxy *proxy)
     g_return_if_fail (connection != NULL);
 
     if (lm_connection_is_open (connection)) {
-        g_warning ("Can't change server proxy while connected");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+               "Can't change server proxy while connected");
         return;
     }
 

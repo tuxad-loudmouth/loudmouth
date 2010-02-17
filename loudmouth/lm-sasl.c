@@ -370,7 +370,8 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
     lm_message_unref (msg);
 
     if (!result) {
-        g_warning ("Failed to send SASL response\n");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+               "Failed to send SASL response\n");
         return FALSE;
     }
 
@@ -689,7 +690,8 @@ sasl_digest_md5_check_server_response(LmSASL *sasl, GHashTable *challenge)
     lm_message_unref (msg);
 
     if (!result) {
-        g_warning ("Failed to send SASL response\n");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
+               "Failed to send SASL response\n");
         return FALSE;
     }
 
@@ -787,7 +789,7 @@ sasl_challenge_cb (LmMessageHandler *handler,
         break;
 #endif
     default:
-        g_warning ("Wrong auth type");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "Wrong auth type");
         break;
     }
 
@@ -850,7 +852,7 @@ sasl_success_cb (LmMessageHandler *handler,
         break;
 #endif
     default:
-        g_warning ("Wrong auth type");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "Wrong auth type");
         break;
     }
 

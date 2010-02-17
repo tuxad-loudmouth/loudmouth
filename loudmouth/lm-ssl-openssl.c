@@ -62,39 +62,39 @@ ssl_print_state (LmSSL *ssl, const char *func, int val)
 
     switch (SSL_get_error(ssl->ssl, val)) {
     case SSL_ERROR_NONE:
-        g_warning ("%s(): %i / SSL_ERROR_NONE",
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "%s(): %i / SSL_ERROR_NONE",
                    func, val);
         break;
     case SSL_ERROR_ZERO_RETURN:
-        g_warning ("%s(): %i / SSL_ERROR_ZERO_RETURN",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_ZERO_RETURN", func, val);
         break;
     case SSL_ERROR_WANT_READ:
-        g_warning ("%s(): %i / SSL_ERROR_WANT_READ",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_WANT_READ", func, val);
         break;
     case SSL_ERROR_WANT_WRITE:
-        g_warning ("%s(): %i / SSL_ERROR_WANT_WRITE",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_WANT_WRITE", func, val);
         break;
     case SSL_ERROR_WANT_X509_LOOKUP:
-        g_warning ("%s(): %i / SSL_ERROR_WANT_X509_LOOKUP",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_WANT_X509_LOOKUP", func, val);
         break;
     case SSL_ERROR_SYSCALL:
-        g_warning ("%s(): %i / SSL_ERROR_SYSCALL",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_SYSCALL", func, val);
         break;
     case SSL_ERROR_SSL:
-        g_warning ("%s(): %i / SSL_ERROR_SSL",
-                   func, val);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "%s(): %i / SSL_ERROR_SSL", func, val);
         break;
     }
     do {
         errid = ERR_get_error();
         if (errid) {
             errmsg = ERR_error_string(errid, NULL);
-            g_warning ("\t%s", errmsg);
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "\t%s", errmsg);
         }
     } while (errid != 0);
 }
@@ -224,7 +224,8 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
             }
         }
     } else {
-        g_warning ("X509_NAME_get_text_by_NID() failed");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+               "X509_NAME_get_text_by_NID() failed");
     }
 
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
@@ -297,12 +298,13 @@ _lm_ssl_initialize (LmSSL *ssl)
 
     ssl->ssl_method = TLSv1_client_method();
     if (ssl->ssl_method == NULL) {
-        g_warning ("TLSv1_client_method() == NULL");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+               "TLSv1_client_method() == NULL");
         abort();
     }
     ssl->ssl_ctx = SSL_CTX_new(ssl->ssl_method);
     if (ssl->ssl_ctx == NULL) {
-        g_warning ("SSL_CTX_new() == NULL");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "SSL_CTX_new() == NULL");
         abort();
     }
 
@@ -340,14 +342,14 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
 
     ssl->ssl = SSL_new(ssl->ssl_ctx);
     if (ssl->ssl == NULL) {
-        g_warning ("SSL_new() == NULL");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "SSL_new() == NULL");
         g_set_error(error, LM_ERROR, LM_ERROR_CONNECTION_OPEN,
                     "SSL_new()");
         return FALSE;
     }
 
     if (!SSL_set_fd (ssl->ssl, fd)) {
-        g_warning ("SSL_set_fd() failed");
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "SSL_set_fd() failed");
         g_set_error(error, LM_ERROR, LM_ERROR_CONNECTION_OPEN,
                     "SSL_set_fd()");
         return FALSE;
