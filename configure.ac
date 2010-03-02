@@ -228,28 +228,26 @@ dnl | Checking for libasyncns                                           |
 dnl +-------------------------------------------------------------------+
 AC_ARG_WITH(asyncns,
 	AS_HELP_STRING([--with-asyncns],
-		[define whether to use libasyncns, @<:@default=no@:>@ (internal/system/no)]),
+		[define whether to use libasyncns, @<:@default=no@:>@ (yes/no)]),
 	ac_asyncns=$withval,
 	ac_asyncns=no)
 
 enable_asyncns=no
-have_asyncns_system=no
 if test x$ac_asyncns != xno; then
-	enable_asyncns=yes
-	AC_DEFINE(HAVE_ASYNCNS, 1, [Whether to use libasyncns])
 
-	if test x$ac_asyncns = xsystem; then
-		PKG_CHECK_MODULES(ASYNCNS, [libasyncns >= 0.3],
-			[have_asyncns_system=yes],
-			[have_asyncns_system=no])
-	fi
+	PKG_CHECK_MODULES(ASYNCNS, [libasyncns >= 0.3],
+			[enable_asyncns=yes],
+			[enable_asyncns=no])
+fi
+
+if test "x$enable_asyncns" = "xyes"; then
+	AC_DEFINE(HAVE_ASYNCNS, 1, [Whether to use libasyncns])
 else
 	echo "Not using asynchronous dns lookups"
 fi
 
 AC_SUBST(ASYNCNS_CFLAGS)
 AC_SUBST(ASYNCNS_LIBS)
-AM_CONDITIONAL(USE_SYSTEM_ASYNCNS, test x$have_asyncns_system = xyes)
 
 dnl +-------------------------------------------------------------------+
 dnl | Checking for Linux TCP/IP stack                                   |

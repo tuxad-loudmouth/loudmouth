@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <string.h>
+#ifdef HAVE_ASYNCNS
 #include <asyncns.h>
 #define freeaddrinfo(x) asyncns_freeaddrinfo(x)
 
@@ -362,3 +363,4 @@ asyncns_resolver_cancel (LmResolver *resolver)
     }
 }
 
+#endif //HAVE_ASYNCNS
