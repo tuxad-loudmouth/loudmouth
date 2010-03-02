@@ -469,6 +469,7 @@ _lm_old_socket_failed_with_error (LmConnectData *connect_data, int error)
 
     if (connect_data->io_channel != NULL) {
         socket_close_io_channel (connect_data->io_channel);
+        connect_data->io_channel = NULL;
     }
 
     if (connect_data->current_addr == NULL) { /*Ran Out Of Addresses*/
