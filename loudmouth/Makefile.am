@@ -33,12 +33,6 @@ ssl_sources =                           \
 	lm-ssl-openssl.c
 endif
 
-if ! USE_SYSTEM_ASYNCNS
-asyncns_sources = \
-	asyncns.c     \
-	asyncns.h
-endif
-
 
 libloudmouth_1_la_SOURCES =             \
 	lm-connection.c                     \
