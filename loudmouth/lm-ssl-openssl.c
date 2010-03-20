@@ -216,7 +216,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
             domain = strstr (cn, server);
         }
 
-        if ((domain == NULL) || (strncmp (server, domain, LM_SSL_CN_MAX) != 0)) {
+        if ((domain == NULL) || (strncasecmp (server, domain, LM_SSL_CN_MAX) != 0)) {
             if (base->func (ssl,
                             LM_SSL_STATUS_CERT_HOSTNAME_MISMATCH,
                             base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
