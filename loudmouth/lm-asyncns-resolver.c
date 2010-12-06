@@ -262,9 +262,9 @@ asyncns_resolver_srv_done (LmResolver *resolver)
                           "host", new_server,
                           "port", new_port,
                           NULL);
+            g_free (new_server);
         }
 
-        g_free (new_server);
         /* TODO: Check whether srv_ans needs freeing */
     }
 
