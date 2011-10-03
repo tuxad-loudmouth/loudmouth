@@ -201,6 +201,7 @@ feature_ping_send_keep_alive (LmFeaturePing *fp)
     priv->keep_alive_counter++;
     if (priv->keep_alive_counter > 3) {
         g_signal_emit (fp, signals[TIMED_OUT], 0);
+       return FALSE;
         /* FIXME */
 #if 0 /* Should be moved to signal callback in LmConnection */
         connection_do_close (connection);
