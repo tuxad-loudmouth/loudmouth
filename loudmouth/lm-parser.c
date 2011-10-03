@@ -43,6 +43,8 @@ struct LmParser {
 
     GMarkupParser           *m_parser;
     GMarkupParseContext     *context;
+    gchar                   *incomplete; /* incomplete utf-8 character
+                                            found at the end of buffer */
 };
 
 
@@ -200,7 +202,7 @@ parser_error_cb (GMarkupParseContext *context,
     g_return_if_fail (user_data != NULL);
     g_return_if_fail (error != NULL);
 
-    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
+    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
            "Parsing failed: %s\n", error->message);
 }
 
@@ -237,27 +239,98 @@ lm_parser_new (LmParserMessageFunction function,
     parser->cur_root = NULL;
     parser->cur_node = NULL;
 
+    parser->incomplete = NULL;
+
     return parser;
 }
+
+static gchar *
+_lm_parser_make_valid (const gchar *buffer, gchar **incomplete)
+{
+    GString *string;
+    const gchar *remainder, *invalid;
+    gint remaining_bytes, valid_bytes;
+    gunichar code; /*error code for invalid character*/
+
+    g_return_val_if_fail (buffer != NULL, NULL);
+
+    string = NULL;
+    remainder = buffer;
+    remaining_bytes = strlen (buffer);
+
+    while (remaining_bytes != 0)
+    {
+        if (g_utf8_validate (remainder, remaining_bytes, &invalid))
+            break;
+        valid_bytes = invalid - remainder;
+
+        if (string == NULL)
+            string = g_string_sized_new (remaining_bytes);
+
+        g_string_append_len (string, remainder, valid_bytes);
+
+        remainder = g_utf8_find_next_char(invalid, NULL);
+        remaining_bytes -= valid_bytes + (remainder - invalid);
+
+        code = g_utf8_get_char_validated (invalid, -1);
+
+        if (code == -1) {
+            /* A complete but invalid codepoint */
+            /* append U+FFFD REPLACEMENT CHARACTER */
+            g_string_append (string, "\357\277\275");
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE, "invalid character!\n");
+        } else if (code == -2) {
+            /* Beginning of what could be a character */
+            *incomplete = g_strdup (invalid);
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_VERBOSE,
+                           "incomplete character: %s\n", *incomplete);
+
+            g_assert (remaining_bytes == 0);
+            g_assert (*(g_utf8_find_next_char(invalid, NULL)) == '\0');
+        }
+    }
+
+    if (string == NULL)
+        return g_strdup (buffer);
+
+    g_string_append (string, remainder);
+
+    g_assert (g_utf8_validate (string->str, -1, NULL));
+
+    return g_string_free (string, FALSE);
+}
+
 
 gboolean
 lm_parser_parse (LmParser *parser, const gchar *string)
 {
+    gboolean parsed;
+    gchar *valid, *completed;
     g_return_val_if_fail (parser != NULL, FALSE);
 
     if (!parser->context) {
         parser->context = g_markup_parse_context_new (parser->m_parser, 0,
                                                       parser, NULL);
     }
-
-    if (g_markup_parse_context_parse (parser->context, string,
-                                      (gssize)strlen (string), NULL)) {
-        return TRUE;
+    if (parser->incomplete) {
+        completed = g_strdup_printf("%s%s", parser->incomplete, string);
+        g_free(parser->incomplete);
+        parser->incomplete = NULL;
+    } else {
+        completed = g_strdup(string);
+    }
+    valid = _lm_parser_make_valid (completed, &parser->incomplete);
+    g_free(completed);
+    if (g_markup_parse_context_parse (parser->context, valid,
+                                      (gssize)strlen (valid), NULL)) {
+        parsed = TRUE;
     } else {
         g_markup_parse_context_free (parser->context);
         parser->context = NULL;
-        return FALSE;
+        parsed = FALSE;
     }
+    g_free(valid);
+    return parsed;
 }
 
 void
@@ -270,6 +343,7 @@ lm_parser_free (LmParser *parser)
     if (parser->context) {
         g_markup_parse_context_free (parser->context);
     }
+    g_free (parser->incomplete);
     g_free (parser->m_parser);
     g_free (parser);
 }
