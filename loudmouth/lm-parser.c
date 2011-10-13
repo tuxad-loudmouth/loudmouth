@@ -78,22 +78,31 @@ parser_start_node_cb (GMarkupParseContext  *context,
 {
     LmParser     *parser;
     gint          i;
+    const gchar  *node_name_unq;
+    const gchar  *xmlns = NULL;
 
     parser = LM_PARSER (user_data);;
 
 
 /*  parser->cur_depth++; */
 
+    //strip namespace prefix other than "stream:" from node_name
+    node_name_unq = strrchr(node_name, ':');
+    if (!node_name_unq || !strncmp(node_name, "stream:", 7))
+        node_name_unq = node_name;
+    else
+        ++node_name_unq;
+
     if (!parser->cur_root) {
         /* New toplevel element */
-        parser->cur_root = _lm_message_node_new (node_name);
+        parser->cur_root = _lm_message_node_new (node_name_unq);
         parser->cur_node = parser->cur_root;
     } else {
         LmMessageNode *parent_node;
 
         parent_node = parser->cur_node;
 
-        parser->cur_node = _lm_message_node_new (node_name);
+        parser->cur_node = _lm_message_node_new (node_name_unq);
         _lm_message_node_add_child_node (parent_node,
                                          parser->cur_node);
     }
@@ -103,11 +112,20 @@ parser_start_node_cb (GMarkupParseContext  *context,
                "ATTRIBUTE: %s = %s\n",
                attribute_names[i],
                attribute_values[i]);
+        //FIXME: strip namespace suffix from xmlns: attribute if exists
 
         lm_message_node_set_attributes (parser->cur_node,
                                         attribute_names[i],
                                         attribute_values[i],
                                         NULL);
+        if (!strncmp(attribute_names[i], "xmlns:", 6))
+            xmlns = attribute_values[i];
+    }
+    if (xmlns && !lm_message_node_get_attribute(parser->cur_node, "xmlns")) {
+        lm_message_node_set_attribute (parser->cur_node, "xmlns", xmlns);
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
+               "ATTRIBUTE: %s = %s\n",
+               "xmlns", xmlns);
     }
 
     if (strcmp ("stream:stream", node_name) == 0) {
@@ -125,25 +143,33 @@ parser_end_node_cb (GMarkupParseContext  *context,
                     GError              **error)
 {
     LmParser     *parser;
+    const gchar  *node_name_unq;
 
     parser = LM_PARSER (user_data);
 
+    node_name_unq = strrchr(node_name, ':');
+    if (!node_name_unq || !strncmp(node_name, "stream:", 7))
+        node_name_unq = node_name;
+    else
+        ++node_name_unq;
+
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
-           "Trying to close node: %s\n", node_name);
+           "Trying to close node: %s\n", node_name_unq);
 
     if (!parser->cur_node) {
         /* FIXME: LM-1 should look at this */
         return;
     }
 
-    if (strcmp (parser->cur_node->name, node_name) != 0) {
+    //cur_node->name doesn't have namespace prefix anymore, node_name does.
+    if (strcmp (parser->cur_node->name, node_name_unq) != 0) {
         if (strcmp (node_name, "stream:stream")) {
             g_print ("Got an stream:stream end\n");
         }
 
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_PARSER,
                "Trying to close node that isn't open: %s",
-               node_name);
+               node_name_unq);
         return;
     }
 
