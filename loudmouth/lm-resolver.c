@@ -477,15 +477,14 @@ _lm_resolver_parse_srv_response (unsigned char  *srv,
     /* Parse the answers */
     while (ancount-- > 0 && (len = dn_expand (srv, end, pos, name, 255)) >= 0) {
         /* Ignore the initial string */
-        uint16_t pref, port;
-        /* uint16_t weight; */
+        uint16_t pref, weight, port;
 
         g_assert (len >= 0);
         pos += len;
         /* Ignore type, ttl, class and dlen */
         pos += 10;
         GETSHORT (pref, pos);
-        /* GETSHORT (weight, pos); */
+        GETSHORT (weight, pos);
         GETSHORT (port, pos);
 
         len = dn_expand (srv, end, pos, name, 255);
