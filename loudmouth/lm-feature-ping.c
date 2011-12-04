@@ -112,18 +112,13 @@ lm_feature_ping_class_init (LmFeaturePingClass *class)
 static void
 lm_feature_ping_init (LmFeaturePing *feature_ping)
 {
-    LmFeaturePingPriv *priv;
-
-    priv = GET_PRIV (feature_ping);
-
+    (void) GET_PRIV (feature_ping);
 }
 
 static void
 feature_ping_finalize (GObject *object)
 {
-    LmFeaturePingPriv *priv;
-
-    priv = GET_PRIV (object);
+    (void) GET_PRIV (object);
 
     (G_OBJECT_CLASS (lm_feature_ping_parent_class)->finalize) (object);
 }

@@ -79,17 +79,13 @@ lm_simple_io_class_init (LmSimpleIOClass *class)
 static void
 lm_simple_io_init (LmSimpleIO *simple_io)
 {
-    LmSimpleIOPriv *priv;
-
-    priv = GET_PRIV (simple_io);
+    (void) GET_PRIV (simple_io);
 }
 
 static void
 simple_io_finalize (GObject *object)
 {
-    LmSimpleIOPriv *priv;
-
-    priv = GET_PRIV (object);
+    (void) GET_PRIV (object);
 
     (G_OBJECT_CLASS (lm_simple_io_parent_class)->finalize) (object);
 }

@@ -381,15 +381,17 @@ sasl_gssapi_handle_challenge (LmSASL *sasl, LmMessageNode *node)
 static gboolean
 sasl_gssapi_finish (LmSASL *sasl, LmMessageNode *node)
 {
-    OM_uint32 major_status, minor_status;
+    OM_uint32 /* major_status, */ minor_status;
 
     if (sasl->gss_service != GSS_C_NO_NAME) {
-        major_status = gss_release_name (&minor_status, &sasl->gss_service);
+        /* major_status = */
+        (void) gss_release_name (&minor_status, &sasl->gss_service);
     }
 
     if (sasl->gss_ctx != GSS_C_NO_CONTEXT) {
-        major_status = gss_delete_sec_context (&minor_status, &sasl->gss_ctx,
-                                               GSS_C_NO_BUFFER);
+        /* major_status = */
+        (void) gss_delete_sec_context (&minor_status, &sasl->gss_ctx,
+                                       GSS_C_NO_BUFFER);
     }
 
     return TRUE;

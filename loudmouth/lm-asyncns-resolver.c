@@ -73,17 +73,13 @@ lm_asyncns_resolver_class_init (LmAsyncnsResolverClass *class)
 static void
 lm_asyncns_resolver_init (LmAsyncnsResolver *asyncns_resolver)
 {
-    LmAsyncnsResolverPriv *priv;
-
-    priv = GET_PRIV (asyncns_resolver);
+    (void) GET_PRIV (asyncns_resolver);
 }
 
 static void
 asyncns_resolver_finalize (GObject *object)
 {
-    LmAsyncnsResolverPriv *priv;
-
-    priv = GET_PRIV (object);
+    (void) GET_PRIV (object);
 
     (G_OBJECT_CLASS (lm_asyncns_resolver_parent_class)->finalize) (object);
 }

@@ -646,7 +646,6 @@ connection_auth_req_reply (LmMessageHandler *handler,
     LmMessage        *auth_msg;
     LmMessageHandler *auth_handler;
     LmAuthParameters *auth_params = (LmAuthParameters *) user_data;
-    gboolean          result;
 
     auth_type = connection_check_auth_type (m);
 
@@ -654,8 +653,8 @@ connection_auth_req_reply (LmMessageHandler *handler,
 
     auth_handler = lm_message_handler_new (connection_auth_reply,
                                            NULL, NULL);
-    result = lm_connection_send_with_reply (connection, auth_msg,
-                                            auth_handler, NULL);
+    lm_connection_send_with_reply (connection, auth_msg,
+                                   auth_handler, NULL);
     lm_message_handler_unref (auth_handler);
     lm_message_unref (auth_msg);
 

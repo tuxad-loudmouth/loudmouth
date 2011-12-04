@@ -70,17 +70,13 @@ lm_blocking_resolver_class_init (LmBlockingResolverClass *class)
 static void
 lm_blocking_resolver_init (LmBlockingResolver *blocking_resolver)
 {
-    LmBlockingResolverPriv *priv;
-
-    priv = GET_PRIV (blocking_resolver);
+    (void) GET_PRIV (blocking_resolver);
 }
 
 static void
 blocking_resolver_finalize (GObject *object)
 {
-    LmBlockingResolverPriv *priv;
-
-    priv = GET_PRIV (object);
+    (void) GET_PRIV (object);
 
     /* Ensure we don't have an idle around */
     blocking_resolver_cancel (LM_RESOLVER (object));

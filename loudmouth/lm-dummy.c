@@ -87,18 +87,13 @@ lm_dummy_class_init (LmDummyClass *class)
 static void
 lm_dummy_init (LmDummy *dummy)
 {
-    LmDummyPriv *priv;
-
-    priv = GET_PRIV (dummy);
-
+    (void) GET_PRIV (dummy);
 }
 
 static void
 dummy_finalize (GObject *object)
 {
-    LmDummyPriv *priv;
-
-    priv = GET_PRIV (object);
+    (void) GET_PRIV (object);
 
     (G_OBJECT_CLASS (lm_dummy_parent_class)->finalize) (object);
 }

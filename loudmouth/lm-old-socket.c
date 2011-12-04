@@ -509,14 +509,14 @@ socket_connect_cb (GIOChannel   *source,
                    LmConnectData *connect_data)
 {
     LmOldSocket     *socket;
-    struct addrinfo *addr;
+    /* struct addrinfo *addr; */
     int              err;
     socklen_t        len;
     LmOldSocketT     fd;
     gboolean         result = FALSE;
 
     socket = lm_old_socket_ref (connect_data->socket);
-    addr = connect_data->current_addr;
+    /* addr = connect_data->current_addr; */
     fd = g_io_channel_unix_get_fd (source);
 
     if (condition == G_IO_ERR) {
