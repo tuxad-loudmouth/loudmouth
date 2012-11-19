@@ -85,10 +85,13 @@ typedef enum {
 
 /**
  * LmDisconnectReason:
- * @LM_DISCONNECT_REASON_OK:  * @LM_DISCONNECT_REASON_PING_TIME_OUT: Connection to the server timed out.
+ * @LM_DISCONNECT_REASON_OK:
+ * @LM_DISCONNECT_REASON_PING_TIME_OUT: Connection to the server timed out.
  * @LM_DISCONNECT_REASON_HUP: The socket emitted that the connection was hung up.
  * @LM_DISCONNECT_REASON_ERROR: A generic error somewhere in the transport layer.
- * @LM_DISCONNECT_REASON_RESOURCE_CONFLICT:  * @LM_DISCONNECT_REASON_INVALID_XML:  * @LM_DISCONNECT_REASON_UNKNOWN: An unknown error.
+ * @LM_DISCONNECT_REASON_RESOURCE_CONFLICT:
+ * @LM_DISCONNECT_REASON_INVALID_XML:
+ * @LM_DISCONNECT_REASON_UNKNOWN: An unknown error.
  *
  * Sent with #LmDisconnectFunction to describe why a connection was closed.
  */

@@ -44,7 +44,15 @@ typedef struct {
  * @LM_MESSAGE_TYPE_IQ: an info/query element, <iq/>
  * @LM_MESSAGE_TYPE_STREAM: the stream:stream element, you probably don't need to create a message of this type.
  * @LM_MESSAGE_TYPE_STREAM_ERROR: a stream:error element
- * @LM_MESSAGE_TYPE_STREAM_FEATURES:  * @LM_MESSAGE_TYPE_AUTH:  * @LM_MESSAGE_TYPE_CHALLENGE:  * @LM_MESSAGE_TYPE_RESPONSE:  * @LM_MESSAGE_TYPE_SUCCESS:  * @LM_MESSAGE_TYPE_FAILURE:  * @LM_MESSAGE_TYPE_PROCEED:  * @LM_MESSAGE_TYPE_STARTTLS:  * @LM_MESSAGE_TYPE_UNKNOWN: incoming message is of some unknown type.
+ * @LM_MESSAGE_TYPE_STREAM_FEATURES:
+ * @LM_MESSAGE_TYPE_AUTH:
+ * @LM_MESSAGE_TYPE_CHALLENGE:
+ * @LM_MESSAGE_TYPE_RESPONSE:
+ * @LM_MESSAGE_TYPE_SUCCESS:
+ * @LM_MESSAGE_TYPE_FAILURE:
+ * @LM_MESSAGE_TYPE_PROCEED:
+ * @LM_MESSAGE_TYPE_STARTTLS:
+ * @LM_MESSAGE_TYPE_UNKNOWN: incoming message is of some unknown type.
  *
  * Describes what type of message a message is. This maps directly to top level elements in the jabber protocol.
  */
@@ -69,7 +77,8 @@ typedef enum {
  * LmMessageSubType:
  * @LM_MESSAGE_SUB_TYPE_NOT_SET: the default. No "type" attribute will be sent.
  * @LM_MESSAGE_SUB_TYPE_AVAILABLE: presence is available, applies to message type "presence"
- * @LM_MESSAGE_SUB_TYPE_NORMAL:  * @LM_MESSAGE_SUB_TYPE_CHAT: message is a chat message, applies to message type "message"
+ * @LM_MESSAGE_SUB_TYPE_NORMAL:
+ * @LM_MESSAGE_SUB_TYPE_CHAT: message is a chat message, applies to message type "message"
  * @LM_MESSAGE_SUB_TYPE_GROUPCHAT: message is a group chat message, applies to message type "message"
  * @LM_MESSAGE_SUB_TYPE_HEADLINE: message is a headline message, applies to message type "message"
  * @LM_MESSAGE_SUB_TYPE_UNAVAILABLE: presence is unavailable, applies to message type "presence"

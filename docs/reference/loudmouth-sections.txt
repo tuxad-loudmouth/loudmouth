@@ -46,6 +46,7 @@ lm_connection_unref
 
 <SECTION>
 <FILE>lm-message-handler</FILE>
+LmMessageHandler
 LmHandleMessageFunction
 lm_message_handler_new
 lm_message_handler_invalidate

@@ -316,7 +316,7 @@ lm_proxy_get_type (LmProxy *proxy)
 /**
  * lm_proxy_set_type
  * @proxy: an #LmProxy
- * @type: an LmProxyType
+ * @type: an #LmProxyType
  *
  * Sets the proxy type for @proxy to @type.
  **/

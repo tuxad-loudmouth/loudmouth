@@ -145,7 +145,7 @@ lm_message_handler_ref (LmMessageHandler *handler)
 
 /**
  * lm_message_handler_unref:
- * @handler: an #LmMessagHandler
+ * @handler: an #LmMessageHandler
  *
  * Removes a reference from @handler. When no more references are present the
  * handler is freed.
