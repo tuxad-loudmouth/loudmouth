@@ -156,17 +156,17 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
     switch (verify_res) {
     case X509_V_OK:
         break;
-    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
-        /* special case for self signed certificates? */
     case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
     case X509_V_ERR_UNABLE_TO_GET_CRL:
-    case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
         if (base->func(ssl,
                        LM_SSL_STATUS_NO_CERT_FOUND,
                        base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
             retval = FALSE;
         }
         break;
+    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+        /* special case for self signed certificates? */
+    case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
     case X509_V_ERR_INVALID_CA:
     case X509_V_ERR_CERT_UNTRUSTED:
     case X509_V_ERR_CERT_REVOKED:
