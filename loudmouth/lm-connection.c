@@ -689,30 +689,14 @@ connection_check_auth_type (LmMessage *auth_req_rpl)
     return ret_val;
 }
 
-static LmHandlerResult
-connection_auth_reply (LmMessageHandler *handler,
-                       LmConnection     *connection,
-                       LmMessage        *m,
-                       gpointer          user_data)
+static void
+connection_call_auth_cb (LmConnection *connection, gboolean success)
 {
-    const gchar *type;
-    gboolean     result = TRUE;
-
-    g_return_val_if_fail (connection != NULL,
-                          LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS);
-
-
-    type = lm_message_node_get_attribute (m->node, "type");
-    if (strcmp (type, "result") == 0) {
-        result = TRUE;
+    if (success) {
         connection->state = LM_CONNECTION_STATE_AUTHENTICATED;
-    }
-    else if (strcmp (type, "error") == 0) {
-        result = FALSE;
+    } else {
         connection->state = LM_CONNECTION_STATE_OPEN;
     }
-
-    lm_verbose ("AUTH reply: %d\n", result);
 
     if (connection->auth_cb) {
         LmCallback *cb = connection->auth_cb;
@@ -721,12 +705,26 @@ connection_auth_reply (LmMessageHandler *handler,
 
         if (cb->func) {
             (* ((LmResultFunction) cb->func)) (connection,
-                                               result,
+                                               success,
                                                cb->user_data);
         }
 
         _lm_utils_free_callback (cb);
     }
+}
+
+static LmHandlerResult
+connection_auth_reply (LmMessageHandler *handler,
+                       LmConnection     *connection,
+                       LmMessage        *m,
+                       gpointer          user_data)
+{
+    LmMessageSubType type;
+    g_return_val_if_fail (connection != NULL,
+                          LM_HANDLER_RESULT_ALLOW_MORE_HANDLERS);
+
+    type = lm_message_get_sub_type (m);
+    connection_call_auth_cb (connection, type == LM_MESSAGE_SUB_TYPE_RESULT);
 
     return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
@@ -998,30 +996,6 @@ _lm_connection_get_server (LmConnection *conn)
     }
 
     return server;
-}
-
-static void
-connection_call_auth_cb (LmConnection *connection, gboolean success)
-{
-    if (success) {
-        connection->state = LM_CONNECTION_STATE_AUTHENTICATED;
-    } else {
-        connection->state = LM_CONNECTION_STATE_OPEN;
-    }
-
-    if (connection->auth_cb) {
-        LmCallback *cb = connection->auth_cb;
-
-        connection->auth_cb = NULL;
-
-        if (cb->func) {
-            (* ((LmResultFunction) cb->func)) (connection,
-                                               success,
-                                               cb->user_data);
-        }
-
-        _lm_utils_free_callback (cb);
-    }
 }
 
 static LmHandlerResult
