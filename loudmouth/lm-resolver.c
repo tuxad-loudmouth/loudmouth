@@ -484,6 +484,8 @@ _lm_resolver_parse_srv_response (unsigned char  *srv,
         /* Ignore type, ttl, class and dlen */
         pos += 10;
         GETSHORT (pref, pos);
+        /* Ignore weight */
+        pos += 2;
         GETSHORT (port, pos);
 
         len = dn_expand (srv, end, pos, name, 255);
