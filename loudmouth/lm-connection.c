@@ -1175,7 +1175,9 @@ lm_connection_new (const gchar *server)
     LmConnection *connection;
     gint          i;
 
+#if !GLIB_CHECK_VERSION(2, 35, 0)
     g_type_init (); /* Ensure that the GLib type library is initialized */
+#endif
     lm_debug_init ();
     _lm_sock_library_init ();
 

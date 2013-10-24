@@ -40,7 +40,9 @@ main (int argc, char **argv)
 #endif
     LmResolver *srv_resolver;
 
+#if !GLIB_CHECK_VERSION(2, 35, 0)
     g_type_init ();
+#endif
 #if 0
     resolver = lm_resolver_new_for_host ("kenny.imendio.com",
                                          resolver_result_cb,
