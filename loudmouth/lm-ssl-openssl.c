@@ -332,7 +332,9 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
 {
     gint ssl_ret;
     GIOStatus status;
+    LmSSLBase *base;
 
+    base = LM_SSL_BASE(ssl);
     if (!ssl->ssl_ctx) {
         g_set_error (error,
                      LM_ERROR, LM_ERROR_CONNECTION_OPEN,
@@ -340,6 +342,9 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
         return FALSE;
     }
 
+    if (base->cipher_list) {
+        SSL_CTX_set_cipher_list(ssl->ssl_ctx, base->cipher_list);
+    }
     ssl->ssl = SSL_new(ssl->ssl_ctx);
     if (ssl->ssl == NULL) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "SSL_new() == NULL");

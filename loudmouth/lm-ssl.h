@@ -123,6 +123,9 @@ LmSSL *               lm_ssl_new             (const gchar *expected_fingerprint,
 
 gboolean              lm_ssl_is_supported    (void);
 
+void                  lm_ssl_set_cipher_list (LmSSL          *ssl,
+                                              const gchar    *cipher_list);
+
 const gchar *         lm_ssl_get_fingerprint (LmSSL          *ssl);
 
 void                  lm_ssl_use_starttls    (LmSSL *ssl,

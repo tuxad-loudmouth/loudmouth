@@ -92,7 +92,6 @@ _lm_ssl_free (LmSSL *ssl)
 #endif /* HAVE_SSL */
 
 
-
 /**
  * lm_ssl_new:
  * @expected_fingerprint: The expected fingerprint. @ssl_function will be called if there is a mismatch. %NULL if you are not interested in this check.
@@ -167,6 +166,13 @@ lm_ssl_ref (LmSSL *ssl)
     LM_SSL_BASE(ssl)->ref_count++;
 
     return ssl;
+}
+
+void
+lm_ssl_set_cipher_list (LmSSL       *ssl,
+                        const gchar *cipher_list)
+{
+  _lm_ssl_base_set_cipher_list(LM_SSL_BASE(ssl), cipher_list);
 }
 
 /**

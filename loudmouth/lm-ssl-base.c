@@ -33,6 +33,7 @@ _lm_ssl_base_init (LmSSLBase      *base,
     base->func_data      = user_data;
     base->data_notify    = notify;
     base->fingerprint[0] = '\0';
+    base->cipher_list    = NULL;
 
     if (expected_fingerprint) {
         base->expected_fingerprint = g_memdup (expected_fingerprint, 16);
@@ -49,8 +50,18 @@ _lm_ssl_base_init (LmSSLBase      *base,
 }
 
 void
+_lm_ssl_base_set_cipher_list (LmSSLBase   *base,
+                              const gchar *cipher_list)
+{
+    if (base->cipher_list)
+        g_free (base->cipher_list);
+    base->cipher_list = g_strdup (cipher_list);
+}
+
+void
 _lm_ssl_base_free_fields (LmSSLBase *base)
 {
     g_free (base->expected_fingerprint);
+    g_free (base->cipher_list);
 }
 

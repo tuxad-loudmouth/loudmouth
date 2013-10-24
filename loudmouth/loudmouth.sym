@@ -90,6 +90,7 @@ lm_ssl_is_supported
 lm_ssl_new
 lm_ssl_ref
 lm_ssl_unref
+lm_ssl_set_cipher_list
 lm_ssl_use_starttls
 lm_utils_get_localtime
 lm_sha_hash

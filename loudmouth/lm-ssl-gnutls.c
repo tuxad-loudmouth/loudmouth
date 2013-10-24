@@ -195,10 +195,16 @@ gboolean
 _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
 {
     int ret;
+    LmSSLBase *base;
     gboolean auth_ok = TRUE;
 
+    base = LM_SSL_BASE(ssl);
     gnutls_init (&ssl->gnutls_session, GNUTLS_CLIENT);
-    gnutls_priority_set_direct (ssl->gnutls_session, "NORMAL", NULL)
+    if (base->cipher_list) {
+      gnutls_priority_set_direct (ssl->gnutls_session, base->cipher_list, NULL);
+    } else {
+      gnutls_priority_set_direct (ssl->gnutls_session, "NORMAL", NULL);
+    }
     gnutls_credentials_set (ssl->gnutls_session,
                             GNUTLS_CRD_CERTIFICATE,
                             ssl->gnutls_xcred);
@@ -229,6 +235,10 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
         return FALSE;
     }
 
+    lm_verbose ("GNUTLS negotiated cipher suite: %s",
+                gnutls_cipher_suite_get_name(gnutls_kx_get(ssl->gnutls_session),
+                                             gnutls_cipher_get(ssl->gnutls_session),
+                                             gnutls_mac_get(ssl->gnutls_session)));
     lm_verbose ("GNUTLS negotiated compression: %s",
                 gnutls_compression_get_name (gnutls_compression_get
                                              (ssl->gnutls_session)));
