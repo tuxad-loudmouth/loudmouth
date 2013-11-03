@@ -20,7 +20,11 @@
 
 #include <config.h>
 
+#include <errno.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <glib.h>
 
 #include "lm-debug.h"
@@ -192,6 +196,72 @@ _lm_ssl_initialize (LmSSL *ssl)
 }
 
 gboolean
+_lm_ssl_set_ca (LmSSL       *ssl,
+                const gchar *ca_path)
+{
+    struct stat target;
+
+    if (stat (ca_path, &target) != 0) {
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+               "ca_path '%s': no such file or directory", ca_path);
+        return FALSE;
+    }
+
+    if (S_ISDIR (target.st_mode)) {
+        int success = 0;
+        int worked_at_least_once = 0;
+        DIR *dir;
+        struct dirent *entry;
+
+        if ((dir = opendir (ca_path)) == NULL) {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "Couldn't open '%s': %s",
+                   ca_path, strerror(errno));
+            return FALSE;
+        }
+
+        for (entry = readdir (dir); entry != NULL; entry = readdir (dir)) {
+            struct stat file;
+            gchar *path = g_build_path ("/", ca_path, entry->d_name, NULL);
+
+            if ((stat (path, &file) == 0) && S_ISREG (file.st_mode)) {
+                success = gnutls_certificate_set_x509_trust_file (
+                                ssl->gnutls_xcred, path, GNUTLS_X509_FMT_PEM);
+                if (success > 0)
+                    worked_at_least_once = 1;
+                if (success < 0) {
+                    g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                           "Loading of certificate '%s' failed: %s",
+                            path, gnutls_strerror(success));
+                }
+            }
+            g_free (path);
+        }
+        closedir (dir);
+
+        if (!worked_at_least_once) {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "No certificates in ca_path '%s'. Are they in PEM format?",
+                   ca_path);
+            return FALSE;
+        }
+
+    } else if (S_ISREG (target.st_mode)) {
+        int success = 0;
+        success = gnutls_certificate_set_x509_trust_file (ssl->gnutls_xcred,
+                                                          ca_path,
+                                                          GNUTLS_X509_FMT_PEM);
+        if (success < 0) {
+            g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+                   "Loading of ca_path '%s' failed: %s",
+                   ca_path, gnutls_strerror(success));
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+gboolean
 _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
 {
     int ret;
@@ -204,6 +274,9 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
       gnutls_priority_set_direct (ssl->gnutls_session, base->cipher_list, NULL);
     } else {
       gnutls_priority_set_direct (ssl->gnutls_session, "NORMAL", NULL);
+    }
+    if (base->ca_path) {
+      _lm_ssl_set_ca(ssl, base->ca_path);
     }
     gnutls_credentials_set (ssl->gnutls_session,
                             GNUTLS_CRD_CERTIFICATE,

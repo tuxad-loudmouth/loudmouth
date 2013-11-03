@@ -59,9 +59,18 @@ _lm_ssl_base_set_cipher_list (LmSSLBase   *base,
 }
 
 void
+_lm_ssl_base_set_ca_path (LmSSLBase   *base,
+			  const gchar *ca_path)
+{
+    if (base->ca_path)
+        g_free (base->ca_path);
+    base->ca_path = g_strdup (ca_path);
+}
+void
 _lm_ssl_base_free_fields (LmSSLBase *base)
 {
     g_free (base->expected_fingerprint);
     g_free (base->cipher_list);
+    g_free (base->ca_path);
 }
 

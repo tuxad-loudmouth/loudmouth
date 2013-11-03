@@ -126,6 +126,9 @@ gboolean              lm_ssl_is_supported    (void);
 void                  lm_ssl_set_cipher_list (LmSSL          *ssl,
                                               const gchar    *cipher_list);
 
+void                  lm_ssl_set_ca          (LmSSL *ssl,
+					      const gchar    *ca_path);
+
 const gchar *         lm_ssl_get_fingerprint (LmSSL          *ssl);
 
 void                  lm_ssl_use_starttls    (LmSSL *ssl,

@@ -23,6 +23,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <glib.h>
 
@@ -328,6 +330,35 @@ _lm_ssl_initialize (LmSSL *ssl)
 }
 
 gboolean
+_lm_ssl_set_ca (LmSSL       *ssl,
+		const gchar *ca_path)
+{
+    struct stat target;
+    int success = 0;
+
+    if (stat (ca_path, &target) != 0) {
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+	       "ca_path '%s': no such file or directory", ca_path);
+        return FALSE;
+    }
+
+    if (S_ISDIR (target.st_mode)) {
+        success = SSL_CTX_load_verify_locations(ssl->ssl_ctx, NULL, ca_path);
+    } else if (S_ISREG (target.st_mode)) {
+        success = SSL_CTX_load_verify_locations(ssl->ssl_ctx, ca_path, NULL);
+    }
+    if (success == 0) {
+        g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
+	       "Loading of ca_path '%s' failed: %s",
+	       ca_path,
+	       ERR_error_string(ERR_peek_last_error(), NULL));
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+gboolean
 _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
 {
     gint ssl_ret;
@@ -345,6 +376,10 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
     if (base->cipher_list) {
         SSL_CTX_set_cipher_list(ssl->ssl_ctx, base->cipher_list);
     }
+    if (base->ca_path) {
+        _lm_ssl_set_ca (ssl, base->ca_path);
+    }
+
     ssl->ssl = SSL_new(ssl->ssl_ctx);
     if (ssl->ssl == NULL) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "SSL_new() == NULL");

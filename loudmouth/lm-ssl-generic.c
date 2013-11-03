@@ -176,6 +176,22 @@ lm_ssl_set_cipher_list (LmSSL       *ssl,
 }
 
 /**
+ * lm_ssl_set_ca:
+ * @ssl: an #LmSSL
+ * @ca_path: path to a certificate or a directory containing certificates
+ *
+ * Sets a path to certificates which should be trusted.
+ *
+ **/
+
+void
+lm_ssl_set_ca (LmSSL *ssl, const gchar    *ca_path)
+{
+  _lm_ssl_base_set_ca_path(LM_SSL_BASE(ssl), ca_path);
+}
+
+
+/**
  * lm_ssl_use_starttls:
  * @ssl: an #LmSSL
  *

@@ -31,6 +31,7 @@ struct _LmSSLBase {
     gpointer        func_data;
     GDestroyNotify  data_notify;
     gchar          *cipher_list;
+    gchar          *ca_path;
     gchar          *expected_fingerprint;
     char            fingerprint[20];
     gboolean        use_starttls;
@@ -47,6 +48,9 @@ void _lm_ssl_base_init         (LmSSLBase      *base,
 
 void _lm_ssl_base_set_cipher_list (LmSSLBase   *base,
                                    const gchar *cipher_list);
+
+void _lm_ssl_base_set_ca_path (LmSSLBase   *base,
+			       const gchar *ca_path);
 
 void _lm_ssl_base_free_fields  (LmSSLBase      *base);
 
