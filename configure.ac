@@ -44,7 +44,7 @@ AC_HEADER_STDC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
-m4_include(build/gtkdoc.m4)
+m4_include(gtk-doc.m4)
 m4_include(build/dolt.m4)
 
 LT_CURRENT=1
@@ -95,7 +95,8 @@ PKG_CHECK_MODULES(LOUDMOUTH,
                   gobject-2.0 >= $GLIB2_REQUIRED)
 
 PKG_CHECK_MODULES(LOUDMOUTHTEST,
-                  glib-2.0 >= $GLIB2_TEST_REQUIRED,
+                  glib-2.0 >= $GLIB2_TEST_REQUIRED
+                  gobject-2.0 >= $GLIB2_REQUIRED,
 		  enable_test=yes, enable_test=no)
 if test "$enable_test" = yes; then
   TEST_DIRS=tests
