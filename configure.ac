@@ -9,7 +9,7 @@ AC_COPYRIGHT([
 AC_CONFIG_SRCDIR(loudmouth/loudmouth.h)
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR(build)
-AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-define -Wall])
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-define subdir-objects -Wall])
 
 AM_MAINTAINER_MODE
 
