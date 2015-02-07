@@ -212,7 +212,7 @@ socket_read_incoming (LmOldSocket *socket,
                                           NULL);
     }
 
-    if (status != G_IO_STATUS_NORMAL || *bytes_read < 0) {
+    if (status != G_IO_STATUS_NORMAL) {
         switch (status) {
         case G_IO_STATUS_EOF:
             *reason = LM_DISCONNECT_REASON_HUP;
