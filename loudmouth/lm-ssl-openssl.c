@@ -37,6 +37,9 @@
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/x509v3.h>
+#include <openssl/asn1.h>
+#include <openssl/safestack.h>
 
 #define LM_SSL_CN_MAX       63
 
@@ -207,6 +210,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
     crt_subj = X509_get_subject_name(srv_crt);
     cn = (gchar *) g_malloc0(LM_SSL_CN_MAX + 1);
 
+    /* FWB: deprecated call, can only get first entry */
     if (X509_NAME_get_text_by_NID(crt_subj, NID_commonName, cn, LM_SSL_CN_MAX) > 0) {
         gchar *domain = cn;
 
@@ -214,11 +218,53 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
                "%s: server = '%s', cn = '%s'\n",
                __FILE__, server, cn);
 
-        if ((cn[0] == '*') && (cn[1] == '.')) {
-            domain = strstr (cn, server);
-        }
+        if (domain != NULL) {
 
-        if ((domain == NULL) || (strncasecmp (server, domain, LM_SSL_CN_MAX) != 0)) {
+            if ((cn[0] == '*') && (cn[1] == '.')) {
+                /* 
+                 * FWB: huh? ever tested?
+                 * server="sub.domain.tld";
+                 * cn="*.domain.tld";
+                 * domain=strstr(cn, server); ???
+                 */
+                /* domain = strstr (cn, server); */
+                server = strchr(server, '.') + 1;
+                domain = cn + 2;
+            }
+    
+            if (strncasecmp (server, domain, LM_SSL_CN_MAX) != 0) {
+                /* FWB: CN doesn't match, try SANs */
+                int subject_alt_names_nb = -1;
+                int san_result = 0;
+                int san_counter;
+                STACK_OF(GENERAL_NAME) *subject_alt_names = NULL;
+    
+                /* g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "%s: CN does not match server name\n", __FILE__); */
+                // Try to extract the names within the SAN extension from the certificate
+                subject_alt_names = X509_get_ext_d2i((X509 *) srv_crt, NID_subject_alt_name, NULL, NULL);
+                if (subject_alt_names != NULL) {
+    
+                    // Check each name within the extension
+                    subject_alt_names_nb = sk_GENERAL_NAME_num(subject_alt_names);
+                    for (san_counter=0; san_counter<subject_alt_names_nb; san_counter++) {
+                        const GENERAL_NAME *current_name = sk_GENERAL_NAME_value(subject_alt_names, san_counter);
+                        if (current_name->type == GEN_DNS) {
+                            // Current name is a DNS name, let's check it, it's ASCII
+                            if (strcasecmp(server, (char *)current_name->d.dNSName->data) == 0) {
+                                g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "%s: found SAN '%s' - MATCH\n", __FILE__, current_name->d.dNSName->data);
+                                san_result = 1; /* break; */
+                            } else {
+                                g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "%s: found SAN '%s'\n", __FILE__, current_name->d.dNSName->data);
+                            }
+                        }
+                    }
+    
+                }
+                sk_GENERAL_NAME_pop_free(subject_alt_names, GENERAL_NAME_free);
+                if (!san_result) goto cn_and_san_mismatch;
+            } /* SAN */
+        } else {
+            cn_and_san_mismatch:
             if (base->func (ssl,
                             LM_SSL_STATUS_CERT_HOSTNAME_MISMATCH,
                             base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
