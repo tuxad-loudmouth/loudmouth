@@ -298,10 +298,13 @@ _lm_ssl_initialize (LmSSL *ssl)
         initialized = TRUE;
     }
 
-    ssl->ssl_method = TLSv1_client_method();
+    /* don't use TLSv1_client_method() because otherwise we don't get
+     * connections to TLS1_1 and TLS1_2 only servers
+     */
+    ssl->ssl_method = SSLv23_client_method();
     if (ssl->ssl_method == NULL) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
-               "TLSv1_client_method() == NULL");
+               "SSLv23_client_method() == NULL");
         abort();
     }
     ssl->ssl_ctx = SSL_CTX_new(ssl->ssl_method);
@@ -317,7 +320,7 @@ _lm_ssl_initialize (LmSSL *ssl)
      * See http://twistedmatrix.com/trac/ticket/3463 and
      * Loudmouth [#28].
      */
-    SSL_CTX_set_options (ssl->ssl_ctx, SSL_OP_NO_TICKET);
+    SSL_CTX_set_options (ssl->ssl_ctx, (SSL_OP_NO_TICKET | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3));
 
     /*if (access("/etc/ssl/cert.pem", R_OK) == 0)
       cert_file = "/etc/ssl/cert.pem";
