@@ -42,7 +42,7 @@ G_BEGIN_DECLS
  * @LM_ERROR_CONNECTION_OPEN: Connection is already open when trying to open it again.
  * @LM_ERROR_AUTH_FAILED: Authentication failed while opening connection
  * @LM_ERROR_CONNECTION_FAILED:
- * 
+ *
  * Describes the problem of the error.
  */
 typedef enum {

@@ -17,9 +17,9 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 #include <config.h>
- 
+
 #include <glib.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,42 +27,42 @@
 #ifdef __WIN32__
 #include <winsock2.h>
 #endif
- 
+
 typedef struct {
     gchar *name;
     gchar *passwd;
 } UserInfo;
- 
+
 static void
 free_user_info (UserInfo *info)
 {
     g_free (info->name);
     g_free (info->passwd);
- 
+
     g_free (info);
 }
- 
- 
+
+
 static void
 authentication_cb (LmConnection *connection, gboolean result, gpointer ud)
 {
     g_print ("Auth: %d\n", result);
     free_user_info ((UserInfo *) ud);
- 
+
     if (result == TRUE) {
         LmMessage *m;
-                 
+
         m = lm_message_new_with_sub_type (NULL,
                                           LM_MESSAGE_TYPE_PRESENCE,
                                           LM_MESSAGE_SUB_TYPE_AVAILABLE);
         g_print (":: %s\n", lm_message_node_to_string (m->node));
-                 
+
         lm_connection_send (connection, m, NULL);
         lm_message_unref (m);
     }
 
 }
- 
+
 static void
 connection_open_cb (LmConnection *connection, gboolean result, UserInfo *info)
 {
@@ -72,7 +72,7 @@ connection_open_cb (LmConnection *connection, gboolean result, UserInfo *info)
                                 authentication_cb, info, FALSE,  NULL);
     g_print ("Sent auth message\n");
 }
- 
+
 static LmHandlerResult
 handle_messages (LmMessageHandler *handler,
                  LmConnection     *connection,
@@ -81,7 +81,7 @@ handle_messages (LmMessageHandler *handler,
 {
     g_print ("Incoming message from: %s\n",
              lm_message_node_get_attribute (m->node, "from"));
- 
+
     return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 int
@@ -93,12 +93,12 @@ main (int argc, char **argv)
     gboolean          result;
     UserInfo         *info;
     gchar            *jid;
-                                                                                
+
     if (argc < 6) {
         g_print ("Usage: %s <server> <username> <password> <connectserver> <connectport>\n", argv[0]);
         return 1;
     }
-                                                                                
+
     connection = lm_connection_new (argv[4]);
 
     jid = g_strdup_printf ("%s@%s", argv[2], argv[1]);
@@ -111,26 +111,26 @@ main (int argc, char **argv)
     lm_connection_register_message_handler (connection, handler,
                                             LM_MESSAGE_TYPE_MESSAGE,
                                             LM_HANDLER_PRIORITY_NORMAL);
-                                                                                
+
     lm_message_handler_unref (handler);
-                                                                                
+
     info = g_new0 (UserInfo, 1);
     info->name = g_strdup (argv[2]);
     info->passwd = g_strdup (argv[3]);
-                                                                                
+
     result = lm_connection_open (connection,
                                  (LmResultFunction) connection_open_cb,
                                  info, NULL, NULL);
-                                                                                
+
     if (!result) {
         g_print ("Opening connection failed: %d\n", result);
     } else {
         g_print ("Returned from the connection_open\n");
     }
-                                                                                
+
     main_loop = g_main_loop_new (NULL, FALSE);
     g_main_loop_run (main_loop);
-                                                                                
+
     return 0;
 }
 

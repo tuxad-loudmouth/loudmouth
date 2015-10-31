@@ -43,7 +43,7 @@ you pass the flag, use "openssl" for OpenSSL.
 Debugging:
 ==========
 
-You can get debug information printed to STDOUT by using the environment 
+You can get debug information printed to STDOUT by using the environment
 variable LM_DEBUG.
 
 export LM_DEBUG=<keyword>

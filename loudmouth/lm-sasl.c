@@ -153,7 +153,7 @@ sasl_gssapi_get_creds (LmSASL *sasl)
     guint32         major_status;
     guint32         minor_status;
 
-    token.value	= g_strdup_printf ("xmpp@%s", sasl->server);
+    token.value        = g_strdup_printf ("xmpp@%s", sasl->server);
     token.length = strlen ((char *)token.value);
 
     if (token.value == NULL) {

@@ -3,7 +3,7 @@ include $(top_srcdir)/build/Makefile.am.lm
 SUBDIRS = parser-tests
 
 noinst_PROGRAMS = $(TEST_PROGS)
-TEST_PROGS = 
+TEST_PROGS =
 
 TEST_PROGS += test-parser                       \
 			  test-data-objects

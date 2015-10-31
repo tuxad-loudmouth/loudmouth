@@ -18,14 +18,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/* 
+/*
  * Small tool to change password on an account
  */
 
 #include <loudmouth/loudmouth.h>
 #include <string.h>
 
-static LmSSLResponse 
+static LmSSLResponse
 ssl_func (LmSSL        *ssl,
           LmSSLStatus   status,
           gpointer      user_data)
@@ -40,7 +40,7 @@ print_usage (const gchar *exec_name)
              exec_name);
 }
 
-int 
+int
 main (int argc, char **argv)
 {
     LmConnection  *connection;
@@ -54,8 +54,8 @@ main (int argc, char **argv)
     LmMessage     *reply;
     LmMessageNode *query;
     gboolean       use_ssl = FALSE;
-    
-    
+
+
     if (argc < 5) {
         print_usage (argv[0]);
         return -1;
@@ -80,7 +80,7 @@ main (int argc, char **argv)
                 if (++i >= argc) {
                     print_usage (argv[0]);
                     return -1;
-                } 
+                }
 
                 host = argv[i];
                 g_print ("HOST: %s\n", host);
@@ -98,7 +98,7 @@ main (int argc, char **argv)
         lm_connection_set_jid (connection, jid);
         g_free (jid);
     }
-    
+
     if (use_ssl) {
         LmSSL *ssl;
 
@@ -121,17 +121,17 @@ main (int argc, char **argv)
     }
 
     if (!lm_connection_authenticate_and_block (connection,
-                                               username, old_pass, 
+                                               username, old_pass,
                                                "Password changer",
                                                &error)) {
         g_error ("Failed to authenticate: %s\n", error->message);
     }
 
-    m = lm_message_new_with_sub_type (NULL, LM_MESSAGE_TYPE_IQ, 
+    m = lm_message_new_with_sub_type (NULL, LM_MESSAGE_TYPE_IQ,
                                       LM_MESSAGE_SUB_TYPE_SET);
-    
+
     query = lm_message_node_add_child (m->node, "query", NULL);
-    
+
     lm_message_node_set_attributes (query, "xmlns", "jabber:iq:register",
                                     NULL);
     lm_message_node_add_child (query, "username", username);
@@ -140,7 +140,7 @@ main (int argc, char **argv)
     reply = lm_connection_send_with_reply_and_block (connection, m, &error);
     if (!reply) {
         g_error ("Failed to change password: %s\n", error->message);
-    }   
+    }
 
     if (lm_message_get_sub_type (reply) == LM_MESSAGE_SUB_TYPE_RESULT) {
         g_print ("Password changed\n");
@@ -149,7 +149,7 @@ main (int argc, char **argv)
         /* If this wasn't only an example we should check error code
          * here to tell the user why it failed */
     }
-    
+
     lm_connection_close (connection, NULL);
 
     return 0;

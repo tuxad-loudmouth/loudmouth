@@ -60,7 +60,7 @@ _lm_ssl_base_set_cipher_list (LmSSLBase   *base,
 
 void
 _lm_ssl_base_set_ca_path (LmSSLBase   *base,
-			  const gchar *ca_path)
+                          const gchar *ca_path)
 {
     if (base->ca_path)
         g_free (base->ca_path);

@@ -24,13 +24,13 @@
 #include "loudmouth/lm-parser.h"
 
 static GSList *
-get_files (const gchar *prefix) 
+get_files (const gchar *prefix)
 {
     GSList      *list = NULL;
     GError      *error = NULL;
     GDir        *dir;
     const gchar *name;
-    
+
     dir = g_dir_open (PARSER_TEST_DIR, 0, &error);
 
     if (!dir) {
@@ -40,7 +40,7 @@ get_files (const gchar *prefix)
 
         return NULL;
     }
-    
+
 
     while ((name = g_dir_read_name (dir))) {
         /* Find *.xml */
@@ -49,7 +49,7 @@ get_files (const gchar *prefix)
             g_str_has_suffix (name, ".xml")) {
             gchar *file_path;
 
-            file_path = g_strconcat (PARSER_TEST_DIR, "/", name, 
+            file_path = g_strconcat (PARSER_TEST_DIR, "/", name,
                                      NULL);
 
             list = g_slist_prepend (list, file_path);
@@ -72,14 +72,14 @@ test_parser_with_file (const gchar *file_path, gboolean is_valid)
 
     parser = lm_parser_new (NULL, NULL, NULL);
     if (!g_file_get_contents (file_path,
-                              &file_contents, &length, 
+                              &file_contents, &length,
                               &error)) {
         g_error ("Couldn't read file '%s': %s",
                  file_path, error->message);
         g_clear_error (&error);
         return;
     }
-        
+
     g_assert (lm_parser_parse (parser, file_contents) == is_valid);
     lm_parser_free (parser);
     g_free (file_contents);
@@ -111,11 +111,11 @@ test_invalid_suite ()
     g_slist_free (list);
 }
 
-int 
+int
 main (int argc, char **argv)
 {
     g_test_init (&argc, &argv, NULL);
-    
+
     g_test_add_func ("/parser/valid_suite", test_valid_suite);
     g_test_add_func ("/parser/invalid/suite", test_invalid_suite);
 

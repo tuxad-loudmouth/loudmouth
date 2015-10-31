@@ -1,9 +1,9 @@
 AC_PREREQ(2.60)
 AC_INIT([Loudmouth], [1.5.0], [http://loudmouth.lighthouseapp.com/projects/17276-libloudmouth/tickets/new], [loudmouth])
 AC_COPYRIGHT([
-	Copyright (C) 2003-2008 Imendio AB
-	Copyright (C) 2007 Collabora Ltd
-	Copyright (C) 2007 Nokia Corporation
+        Copyright (C) 2003-2008 Imendio AB
+        Copyright (C) 2007 Collabora Ltd
+        Copyright (C) 2007 Nokia Corporation
 ])
 
 AC_CONFIG_SRCDIR(loudmouth/loudmouth.h)
@@ -56,7 +56,7 @@ AC_SUBST([LT_AGE])
 
 AM_PATH_GLIB_2_0
 
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h memory.h netdb.h netinet/in.h netinet/in_systm.h stdlib.h string.h sys/socket.h sys/time.h unistd.h]) 
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h memory.h netdb.h netinet/in.h netinet/in_systm.h stdlib.h string.h sys/socket.h sys/time.h unistd.h])
 AC_CHECK_HEADERS([winsock2.h arpa/nameser_compat.h])
 
 if test "$ac_cv_header_winsock2_h" = "yes"; then
@@ -90,14 +90,14 @@ AC_SUBST(LIBTASN1_REQUIRED)
 
 LM_CHECK_TIMEZONE
 
-PKG_CHECK_MODULES(LOUDMOUTH, 
+PKG_CHECK_MODULES(LOUDMOUTH,
                   glib-2.0 >= $GLIB2_REQUIRED
                   gobject-2.0 >= $GLIB2_REQUIRED)
 
 PKG_CHECK_MODULES(LOUDMOUTHTEST,
                   glib-2.0 >= $GLIB2_TEST_REQUIRED
                   gobject-2.0 >= $GLIB2_REQUIRED,
-		  enable_test=yes, enable_test=no)
+                  enable_test=yes, enable_test=no)
 if test "$enable_test" = yes; then
   TEST_DIRS=tests
 else
@@ -107,7 +107,7 @@ AC_SUBST([TEST_DIRS])
 
 PKG_CHECK_MODULES(LIBIDN, libidn, have_idn=yes, have_idn=no)
 if test "x$have_idn" = "xyes"; then
-	AC_DEFINE(HAVE_IDN, 1, [Define if IDN support is included])
+        AC_DEFINE(HAVE_IDN, 1, [Define if IDN support is included])
 fi
 
 dnl Gtk doc
@@ -144,10 +144,10 @@ AC_PATH_PROG(KRB5CONFIG, krb5-config, no)
 enable_gssapi=no
 if test "x$KRB5CONFIG" != "xno"
 then
-	AC_CHECK_HEADERS([gssapi.h gssapi/gssapi.h])
-	enable_gssapi=yes
-	AC_DEFINE(HAVE_GSSAPI, 1, [whether to use GSSAPI support.])
-	LIBS="$LIBS `$KRB5CONFIG --libs gssapi`"
+        AC_CHECK_HEADERS([gssapi.h gssapi/gssapi.h])
+        enable_gssapi=yes
+        AC_DEFINE(HAVE_GSSAPI, 1, [whether to use GSSAPI support.])
+        LIBS="$LIBS `$KRB5CONFIG --libs gssapi`"
 fi
 AM_CONDITIONAL(USE_GSSAPI, test x$enable_gssapi = xyes)
 
@@ -155,20 +155,20 @@ dnl +--------------------------------------------------------+
 dnl | Checking for SSL support                               |-
 dnl +--------------------------------------------------------+
 AC_ARG_WITH(ssl,
-	    AS_HELP_STRING([--with-ssl=@<:@gnutls|openssl|no@:>@], 
-			   [Which SSL implementation to use [[default=gnutls]]]),
-	    ac_ssl=$withval,
-	    ac_ssl=gnutls)
+            AS_HELP_STRING([--with-ssl=@<:@gnutls|openssl|no@:>@],
+                           [Which SSL implementation to use [[default=gnutls]]]),
+            ac_ssl=$withval,
+            ac_ssl=gnutls)
 
 AC_ARG_WITH(openssl-includes,
-	    AC_HELP_STRING([--with-openssl-includes=DIR],[OpenSSL includes]),
-	    [ use_openssl=yes CPPFLAGS="$CPPFLAGS -I$withval" ]
-	    )
+            AC_HELP_STRING([--with-openssl-includes=DIR],[OpenSSL includes]),
+            [ use_openssl=yes CPPFLAGS="$CPPFLAGS -I$withval" ]
+            )
 
 AC_ARG_WITH(openssl-libs,
-	    AC_HELP_STRING([--with-openssl-libs=DIR],[OpenSSL libraries]),
-	    [ use_openssl=yes LDFLAGS="$LDFLAGS -L$withval" ]
-	    )
+            AC_HELP_STRING([--with-openssl-libs=DIR],[OpenSSL libraries]),
+            [ use_openssl=yes LDFLAGS="$LDFLAGS -L$withval" ]
+            )
 
 enable_ssl=no
 if test "x$ac_ssl" = "xgnutls"; then
@@ -182,43 +182,43 @@ if test "x$ac_ssl" = "xgnutls"; then
     enable_ssl=GnuTLS
   else
     AC_MSG_ERROR([GnuTLS was not found, use
-		--with-ssl=[[no|openssl]] to build without SSL support or
-		with OpenSSL])
+                --with-ssl=[[no|openssl]] to build without SSL support or
+                with OpenSSL])
   fi
 elif test "$ac_ssl" = "openssl"; then
   dnl Look for OpenSSL
   AC_CHECK_HEADERS([openssl/ssl.h])
   OLDLIBS="$LIBS"
-  AC_CHECK_LIB(crypto, 
-	       BIO_f_base64, 
-	       [AC_CHECK_LIB(ssl, 
-		             SSL_new, 
+  AC_CHECK_LIB(crypto,
+               BIO_f_base64,
+               [AC_CHECK_LIB(ssl,
+                             SSL_new,
                              [SSL_LIB="-lssl -lcrypto"
-		             AC_DEFINE(HAVE_OPENSSL, 
-				       [], 
-				       [Have OpenSSL])], 
-		             [have_openssl=no], 
-			     [-lcrypto])], 
-	       [have_openssl=no], 
-	       [])
+                             AC_DEFINE(HAVE_OPENSSL,
+                                       [],
+                                       [Have OpenSSL])],
+                             [have_openssl=no],
+                             [-lcrypto])],
+               [have_openssl=no],
+               [])
 
   if test "x$have_openssl" = "xno"; then
     AC_MSG_ERROR([OpenSSL was not found, use --with-ssl=[[no|gnutls]] to
                   build without SSL support or with GnuTLS])
-  else 
+  else
     LIBS="$OLDLIBS $SSL_LIB"
     enable_ssl=OpenSSL
   fi
 else
-	echo "Disabling SSL support"
+        echo "Disabling SSL support"
 fi
 
 if test x$enable_ssl != xno; then
-	AC_DEFINE(HAVE_SSL, 1, [whether to use SSL support.])
+        AC_DEFINE(HAVE_SSL, 1, [whether to use SSL support.])
 else
-	if test x$ac_ssl != xno; then
-		AC_MSG_ERROR([No SSL implementation was found, if you do not want to build with SSL use --with-ssl=no])
-	fi
+        if test x$ac_ssl != xno; then
+                AC_MSG_ERROR([No SSL implementation was found, if you do not want to build with SSL use --with-ssl=no])
+        fi
 fi
 
 AM_CONDITIONAL(USE_OPENSSL, test x$enable_ssl = xOpenSSL)
@@ -228,23 +228,23 @@ dnl +-------------------------------------------------------------------+
 dnl | Checking for libasyncns                                           |
 dnl +-------------------------------------------------------------------+
 AC_ARG_WITH(asyncns,
-	AS_HELP_STRING([--with-asyncns],
-		[define whether to use libasyncns, @<:@default=no@:>@ (yes/no)]),
-	ac_asyncns=$withval,
-	ac_asyncns=no)
+        AS_HELP_STRING([--with-asyncns],
+                [define whether to use libasyncns, @<:@default=no@:>@ (yes/no)]),
+        ac_asyncns=$withval,
+        ac_asyncns=no)
 
 enable_asyncns=no
 if test x$ac_asyncns != xno; then
 
-	PKG_CHECK_MODULES(ASYNCNS, [libasyncns >= 0.3],
-			[enable_asyncns=yes],
-			[enable_asyncns=no])
+        PKG_CHECK_MODULES(ASYNCNS, [libasyncns >= 0.3],
+                        [enable_asyncns=yes],
+                        [enable_asyncns=no])
 fi
 
 if test "x$enable_asyncns" = "xyes"; then
-	AC_DEFINE(HAVE_ASYNCNS, 1, [Whether to use libasyncns])
+        AC_DEFINE(HAVE_ASYNCNS, 1, [Whether to use libasyncns])
 else
-	echo "Not using asynchronous dns lookups"
+        echo "Not using asynchronous dns lookups"
 fi
 
 AC_SUBST(ASYNCNS_CFLAGS)
@@ -262,8 +262,8 @@ AC_CHECK_DECL(TCP_KEEPCNT, [ac_use_keepalives=yes], [ac_use_keepalives=no], [
 
 use_keepalives=no
 if test x$ac_use_keepalives != xno; then
-	use_keepalives=yes
-	AC_DEFINE(USE_TCP_KEEPALIVES, 1, [Whether to use Linux TCP keepalives])
+        use_keepalives=yes
+        AC_DEFINE(USE_TCP_KEEPALIVES, 1, [Whether to use Linux TCP keepalives])
 fi
 
 dnl +-------------+
@@ -287,10 +287,10 @@ AC_ARG_ENABLE(debug,
               enable_debug=yes)
 
 if test x$enable_debug = xno ; then
-	echo "Debugging disabled"
-	LOUDMOUTH_CFLAGS="$LOUDMOUTH_CFLAGS -DLM_NO_DEBUG"
+        echo "Debugging disabled"
+        LOUDMOUTH_CFLAGS="$LOUDMOUTH_CFLAGS -DLM_NO_DEBUG"
 else
-	echo "Debugging enabled"
+        echo "Debugging enabled"
 fi
 
 AC_SUBST(LOUDMOUTH_CFLAGS)
@@ -309,20 +309,20 @@ loudmouth-1.0.pc])
 dnl ==========================================================================
 echo "
 
-	Loudmouth $VERSION
-	==================
+        Loudmouth $VERSION
+        ==================
 
-	prefix:                   ${prefix}
-	compiler:                 ${CC}
-	Have IDN support:         ${have_idn}
-	Enable SSL:               ${enable_ssl}
-	Asynchronous DNS:         ${enable_asyncns}
-	Linux TCP keepalives:     ${use_keepalives}
-	Enable Debug:             ${enable_debug}
-	Enable GSSAPI:            ${enable_gssapi}
-	Enable Documentation:     ${enable_gtk_doc}
-	Enable Tests:             ${enable_test}
+        prefix:                   ${prefix}
+        compiler:                 ${CC}
+        Have IDN support:         ${have_idn}
+        Enable SSL:               ${enable_ssl}
+        Asynchronous DNS:         ${enable_asyncns}
+        Linux TCP keepalives:     ${use_keepalives}
+        Enable Debug:             ${enable_debug}
+        Enable GSSAPI:            ${enable_gssapi}
+        Enable Documentation:     ${enable_gtk_doc}
+        Enable Tests:             ${enable_test}
 
-	Now type 'make' to build Loudmouth
+        Now type 'make' to build Loudmouth
 "
 

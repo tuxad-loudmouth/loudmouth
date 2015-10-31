@@ -61,7 +61,7 @@ AC_DEFUN([IDT_COMPILE_WARNINGS],[
 
 dnl Autoconf macros for libgnutls
 dnl $id$
-                                                                                
+
 dnl AM_PATH_LIBGNUTLS([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND
 ]]])
 dnl Test for libgnutls, and define LIBGNUTLS_CFLAGS and LIBGNUTLS_LIBS
@@ -73,14 +73,14 @@ dnl
 AC_ARG_WITH(libgnutls-prefix,
           [  --with-libgnutls-prefix=PFX   Prefix where libgnutls is installed (optional)],
           libgnutls_config_prefix="$withval", libgnutls_config_prefix="")
-                                                                                
+
   if test x$libgnutls_config_prefix != x ; then
      libgnutls_config_args="$libgnutls_config_args --prefix=$libgnutls_config_prefix"
      if test x${LIBGNUTLS_CONFIG+set} != xset ; then
         LIBGNUTLS_CONFIG=$libgnutls_config_prefix/bin/libgnutls-config
      fi
   fi
-                                                                                
+
   AC_PATH_PROG(LIBGNUTLS_CONFIG, libgnutls-config, no)
   min_libgnutls_version=ifelse([$1], ,0.1.0,$1)
   AC_MSG_CHECKING(for libgnutls - version >= $min_libgnutls_version)
@@ -91,8 +91,8 @@ AC_ARG_WITH(libgnutls-prefix,
     LIBGNUTLS_CFLAGS=`$LIBGNUTLS_CONFIG $libgnutls_config_args --cflags`
     LIBGNUTLS_LIBS=`$LIBGNUTLS_CONFIG $libgnutls_config_args --libs`
     libgnutls_config_version=`$LIBGNUTLS_CONFIG $libgnutls_config_args --version`
-                                                                                
-                                                                                
+
+
       ac_save_CFLAGS="$CFLAGS"
       ac_save_LIBS="$LIBS"
       CFLAGS="$CFLAGS $LIBGNUTLS_CFLAGS"
@@ -111,7 +111,7 @@ int
 main ()
 {
     system ("touch conf.libgnutlstest");
-                                                                                
+
     if( strcmp( gnutls_check_version(NULL), "$libgnutls_config_version" ) )
     {
       printf("\n*** 'libgnutls-config --version' returned %s, but LIBGNUTLS (%s)\n",
@@ -159,7 +159,7 @@ main ()
        CFLAGS="$ac_save_CFLAGS"
        LIBS="$ac_save_LIBS"
   fi
-                                                                                
+
   if test "x$no_libgnutls" = x ; then
      AC_MSG_RESULT(yes)
      ifelse([$2], , :, [$2])
