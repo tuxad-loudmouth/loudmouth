@@ -221,7 +221,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
         if (domain != NULL) {
 
             if ((cn[0] == '*') && (cn[1] == '.')) {
-                /* 
+                /*
                  * FWB: huh? ever tested?
                  * server="sub.domain.tld";
                  * cn="*.domain.tld";
@@ -231,19 +231,19 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
                 server = strchr(server, '.') + 1;
                 domain = cn + 2;
             }
-    
+
             if (strncasecmp (server, domain, LM_SSL_CN_MAX) != 0) {
                 /* FWB: CN doesn't match, try SANs */
                 int subject_alt_names_nb = -1;
                 int san_result = 0;
                 int san_counter;
                 STACK_OF(GENERAL_NAME) *subject_alt_names = NULL;
-    
+
                 /* g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "%s: CN does not match server name\n", __FILE__); */
                 // Try to extract the names within the SAN extension from the certificate
                 subject_alt_names = X509_get_ext_d2i((X509 *) srv_crt, NID_subject_alt_name, NULL, NULL);
                 if (subject_alt_names != NULL) {
-    
+
                     // Check each name within the extension
                     subject_alt_names_nb = sk_GENERAL_NAME_num(subject_alt_names);
                     for (san_counter=0; san_counter<subject_alt_names_nb; san_counter++) {
@@ -258,7 +258,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
                             }
                         }
                     }
-    
+
                 }
                 sk_GENERAL_NAME_pop_free(subject_alt_names, GENERAL_NAME_free);
                 if (!san_result) goto cn_and_san_mismatch;
@@ -380,14 +380,14 @@ _lm_ssl_initialize (LmSSL *ssl)
 
 gboolean
 _lm_ssl_set_ca (LmSSL       *ssl,
-		const gchar *ca_path)
+                const gchar *ca_path)
 {
     struct stat target;
     int success = 0;
 
     if (stat (ca_path, &target) != 0) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
-	       "ca_path '%s': no such file or directory", ca_path);
+               "ca_path '%s': no such file or directory", ca_path);
         return FALSE;
     }
 
@@ -398,9 +398,9 @@ _lm_ssl_set_ca (LmSSL       *ssl,
     }
     if (success == 0) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
-	       "Loading of ca_path '%s' failed: %s",
-	       ca_path,
-	       ERR_error_string(ERR_peek_last_error(), NULL));
+               "Loading of ca_path '%s' failed: %s",
+               ca_path,
+               ERR_error_string(ERR_peek_last_error(), NULL));
         return FALSE;
     }
 

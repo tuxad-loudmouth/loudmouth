@@ -50,7 +50,7 @@ void _lm_ssl_base_set_cipher_list (LmSSLBase   *base,
                                    const gchar *cipher_list);
 
 void _lm_ssl_base_set_ca_path (LmSSLBase   *base,
-			       const gchar *ca_path);
+                               const gchar *ca_path);
 
 void _lm_ssl_base_free_fields  (LmSSLBase      *base);
 

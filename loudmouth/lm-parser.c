@@ -188,8 +188,8 @@ parser_end_node_cb (GMarkupParseContext  *context,
             if (parser->function) {
                 (* parser->function) (parser, m, parser->user_data);
             }
-	    lm_message_unref (m);
-	}
+            lm_message_unref (m);
+        }
 
         lm_message_node_unref (parser->cur_root);
         parser->cur_node = parser->cur_root = NULL;

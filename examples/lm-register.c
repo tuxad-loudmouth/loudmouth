@@ -25,7 +25,7 @@
 #include <loudmouth/loudmouth.h>
 #include <string.h>
 
-static LmSSLResponse 
+static LmSSLResponse
 ssl_func (LmSSL        *ssl,
           LmSSLStatus   status,
           gpointer      user_data)
@@ -106,11 +106,11 @@ main (int argc, char **argv)
     lm_message_node_add_child (query, "username", username);
     lm_message_node_add_child (query, "password", pass);
 
-    reply = lm_connection_send_with_reply_and_block (connection, 
+    reply = lm_connection_send_with_reply_and_block (connection,
                                                      m, &error);
-    
+
     if (!reply) {
-        g_error ("Failed to send registration request: %s\n", 
+        g_error ("Failed to send registration request: %s\n",
                  error->message);
     }
 
@@ -123,7 +123,7 @@ main (int argc, char **argv)
     default:
         g_print ("Failed to register account '%s@%s' due to: ",
                  username, server);
-        
+
         node = lm_message_node_find_child (reply->node, "error");
         if (node) {
             g_print ("%s\n", lm_message_node_get_value (node));

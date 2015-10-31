@@ -33,7 +33,7 @@ LmSSL *          _lm_ssl_new              (const gchar    *expected_fingerprint,
 
 void             _lm_ssl_initialize       (LmSSL            *ssl);
 gboolean         _lm_ssl_set_ca           (LmSSL            *ssl,
-					   const gchar    *ca_path);
+                                           const gchar    *ca_path);
 gboolean         _lm_ssl_begin            (LmSSL            *ssl,
                                            gint              fd,
                                            const gchar      *server,

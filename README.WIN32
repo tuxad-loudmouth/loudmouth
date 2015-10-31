@@ -1,10 +1,10 @@
 Steps to build Loudmouth 0.13.1 under Windows
 ---------------------------------------------
 
-1) Go to Tor Lillqvist's Win32 glib page 
+1) Go to Tor Lillqvist's Win32 glib page
    (http://www.gimp.org/~tml/gimp/win32/downloads.html)
 
-2) Get the pre-built glib, glib-dev, libintl and libiconv binaries 
+2) Get the pre-built glib, glib-dev, libintl and libiconv binaries
 	* libiconv-1.9.1.bin.woe32.zip
 	* gettext-runtime-0.12.1.bin.woe32.zip
 	* glib-dev-2.2.2.zip
@@ -17,7 +17,7 @@ Steps to build Loudmouth 0.13.1 under Windows
 5) Copy the prebuilt win32-config.h to c:\loudmouth-0.13.1\config.h
 
 6) Create an empty win32 static lib project in the root of the loudmouth
-   directory 
+   directory
 
 7) Add config.h and all .c and .h files in the loudmouth subdir except
    test-lm.c
@@ -47,5 +47,5 @@ Run test-lm
 Required Code Fixes
 -------------------
 lm-connection.c
-	The include line for unistd.h may need to be moved 
+	The include line for unistd.h may need to be moved
 	into the #ifndef __WIN32__ block

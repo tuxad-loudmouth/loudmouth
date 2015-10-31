@@ -27,12 +27,12 @@ static void
 test_auth_parameters ()
 {
     LmAuthParameters *params;
-    
+
     params = lm_auth_parameters_new ("my_user", "my_pass", "my_resource");
     g_assert (g_strcmp0 ("my_user", lm_auth_parameters_get_username (params)) == 0);
     g_assert (g_strcmp0 ("my_pass", lm_auth_parameters_get_password (params)) == 0);
     g_assert (g_strcmp0 ("my_resource", lm_auth_parameters_get_resource (params)) == 0);
-    
+
     lm_auth_parameters_unref (params);
 }
 
@@ -40,16 +40,16 @@ static void
 test_connect_parameters ()
 {
     LmConnectParameters *params;
-    
+
     params = lm_connect_parameters_new ("my_domain", "my_host", 5223);
     g_assert (g_strcmp0 ("my_domain", lm_connect_parameters_get_domain (params)) == 0);
     g_assert (g_strcmp0 ("my_host", lm_connect_parameters_get_host (params)) == 0);
     g_assert (5223 == lm_connect_parameters_get_port (params));
-    
+
     lm_connect_parameters_unref (params);
 }
 
-int 
+int
 main (int argc, char **argv)
 {
     g_test_init (&argc, &argv, NULL);
