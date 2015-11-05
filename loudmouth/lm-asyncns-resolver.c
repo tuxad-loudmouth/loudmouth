@@ -206,6 +206,7 @@ asyncns_resolver_lookup_host (LmResolver *resolver)
 
     if (!asyncns_resolver_prep (resolver, NULL)) {
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET, "Signal error\n");
+        g_free (host);
         return;
     }
 
@@ -218,6 +219,8 @@ asyncns_resolver_lookup_host (LmResolver *resolver)
     asyncns_setuserdata (priv->asyncns_ctx,
                          priv->resolv_query,
                          (gpointer) asyncns_resolver_done);
+
+    g_free (host);
 }
 
 static void
@@ -300,6 +303,10 @@ asyncns_resolver_lookup_service (LmResolver *resolver)
         g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_NET,
                "Failed to initiate the asyncns library");
         /* FIXME: Signal error */
+        g_free (srv);
+        g_free (domain);
+        g_free (service);
+        g_free (protocol);
         return;
     }
 
