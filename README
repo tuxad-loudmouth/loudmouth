@@ -59,13 +59,16 @@ Where keyword is one or more (separated by :) of the following:
 Questions, remarks, bug reports:
 ================================
 
-Official loudmouth project is no more maintained - both
-<http://projects.imendio.com/loudmouth> and
-<http://loudmouth-project.org>.
-
 This fork of loudmouth is lazily maintained by MCabber community, members
 of which can be found in official mcabber chatroom: <xmpp:mcabber@conf.lilotux.net>.
+
+New releases from the MCabber team are available at
+<https://mcabber.com/files/loudmouth/>
 
 Bugs can be also reported (to not lose track of them) to github bugtracker:
 <https://github.com/mcabber/loudmouth/issues>
 
+
+Official loudmouth project is no more maintained - both
+<http://projects.imendio.com/loudmouth> and
+<http://loudmouth-project.org>.
