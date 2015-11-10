@@ -168,6 +168,14 @@ lm_ssl_ref (LmSSL *ssl)
     return ssl;
 }
 
+/**
+ * lm_ssl_set_cipher_list:
+ * @ssl: an #LmSSL
+ * @cipher_list: list of ciphers
+ *
+ * Sets the list of availeble ciphers.
+ *
+ **/
 void
 lm_ssl_set_cipher_list (LmSSL       *ssl,
                         const gchar *cipher_list)
@@ -183,7 +191,6 @@ lm_ssl_set_cipher_list (LmSSL       *ssl,
  * Sets a path to certificates which should be trusted.
  *
  **/
-
 void
 lm_ssl_set_ca (LmSSL *ssl, const gchar    *ca_path)
 {

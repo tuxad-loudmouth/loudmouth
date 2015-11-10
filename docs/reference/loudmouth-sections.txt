@@ -109,6 +109,8 @@ LmSSLFunction
 lm_ssl_new
 lm_ssl_is_supported
 lm_ssl_get_fingerprint
+lm_ssl_set_ca
+lm_ssl_set_cipher_list
 lm_ssl_ref
 lm_ssl_unref
 </SECTION>
