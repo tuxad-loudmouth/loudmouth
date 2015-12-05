@@ -120,12 +120,15 @@ ssl_verify_cb (int preverify_ok, X509_STORE_CTX *x509_ctx)
     return 1;
 }
 
+/* side effect: fills the ssl->fingerprint buffer */
 static gboolean
 ssl_verify_certificate (LmSSL *ssl, const gchar *server)
 {
     gboolean retval = TRUE;
     LmSSLBase *base;
     long verify_res;
+    int rc;
+    const EVP_MD *digest = EVP_md5();
     unsigned int digest_len;
     X509 *srv_crt;
     gchar *cn;
@@ -142,17 +145,25 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
 
     verify_res = SSL_get_verify_result(ssl->ssl);
     srv_crt = SSL_get_peer_certificate(ssl->ssl);
-    if (base->expected_fingerprint != NULL) {
-        X509_digest(srv_crt, EVP_md5(), (guchar *) base->fingerprint,
-                    &digest_len);
-        if (memcmp(base->expected_fingerprint, base->fingerprint,
+    rc = X509_digest(srv_crt, digest, (guchar *) base->fingerprint,
+                     &digest_len);
+    if ((rc > 0) && (digest_len == EVP_MD_size(digest))) {
+        if (base->expected_fingerprint != NULL) {
+            if (memcmp(base->expected_fingerprint, base->fingerprint,
                    digest_len) != 0) {
-            if (base->func(ssl,
-                           LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,
-                           base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
-                return FALSE;
+                if (base->func(ssl,
+                               LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,
+                               base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
+                    return FALSE;
+                }
             }
         }
+    } else {
+      if (base->func(ssl,
+                     LM_SSL_STATUS_GENERIC_ERROR,
+                     base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
+          return FALSE;
+      }
     }
     g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL,
            "%s: SSL_get_verify_result() = %ld\n",
