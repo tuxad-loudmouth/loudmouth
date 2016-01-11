@@ -38,7 +38,7 @@ if test "$os_win32" = "yes"; then
   LDFLAGS="$LDFLAGS -no-undefined"
 fi
 
-AC_PROG_CC
+AC_PROG_CC([cc gcc])
 AC_ISC_POSIX
 AC_HEADER_STDC
 AC_LIBTOOL_WIN32_DLL

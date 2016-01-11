@@ -75,11 +75,6 @@ extern "C" {
 }
 #endif
 
-#ifndef lint
-static const char rcsid[] =
-"$Id$";
-#endif /* !lint */
-
 #define ROTL(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 #define ROTR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
 

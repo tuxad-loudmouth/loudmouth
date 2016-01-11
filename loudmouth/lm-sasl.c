@@ -25,7 +25,7 @@
 #include <glib.h>
 
 #ifdef HAVE_GSSAPI
-#include <gssapi.h>
+#include <gssapi/gssapi.h>
 #endif
 
 #include "lm-sock.h"

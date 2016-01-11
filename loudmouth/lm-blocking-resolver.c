@@ -29,6 +29,7 @@
 #include <arpa/nameser_compat.h>
 #endif
 
+#include <netinet/in.h>
 #include <arpa/nameser.h>
 #include <resolv.h>
 
