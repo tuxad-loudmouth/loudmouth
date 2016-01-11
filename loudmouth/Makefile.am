@@ -111,8 +111,7 @@ libloudmouthinclude_HEADERS =           \
 libloudmouth_1_la_LIBADD =              \
 	$(LOUDMOUTH_LIBS)                   \
 	$(LIBIDN_LIBS)                      \
-	$(ASYNCNS_LIBS)                     \
-	-lresolv
+	$(ASYNCNS_LIBS)
 
 libloudmouth_1_la_LDFLAGS =                                 \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)    \
