@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT([Loudmouth], [1.5.1], [http://loudmouth.lighthouseapp.com/projects/17276-libloudmouth/tickets/new], [loudmouth])
+AC_INIT([Loudmouth], [1.5.2])
 AC_COPYRIGHT([
         Copyright (C) 2003-2008 Imendio AB
         Copyright (C) 2007 Collabora Ltd
