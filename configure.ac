@@ -45,7 +45,6 @@ AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
 m4_include(gtk-doc.m4)
-m4_include(build/dolt.m4)
 
 LT_CURRENT=1
 LT_REVISION=0
