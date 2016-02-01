@@ -6,14 +6,14 @@ noinst_PROGRAMS = $(TEST_PROGS)
 TEST_PROGS =
 
 TEST_PROGS += test-parser                       \
-			  test-data-objects
+	test-data-objects
 
 test_parser_SOURCES =                           \
 	test-parser.c
 	
 test_data_objects_SOURCES =                     \
-	test-data-objects.c                         \
-	$(top_srcdir)/loudmouth/lm-data-objects.c
+	../loudmouth/lm-data-objects.c          \
+	test-data-objects.c
 
 AM_CPPFLAGS =                                   \
 	-I.                                         \
