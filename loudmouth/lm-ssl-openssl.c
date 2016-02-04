@@ -147,7 +147,7 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
     srv_crt = SSL_get_peer_certificate(ssl->ssl);
     rc = X509_digest(srv_crt, digest, (guchar *) base->fingerprint,
                      &digest_len);
-    if ((rc > 0) && (digest_len == EVP_MD_size(digest))) {
+    if ((rc != 0) && (digest_len == EVP_MD_size(digest))) {
         if (base->expected_fingerprint != NULL) {
             if (memcmp(base->expected_fingerprint, base->fingerprint,
                    digest_len) != 0) {
