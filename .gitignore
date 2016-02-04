@@ -15,8 +15,6 @@ config.log
 config.status
 config.sub
 depcomp
-doltcompile
-doltlibtool
 aclocal.m4
 autom4te*
 config.guess
