@@ -91,6 +91,9 @@ AC_SUBST(LIBTASN1_REQUIRED)
 
 LM_CHECK_TIMEZONE
 
+dnl Query for installation path of *.pc files, available with pkg-config>=0.27
+m4_ifdef([PKG_INSTALLDIR], [PKG_INSTALLDIR])
+
 PKG_CHECK_MODULES(LOUDMOUTH,
                   glib-2.0 >= $GLIB2_REQUIRED
                   gobject-2.0 >= $GLIB2_REQUIRED)
