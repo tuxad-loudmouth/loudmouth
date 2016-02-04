@@ -42,6 +42,9 @@ fi
 AC_PROG_CC([cc gcc])
 AC_ISC_POSIX
 AC_HEADER_STDC
+# automake warns about not using AM_PROG_AR
+# but automake <= 1.11 doesn't recognize it
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
