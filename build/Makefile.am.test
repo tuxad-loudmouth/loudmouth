@@ -5,9 +5,6 @@ GTESTER = gtester 			# for non-GLIB packages
 GTESTER_REPORT = gtester-report	        # for non-GLIB package
 # GTESTER_REPORT = $(top_builddir)/glib/gtester-report	# for the GLIB package
 
-# initialize variables for unconditional += appending
-TEST_PROGS =
-
 ### testing rules
 
 # test: run all tests in cwd and subdirs
