@@ -3,6 +3,8 @@ include $(top_srcdir)/build/Makefile.am.lm
 SUBDIRS = loudmouth docs examples $(TEST_DIRS)
 DIST_SUBDIRS = loudmouth docs examples tests
 
+ACLOCAL_AMFLAGS = -I m4
+
 EXTRA_DIST +=			\
 	loudmouth-1.0.pc.in     \
 	README.WIN32

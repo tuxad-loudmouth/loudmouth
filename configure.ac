@@ -9,6 +9,7 @@ AC_COPYRIGHT([
 AC_CONFIG_SRCDIR(loudmouth/loudmouth.h)
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_AUX_DIR(build)
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-define subdir-objects -Wall])
 
 AM_MAINTAINER_MODE
@@ -43,8 +44,6 @@ AC_ISC_POSIX
 AC_HEADER_STDC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
-
-m4_include(gtk-doc.m4)
 
 LT_CURRENT=1
 LT_REVISION=0
