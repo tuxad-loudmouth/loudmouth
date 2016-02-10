@@ -35,8 +35,6 @@
 
 #include <gnutls/x509.h>
 
-#define CA_PEM_FILE "/etc/ssl/certs/ca-certificates.crt"
-
 struct _LmSSL {
     LmSSLBase base;
 
@@ -189,9 +187,7 @@ _lm_ssl_initialize (LmSSL *ssl)
 {
     gnutls_global_init ();
     gnutls_certificate_allocate_credentials (&ssl->gnutls_xcred);
-    gnutls_certificate_set_x509_trust_file(ssl->gnutls_xcred,
-                                           CA_PEM_FILE,
-                                           GNUTLS_X509_FMT_PEM);
+    gnutls_certificate_set_x509_system_trust(ssl->gnutls_xcred);
 }
 
 gboolean
