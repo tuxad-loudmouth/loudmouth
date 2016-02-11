@@ -265,12 +265,12 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
     base = LM_SSL_BASE(ssl);
     gnutls_init (&ssl->gnutls_session, GNUTLS_CLIENT);
     if (base->cipher_list) {
-      gnutls_priority_set_direct (ssl->gnutls_session, base->cipher_list, NULL);
+        gnutls_priority_set_direct (ssl->gnutls_session, base->cipher_list, NULL);
     } else {
-      gnutls_priority_set_direct (ssl->gnutls_session, "NORMAL", NULL);
+        gnutls_priority_set_direct (ssl->gnutls_session, "NORMAL", NULL);
     }
     if (base->ca_path) {
-      _lm_ssl_set_ca(ssl, base->ca_path);
+        _lm_ssl_set_ca(ssl, base->ca_path);
     } else {
         gnutls_certificate_set_x509_system_trust(ssl->gnutls_xcred);
     }
