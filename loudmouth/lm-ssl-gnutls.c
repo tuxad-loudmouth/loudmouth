@@ -187,7 +187,6 @@ _lm_ssl_initialize (LmSSL *ssl)
 {
     gnutls_global_init ();
     gnutls_certificate_allocate_credentials (&ssl->gnutls_xcred);
-    gnutls_certificate_set_x509_system_trust(ssl->gnutls_xcred);
 }
 
 gboolean
@@ -272,6 +271,8 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
     }
     if (base->ca_path) {
       _lm_ssl_set_ca(ssl, base->ca_path);
+    } else {
+        gnutls_certificate_set_x509_system_trust(ssl->gnutls_xcred);
     }
     gnutls_credentials_set (ssl->gnutls_session,
                             GNUTLS_CRD_CERTIFICATE,
