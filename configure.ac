@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT([Loudmouth], [1.5.2])
+AC_INIT([Loudmouth], [1.5.3])
 AC_COPYRIGHT([
         Copyright (C) 2003-2008 Imendio AB
         Copyright (C) 2007 Collabora Ltd
