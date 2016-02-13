@@ -136,9 +136,9 @@ lm_ssl_is_supported (void)
  * lm_ssl_get_fingerprint:
  * @ssl: an #LmSSL
  *
- * Returns the MD5 fingerprint of the remote server's certificate.
+ * Returns the fingerprint of the remote server's certificate.
  *
- * Return value: A 16-byte array representing the fingerprint or %NULL if unknown.
+ * Return value: A null terminated string representing the fingerprint or %NULL if unknown.
  **/
 const gchar *
 lm_ssl_get_fingerprint (LmSSL *ssl)

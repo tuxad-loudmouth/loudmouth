@@ -16,6 +16,7 @@
  * License along with this program; if not, see <https://www.gnu.org/licenses>
  */
 
+#include "lm-debug.h"
 #include "lm-ssl-base.h"
 #include "lm-ssl-internals.h"
 
@@ -34,7 +35,15 @@ _lm_ssl_base_init (LmSSLBase      *base,
     base->cipher_list    = NULL;
 
     if (expected_fingerprint) {
-        base->expected_fingerprint = g_memdup (expected_fingerprint, 16);
+        if (!g_str_has_prefix(expected_fingerprint, LM_FINGERPRINT_PREFIX)) {
+          /* let's set a bogus hash because the user tries to use a hash
+             we don't support now */
+          expected_fingerprint = "wrong_hash_format";
+          g_log (LM_LOG_DOMAIN, LM_LOG_LEVEL_SSL, "Wrong hash format, use "
+                 LM_FINGERPRINT_PREFIX"$hash");
+        }
+        base->expected_fingerprint = g_strndup(expected_fingerprint,
+                                               LM_FINGERPRINT_LENGTH);
     } else {
         base->expected_fingerprint = NULL;
     }
@@ -64,6 +73,39 @@ _lm_ssl_base_set_ca_path (LmSSLBase   *base,
         g_free (base->ca_path);
     base->ca_path = g_strdup (ca_path);
 }
+
+void
+_lm_ssl_base_set_fingerprint (LmSSLBase    *base,
+                              const guchar *digest,
+                              unsigned int  digest_len)
+{
+    gchar hex[LM_FINGERPRINT_LENGTH];
+    gchar *p;
+    int i;
+
+    g_assert(LM_FINGERPRINT_PREFIX != NULL);
+    g_assert(digest != NULL);
+    g_assert(digest_len > 0);
+    g_assert(LM_FINGERPRINT_LENGTH >=
+             (sizeof(LM_FINGERPRINT_PREFIX) + digest_len*2));
+
+    for (p = hex, i = 0; i < digest_len ; i++, p+=2) {
+        g_snprintf(p, 3, "%02x", digest[i]);
+    }
+    g_snprintf(base->fingerprint, LM_FINGERPRINT_LENGTH,
+               "%s%s",
+               LM_FINGERPRINT_PREFIX,
+               hex);
+}
+
+int _lm_ssl_base_check_fingerprint( LmSSLBase *base)
+{
+    if (base->expected_fingerprint == NULL) {
+        return 0;
+    }
+    return g_ascii_strcasecmp(base->expected_fingerprint, base->fingerprint);
+}
+
 void
 _lm_ssl_base_free_fields (LmSSLBase *base)
 {

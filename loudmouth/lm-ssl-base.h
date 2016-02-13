@@ -31,7 +31,7 @@ struct _LmSSLBase {
     gchar          *cipher_list;
     gchar          *ca_path;
     gchar          *expected_fingerprint;
-    char            fingerprint[20];
+    char            fingerprint[LM_FINGERPRINT_LENGTH];
     gboolean        use_starttls;
     gboolean        require_starttls;
 
@@ -49,6 +49,12 @@ void _lm_ssl_base_set_cipher_list (LmSSLBase   *base,
 
 void _lm_ssl_base_set_ca_path (LmSSLBase   *base,
                                const gchar *ca_path);
+
+void _lm_ssl_base_set_fingerprint (LmSSLBase    *base,
+                                   const guchar *digest,
+                                   unsigned int  digest_len);
+
+int _lm_ssl_base_check_fingerprint( LmSSLBase *base);
 
 void _lm_ssl_base_free_fields  (LmSSLBase      *base);
 

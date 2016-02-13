@@ -43,6 +43,9 @@
 #error "Only <loudmouth/loudmouth.h> can be included directly, this file may disappear or change contents."
 #endif
 
+#define LM_FINGERPRINT_PREFIX "SHA256:"
+#define LM_FINGERPRINT_LENGTH 72
+
 G_BEGIN_DECLS
 
 /**

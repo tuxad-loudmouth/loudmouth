@@ -126,8 +126,9 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
     LmSSLBase *base;
     long verify_res;
     int rc;
-    const EVP_MD *digest = EVP_md5();
+    const EVP_MD *digest = EVP_sha256();
     unsigned int digest_len;
+    guchar digest_bin[EVP_MD_size(digest)];
     X509 *srv_crt;
     gchar *cn;
     X509_NAME *crt_subj;
@@ -143,17 +144,14 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
 
     verify_res = SSL_get_verify_result(ssl->ssl);
     srv_crt = SSL_get_peer_certificate(ssl->ssl);
-    rc = X509_digest(srv_crt, digest, (guchar *) base->fingerprint,
-                     &digest_len);
+    rc = X509_digest(srv_crt, digest, digest_bin, &digest_len);
     if ((rc != 0) && (digest_len == EVP_MD_size(digest))) {
-        if (base->expected_fingerprint != NULL) {
-            if (memcmp(base->expected_fingerprint, base->fingerprint,
-                   digest_len) != 0) {
-                if (base->func(ssl,
-                               LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,
-                               base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
-                    return FALSE;
-                }
+        _lm_ssl_base_set_fingerprint(base, digest_bin, digest_len);
+        if (_lm_ssl_base_check_fingerprint(base) != 0) {
+            if (base->func(ssl,
+                           LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,
+                           base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
+                return FALSE;
             }
         }
     } else {

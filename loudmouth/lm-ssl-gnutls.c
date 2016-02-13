@@ -34,6 +34,7 @@
 #ifdef HAVE_GNUTLS
 
 #include <gnutls/x509.h>
+#include <gnutls/crypto.h>
 
 struct _LmSSL {
     LmSSLBase base;
@@ -109,6 +110,8 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
     if (gnutls_certificate_type_get (ssl->gnutls_session) == GNUTLS_CRT_X509) {
         const gnutls_datum_t* cert_list;
         guint cert_list_size;
+        gnutls_digest_algorithm_t digest = GNUTLS_DIG_SHA256;
+        guchar digest_bin[LM_FINGERPRINT_LENGTH];
         size_t digest_size;
         gnutls_x509_crt_t cert;
 
@@ -139,15 +142,15 @@ ssl_verify_certificate (LmSSL *ssl, const gchar *server)
 
         gnutls_x509_crt_deinit (cert);
 
-        digest_size = sizeof (base->fingerprint);
+        digest_size = gnutls_hash_get_len(digest);
+        g_assert(digest_size < sizeof(digest_bin));
 
-        if (gnutls_fingerprint (GNUTLS_DIG_MD5, &cert_list[0],
-                                base->fingerprint,
+        if (gnutls_fingerprint (digest,
+                                &cert_list[0],
+                                digest_bin,
                                 &digest_size) >= 0) {
-            if (base->expected_fingerprint &&
-                memcmp (base->expected_fingerprint,
-                        base->fingerprint,
-                        digest_size) &&
+            _lm_ssl_base_set_fingerprint(base, digest_bin, digest_size);
+            if (_lm_ssl_base_check_fingerprint(base) != 0 &&
                 base->func (ssl,
                             LM_SSL_STATUS_CERT_FINGERPRINT_MISMATCH,
                             base->func_data) != LM_SSL_RESPONSE_CONTINUE) {
