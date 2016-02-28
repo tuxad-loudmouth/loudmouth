@@ -7,6 +7,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST +=			\
 	loudmouth-1.0.pc.in     \
+	autogen.sh		\
 	README.WIN32
 
 pkgconfig_DATA = loudmouth-1.0.pc
