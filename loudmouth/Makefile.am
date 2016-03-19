@@ -33,17 +33,12 @@ ssl_sources =                           \
 	lm-ssl-openssl.c
 endif
 
-
 libloudmouth_1_la_SOURCES =             \
 	lm-connection.c                     \
 	lm-debug.c                          \
 	lm-debug.h                          \
-	lm-data-objects.c					\
-	lm-data-objects.h					\
-	lm-dummy.c                          \
-	lm-dummy.h                          \
-	lm-idummy.c                         \
-	lm-idummy.h                         \
+	lm-data-objects.c                   \
+	lm-data-objects.h                   \
 	lm-error.c                          \
 	lm-marshal.c                        \
 	lm-marshal.h                        \
@@ -56,7 +51,7 @@ libloudmouth_1_la_SOURCES =             \
 	lm-misc.h                           \
 	lm-parser.c                         \
 	lm-parser.h                         \
-										\
+	                                    \
 	$(asyncns_sources)                  \
 	lm-resolver.c                       \
 	lm-resolver.h                       \
@@ -64,7 +59,7 @@ libloudmouth_1_la_SOURCES =             \
 	lm-asyncns-resolver.h               \
 	lm-blocking-resolver.c              \
 	lm-blocking-resolver.h              \
-										\
+	                                    \
 	lm-internals.h                      \
 	lm-sha.c                            \
 	lm-sha.h                            \
@@ -79,19 +74,15 @@ libloudmouth_1_la_SOURCES =             \
 	lm-sock.c                           \
 	lm-old-socket.c                     \
 	lm-old-socket.h                     \
-  					\
+	                                    \
 	lm-socket.c                         \
 	lm-socket.h                         \
-	\
+	                                    \
 	lm-feature-ping.c                   \
 	lm-feature-ping.h                   \
-										\
+	                                    \
 	lm-sasl.c                           \
 	lm-sasl.h                           \
-	lm-simple-io.c                      \
-	lm-simple-io.h                      \
-	lm-xmpp-writer.c                    \
-	lm-xmpp-writer.h                    \
 	md5.c                               \
 	md5.h                               \
 	$(NULL)
