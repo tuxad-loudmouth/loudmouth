@@ -11,7 +11,7 @@ if ! [ -f "./autogen.sh" ]; then
 fi
 
 if [ "x$1" = "x-h" ] || [ "x$1" = "x--help" ]; then
-	echo "./autogen.sh [-g]"
+	echo "./autogen.sh [-n]"
 	echo
 	echo " -n  disable gtk-doc"
 	echo
