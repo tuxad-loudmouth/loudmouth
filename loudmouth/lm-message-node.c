@@ -28,19 +28,14 @@
 #include "lm-internals.h"
 #include "lm-message-node.h"
 
-typedef struct {
-    gchar *key;
-    gchar *value;
-} KeyValuePair;
-
 static void            message_node_free            (LmMessageNode    *node);
 static LmMessageNode * message_node_last_child      (LmMessageNode    *node);
 
 static void
 message_node_free (LmMessageNode *node)
 {
-    LmMessageNode *l;
-    GSList        *list;
+    LmMessageNode          *l;
+    LmMessageNodeAttribute *a;
 
     g_return_if_fail (node != NULL);
 
@@ -54,15 +49,16 @@ message_node_free (LmMessageNode *node)
     g_free (node->name);
     g_free (node->value);
 
-    for (list = node->attributes; list; list = list->next) {
-        KeyValuePair *kvp = (KeyValuePair *) list->data;
+    for (a = node->attributes; a;) {
+        LmMessageNodeAttribute *next_a = a->next;
 
-        g_free (kvp->key);
-        g_free (kvp->value);
-        g_free (kvp);
+        g_free (a->name);
+        g_free (a->value);
+        g_free (a);
+
+        a = next_a;
     }
 
-    g_slist_free (node->attributes);
     g_free (node);
 }
 
@@ -219,7 +215,6 @@ lm_message_node_set_attributes  (LmMessageNode *node,
         value = (const gchar *) va_arg (args, gpointer);
 
         lm_message_node_set_attribute (node, name, value);
-
     }
 
     va_end (args);
@@ -238,32 +233,29 @@ lm_message_node_set_attribute (LmMessageNode *node,
                                const gchar   *name,
                                const gchar   *value)
 {
-    gboolean  found = FALSE;
-    GSList   *l;
+    gboolean                found = FALSE;
+    LmMessageNodeAttribute *a;
 
     g_return_if_fail (node != NULL);
     g_return_if_fail (name != NULL);
     g_return_if_fail (value != NULL);
 
-    for (l = node->attributes; l; l = l->next) {
-        KeyValuePair *kvp = (KeyValuePair *) l->data;
-
-        if (strcmp (kvp->key, name) == 0) {
-            g_free (kvp->value);
-            kvp->value = g_strdup (value);
+    for (a = node->attributes; a; a = a->next) {
+        if (strcmp (a->name, name) == 0) {
+            g_free (a->value);
+            a->value = g_strdup (value);
             found = TRUE;
             break;
         }
     }
 
     if (!found) {
-        KeyValuePair *kvp;
+        a = g_new0 (LmMessageNodeAttribute, 1);
+        a->name = g_strdup (name);
+        a->value = g_strdup (value);
 
-        kvp = g_new0 (KeyValuePair, 1);
-        kvp->key = g_strdup (name);
-        kvp->value = g_strdup (value);
-
-        node->attributes = g_slist_prepend (node->attributes, kvp);
+        a->next = node->attributes;
+        node->attributes = a;
     }
 }
 
@@ -279,17 +271,16 @@ lm_message_node_set_attribute (LmMessageNode *node,
 const gchar *
 lm_message_node_get_attribute (LmMessageNode *node, const gchar *name)
 {
-    GSList      *l;
-    const gchar *ret_val = NULL;
+    LmMessageNodeAttribute *a;
+    const gchar            *ret_val = NULL;
 
     g_return_val_if_fail (node != NULL, NULL);
     g_return_val_if_fail (name != NULL, NULL);
 
-    for (l = node->attributes; l; l = l->next) {
-        KeyValuePair *kvp = (KeyValuePair *) l->data;
-
-        if (strcmp (kvp->key, name) == 0) {
-            ret_val = kvp->value;
+    for (a = node->attributes; a; a = a->next) {
+        if (strcmp (a->name, name) == 0) {
+            ret_val = a->value;
+            break;
         }
     }
 
@@ -442,9 +433,9 @@ lm_message_node_unref (LmMessageNode *node)
 gchar *
 lm_message_node_to_string (LmMessageNode *node)
 {
-    GString       *ret;
-    GSList        *l;
-    LmMessageNode *child;
+    GString                *ret;
+    LmMessageNodeAttribute *a;
+    LmMessageNode          *child;
 
     g_return_val_if_fail (node != NULL, NULL);
 
@@ -455,21 +446,18 @@ lm_message_node_to_string (LmMessageNode *node)
     ret = g_string_new ("<");
     g_string_append (ret, node->name);
 
-    for (l = node->attributes; l; l = l->next) {
-        KeyValuePair *kvp = (KeyValuePair *) l->data;
-
+    for (a = node->attributes; a; a = a->next) {
         if (node->raw_mode == FALSE) {
             gchar *escaped;
 
-            escaped = g_markup_escape_text (kvp->value, -1);
+            escaped = g_markup_escape_text (a->value, -1);
             g_string_append_printf (ret, " %s=\"%s\"",
-                                    kvp->key, escaped);
+                                    a->name, escaped);
             g_free (escaped);
         } else {
             g_string_append_printf (ret, " %s=\"%s\"",
-                                    kvp->key, kvp->value);
+                                    a->name, a->value);
         }
-
     }
 
     g_string_append_c (ret, '>');

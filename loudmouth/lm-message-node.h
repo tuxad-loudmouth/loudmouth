@@ -28,6 +28,23 @@
 G_BEGIN_DECLS
 
 /**
+ * LmMessageNodeAttribute:
+ * @name: attribute name
+ * @value: attribute value
+ * @next: next attribute
+ *
+ * Linked list of message node attributes.
+ */
+typedef struct _LmMessageNodeAttribute LmMessageNodeAttribute;
+
+struct _LmMessageNodeAttribute {
+    gchar *name;
+    gchar *value;
+
+    LmMessageNodeAttribute *next;
+};
+
+/**
  * LmMessageNode:
  * @name: the name of the node
  * @value: value of the node, can be NULL
@@ -36,6 +53,7 @@ G_BEGIN_DECLS
  * @prev: previous sibling
  * @parent: node parent
  * @children: pointing to first child
+ * @attributes: linked list of node attributes
  *
  * A struct representing a node in a message.
  */
@@ -51,8 +69,9 @@ struct _LmMessageNode {
     LmMessageNode     *parent;
     LmMessageNode     *children;
 
+    LmMessageNodeAttribute *attributes;
+
     /* < private > */
-    GSList     *attributes;
     gint        ref_count;
 };
 
