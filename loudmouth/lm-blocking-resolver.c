@@ -45,7 +45,7 @@ struct LmBlockingResolverPriv {
     GSource *idle_source;
 };
 
-static void     blocking_resolver_finalize    (GObject       *object);
+static void     blocking_resolver_dispose     (GObject       *object);
 static void     blocking_resolver_lookup      (LmResolver    *resolver);
 static void     blocking_resolver_cancel      (LmResolver    *resolver);
 
@@ -57,7 +57,7 @@ lm_blocking_resolver_class_init (LmBlockingResolverClass *class)
     GObjectClass    *object_class   = G_OBJECT_CLASS (class);
     LmResolverClass *resolver_class = LM_RESOLVER_CLASS (class);
 
-    object_class->finalize = blocking_resolver_finalize;
+    object_class->dispose = blocking_resolver_dispose;
 
     resolver_class->lookup = blocking_resolver_lookup;
     resolver_class->cancel = blocking_resolver_cancel;
@@ -69,18 +69,15 @@ lm_blocking_resolver_class_init (LmBlockingResolverClass *class)
 static void
 lm_blocking_resolver_init (LmBlockingResolver *blocking_resolver)
 {
-    (void) GET_PRIV (blocking_resolver);
 }
 
 static void
-blocking_resolver_finalize (GObject *object)
+blocking_resolver_dispose (GObject *object)
 {
-    (void) GET_PRIV (object);
-
     /* Ensure we don't have an idle around */
     blocking_resolver_cancel (LM_RESOLVER (object));
 
-    (G_OBJECT_CLASS (lm_blocking_resolver_parent_class)->finalize) (object);
+    (G_OBJECT_CLASS (lm_blocking_resolver_parent_class)->dispose) (object);
 }
 
 static gboolean

@@ -48,8 +48,9 @@ struct LmAsyncnsResolverPriv {
     GIOChannel  *resolv_channel;
 };
 
-static void     asyncns_resolver_finalize      (GObject     *object);
+static void     asyncns_resolver_dispose       (GObject     *object);
 static void     asyncns_resolver_lookup        (LmResolver  *resolver);
+static void     asyncns_resolver_cleanup       (LmResolver  *resolver);
 static void     asyncns_resolver_cancel        (LmResolver  *resolver);
 
 G_DEFINE_TYPE (LmAsyncnsResolver, lm_asyncns_resolver, LM_TYPE_RESOLVER)
@@ -60,7 +61,7 @@ lm_asyncns_resolver_class_init (LmAsyncnsResolverClass *class)
     GObjectClass    *object_class = G_OBJECT_CLASS (class);
     LmResolverClass *resolver_class = LM_RESOLVER_CLASS (class);
 
-    object_class->finalize = asyncns_resolver_finalize;
+    object_class->dispose = asyncns_resolver_dispose;
 
     resolver_class->lookup = asyncns_resolver_lookup;
     resolver_class->cancel = asyncns_resolver_cancel;
@@ -71,15 +72,16 @@ lm_asyncns_resolver_class_init (LmAsyncnsResolverClass *class)
 static void
 lm_asyncns_resolver_init (LmAsyncnsResolver *asyncns_resolver)
 {
-    (void) GET_PRIV (asyncns_resolver);
 }
 
 static void
-asyncns_resolver_finalize (GObject *object)
+asyncns_resolver_dispose (GObject *object)
 {
-    (void) GET_PRIV (object);
+    g_return_if_fail (LM_IS_ASYNCNS_RESOLVER (object));
 
-    (G_OBJECT_CLASS (lm_asyncns_resolver_parent_class)->finalize) (object);
+    asyncns_resolver_cleanup (LM_RESOLVER(object));
+
+    (G_OBJECT_CLASS (lm_asyncns_resolver_parent_class)->dispose) (object);
 }
 
 static void

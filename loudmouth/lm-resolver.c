@@ -61,6 +61,7 @@ struct LmResolverPriv {
     struct addrinfo    *current_result;
 };
 
+static void     resolver_dispose             (GObject           *object);
 static void     resolver_finalize            (GObject           *object);
 static void     resolver_get_property        (GObject           *object,
                                               guint              param_id,
@@ -89,6 +90,7 @@ lm_resolver_class_init (LmResolverClass *class)
 {
     GObjectClass *object_class = G_OBJECT_CLASS (class);
 
+    object_class->dispose      = resolver_dispose;
     object_class->finalize     = resolver_finalize;
     object_class->get_property = resolver_get_property;
     object_class->set_property = resolver_set_property;
@@ -158,7 +160,19 @@ lm_resolver_class_init (LmResolverClass *class)
 static void
 lm_resolver_init (LmResolver *resolver)
 {
-    (void) GET_PRIV (resolver);
+}
+
+static void
+resolver_dispose (GObject *object)
+{
+    LmResolverPriv *priv = GET_PRIV (object);
+
+    if (priv->context) {
+        g_main_context_unref (priv->context);
+        priv->context = NULL;
+    }
+
+    (G_OBJECT_CLASS (lm_resolver_parent_class)->dispose) (object);
 }
 
 static void
@@ -172,10 +186,6 @@ resolver_finalize (GObject *object)
     g_free (priv->domain);
     g_free (priv->service);
     g_free (priv->protocol);
-
-    if (priv->context) {
-        g_main_context_unref (priv->context);
-    }
 
     if (priv->results) {
         freeaddrinfo (priv->results);
