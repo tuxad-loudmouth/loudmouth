@@ -284,8 +284,9 @@ _lm_ssl_begin (LmSSL *ssl, gint fd, const gchar *server, GError **error)
     gnutls_transport_set_ptr (ssl->gnutls_session,
                               (gnutls_transport_ptr_t)(glong) fd);
 
-    while (GNUTLS_E_AGAIN == (ret = gnutls_handshake(ssl->gnutls_session)))
-	  ;
+    do {
+        ret = gnutls_handshake(ssl->gnutls_session);
+    } while (GNUTLS_E_AGAIN == ret || GNUTLS_E_INTERRUPTED == ret);
 
     if (ret >= 0) {
         auth_ok = ssl_verify_certificate (ssl, server);
