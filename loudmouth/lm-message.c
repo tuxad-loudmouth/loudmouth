@@ -305,7 +305,7 @@ lm_message_get_type (LmMessage *message)
 LmMessageSubType
 lm_message_get_sub_type (LmMessage *message)
 {
-    g_return_val_if_fail (message != NULL, LM_MESSAGE_TYPE_UNKNOWN);
+    g_return_val_if_fail (message != NULL, LM_MESSAGE_SUB_TYPE_NOT_SET);
 
     return PRIV(message)->sub_type;
 }
